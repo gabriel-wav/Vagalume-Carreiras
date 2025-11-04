@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Vagas</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f9f9f9; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .vaga { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        .vaga h3 { margin-top: 0; }
+        .vaga-empresa { font-weight: bold; color: #555; }
+        .btn-detalhes { background: #007bff; color: white; padding: 8px 12px; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vagas Abertas</h1>
+        <p>Encontre sua próxima oportunidade.</p>
+
+        <hr>
+
+        {% if vagas %}
+            {% for vaga in vagas %}
+                <div class="vaga">
+                    <h3>{{ vaga.titulo }}</h3>
+                    <p class="vaga-empresa">{{ vaga.empresa.nome }}</p>
+                    <p>Localidade: {{ vaga.localidade }} | Contrato: {{ vaga.tipo_contrato }}</p>
+                    <p>Publicada em: {{ vaga.data_publicacao|date:"d/m/Y" }}</p>
+                    
+                    <a href="#" class="btn-detalhes">(Ver Detalhes e Candidatar)</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Nenhuma vaga aberta no momento. Volte em breve!</p>
+        {% endif %}
+
+    </div>
+</body>
+</html> 

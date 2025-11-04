@@ -15,23 +15,6 @@ class Usuario(AbstractUser):
         default='candidato'
     )
     telefone = models.CharField(max_length=15, blank=True, null=True)
-
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name='groups',
-        blank=True,
-        help_text='Os grupos aos quais este usuário pertence.',
-        related_name="usuario_groups",  # Nome único para o atalho reverso
-        related_query_name="usuario",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name='user permissions',
-        blank=True,
-        help_text='Permissões específicas para este usuário.',
-        related_name="usuario_permissions", # Nome único para o atalho reverso
-        related_query_name="usuario",
-    )
     
     def __str__(self):
         return self.email

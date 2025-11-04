@@ -4,7 +4,10 @@ from django import forms
 from .models import Vaga
 
 class VagaForm(forms.ModelForm):
-    
+    """
+    Formulário para o Recrutador criar ou editar uma Vaga.
+    (Esta é a versão avançada do seu colega, que vamos usar)
+    """
     class Meta:
         model = Vaga
         # Define os campos que o recrutador irá preencher
@@ -25,7 +28,7 @@ class VagaForm(forms.ModelForm):
         self.empresa = kwargs.pop('empresa', None)
         super().__init__(*args, **kwargs)
         
-        # (Semana 6): Adiciona classes de CSS (ex: Bootstrap/Tailwind)
+        # Adiciona classes de CSS (ex: Bootstrap/Tailwind)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control' # Exemplo
 
@@ -37,17 +40,13 @@ class VagaForm(forms.ModelForm):
         titulo = self.cleaned_data.get('titulo')
         
         if not self.empresa:
-            # Isso não deve acontecer se a view for configurada corretamente
             raise forms.ValidationError("Erro interno: Empresa não identificada.")
 
-        # Procura por vagas da MESMA empresa com o MESMO título
-        # self.instance é a vaga sendo editada (se for o caso)
         query = Vaga.objects.filter(
             empresa=self.empresa, 
-            titulo__iexact=titulo # ignora maiúscula/minúscula
+            titulo__iexact=titulo
         )
         
-        # Se estiver editando, exclui a própria vaga da checagem
         if self.instance and self.instance.pk:
             query = query.exclude(pk=self.instance.pk)
         
@@ -65,42 +64,11 @@ class VagaForm(forms.ModelForm):
         
         if recrutador:
             vaga.recrutador = recrutador
-            vaga.empresa = recrutador.empresa # Pega a empresa do recrutador
-        elif self.empresa: # Fallback caso a empresa seja passada
+            vaga.empresa = recrutador.empresa
+        elif self.empresa:
              vaga.empresa = self.empresa
             
         if commit:
             vaga.save()
             
         return vaga
-# Arquivo: apps/vagas/forms.py
-
-from django import forms
-from .models import Vaga
-
-class VagaForm(forms.ModelForm):
-    """
-    Formulário para o Recrutador criar ou editar uma Vaga.
-    """
-    class Meta:
-        model = Vaga # O formulário será baseado no seu model Vaga
-        
-        # Lista de campos do seu model que aparecerão no formulário
-        fields = [
-            'titulo', 
-            'descricao', 
-            'requisitos', 
-            'tipo_contrato', 
-            'localidade', 
-            'beneficios', 
-            'faixa_salarial',
-            'status', # (True = Aberta, False = Fechada)
-        ]
-
-    def __init__(self, *args, **kwargs):
-        # Este __init__ é só para deixar o form mais bonito (adiciona classes do Bootstrap, por ex.)
-        # É opcional, mas uma boa prática.
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            # Adiciona uma classe CSS 'form-control' para estilização
-            field.widget.attrs['class'] = 'form-control'
