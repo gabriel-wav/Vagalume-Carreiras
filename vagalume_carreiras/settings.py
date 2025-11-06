@@ -80,9 +80,16 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vagalume_db',
         'USER': 'postgres',
-        'PASSWORD': 'senai103@',  # postgresql nao pede senha
+        'PASSWORD': 'senai103@',  # postgre nao pede senha
         'HOST': 'localhost',
         'PORT': '5432',
+        
+        # --- ADICIONE ESTAS LINHAS ---
+        # Força o psycopg2 a usar UTF-8 e evita o erro de 'byte 0xe7'
+        'OPTIONS': {
+            'options': '-c client_encoding=utf8'
+        }
+        # -----------------------------
     }
 }
 
@@ -129,7 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
     'apps.usuarios.backends.EmailOrCPFBackend',
-    'django.contrib.auth.backends.ModelBackend', # Mantém o backend padrão como reserva
+    'django.contrib.auth.backends.ModelBackend', # Mantém o backend padrao como reserva
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
