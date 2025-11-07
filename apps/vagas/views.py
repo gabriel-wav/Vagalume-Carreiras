@@ -9,7 +9,8 @@ from django.db import IntegrityError
 from apps.usuarios.forms import ExperienciaForm, FormacaoForm
 from apps.usuarios.models import Candidato, Empresa
 from .models import Vaga
-
+from apps.matching.engine import calcular_similaridade 
+from apps.usuarios.forms import ExperienciaForm, FormacaoForm
 
 
 def landing_page(request):
@@ -75,23 +76,48 @@ def criar_vaga(request):
 def home_candidato(request):
     """
     Painel do Candidato.
-    Agora também é a central de Onboarding.
+    Agora também é a central de Onboarding e calcula o Matching.
     """
+    # Controle de Permissão
     if request.user.tipo_usuario != 'candidato':
         messages.error(request, 'Acesso negado.')
         return redirect('home_recrutador')
 
-    # Busca as vagas (para o painel real)
-    lista_de_vagas = Vaga.objects.filter(status=True).order_by('-data_publicacao')
-    
-    # Prepara os formulários vazios para o onboarding
+    # Pega o perfil de candidato logado
+    candidato = request.user.candidato
+
+    # Busca TODAS as vagas que estão abertas (status=True)
+    lista_de_vagas = Vaga.objects.filter(status=True)
+
+    # --- AQUI COMEÇA A MÁGICA DA SEMANA 7 ---
+    vagas_com_match = []
+
+    for vaga in lista_de_vagas:
+        # 1. Calcula o score usando a engine
+        score = calcular_similaridade(vaga, candidato)
+
+        # 2. Adiciona a vaga e seu score na lista
+        vagas_com_match.append({
+            'vaga': vaga,
+            'match_score': score
+        })
+
+    # 3. ORDENA a lista: vagas com maior score primeiro!
+    vagas_ordenadas = sorted(
+        vagas_com_match, 
+        key=lambda item: item['match_score'], 
+        reverse=True
+    )
+    # --- FIM DA MÁGICA ---
+
+    # Prepara os formulários vazios para o onboarding (como antes)
     contexto = {
-        'vagas': lista_de_vagas,
+        'vagas_com_match': vagas_ordenadas, # Manda a lista ordenada!
         'experiencia_form': ExperienciaForm(),
         'formacao_form': FormacaoForm(),
         # (adicione os outros forms aqui quando criá-los)
     }
-    
+
     return render(request, 'vagas/home_candidato.html', contexto)
 
 @login_required

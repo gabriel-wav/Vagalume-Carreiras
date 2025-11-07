@@ -104,7 +104,40 @@
         </ul>
     {% endif %}
     
-    <p>... (lista de vagas) ...</p>
+    <div class="vagas-container" id="vagas-container">
+    <div class="container-header">
+        <h1>Vagas Abertas</h1>
+        <p>Encontre sua próxima oportunidade.</p>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            </ul>
+    {% endif %}
+
+    {% for item in vagas_com_match %}
+        <div class.="vaga-card">
+            <div class="vaga-info">
+                <h3>{{ item.vaga.titulo }}</h3>
+                <p>
+                    {% if item.vaga.empresa %}
+                        {{ item.vaga.empresa.nome }} | 
+                    {% endif %}
+                    {{ item.vaga.localidade }}
+                </p>
+            </div>
+            <div class="vaga-match-score">
+                <h2>{{ item.match_score|floatformat:0 }}%</h2>
+                <p>Compatível</p>
+            </div>
+        </div>
+    {% empty %}
+        <p style="text-align: center; color: #8b949e; padding: 20px;">
+            Nenhuma vaga encontrada no momento.
+        </p>
+    {% endfor %}
+
+</div>
 </div>
 
 
@@ -160,6 +193,45 @@
     .onboarding-textarea { width: 100%; min-height: 150px; background-color: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 12px 15px; border-radius: 5px; font-size: 1rem; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 20px; }
     .vagas-container { max-width: 900px; margin: auto; }
 
+    /* --- ESTILOS DOS CARDS DE VAGA --- */
+.vaga-card {
+    background: #161B22; /* Cor de fundo do card */
+    border: 1px solid #30363d;
+    padding: 25px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex; /* Para alinhar o score */
+    justify-content: space-between;
+    align-items: center;
+}
+.vaga-info h3 { 
+    color: #fff; 
+    margin: 0 0 5px 0; 
+    font-size: 1.25rem;
+}
+.vaga-info p { 
+    color: #8b949e; 
+    margin: 0; 
+    font-size: 0.95rem;
+}
+.vaga-match-score { 
+    text-align: right; 
+    flex-shrink: 0; /* Impede que o score encolha */
+    margin-left: 20px;
+}
+.vaga-match-score h2 {
+    color: #BEF264; /* Verde Vagalume */
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+.vaga-match-score p { 
+    color: #8b949e; 
+    margin: 0; 
+    font-size: 0.9rem; 
+    font-weight: 500;
+}
+
     /*
  * ESTILOS PARA OS FORMS .as_p
  */
@@ -192,6 +264,8 @@
     margin-right: 10px;
     vertical-align: middle; /* Alinha melhor com o texto */
 }
+
+
 </style>
 
 <script>
