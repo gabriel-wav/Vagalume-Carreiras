@@ -44,7 +44,7 @@ def cadastrar_candidato(request):
             messages.info(request, 'Bem-vindo!', extra_tags='FIRST_LOGIN')
             
             # Redireciona para o painel do candidato (vamos criar essa URL depois)
-            return redirect('onboarding_bem_vindo')
+            return redirect('home_candidato')
     
     else:
         # Se for um GET (usuário só abriu a página), mostra um form vazio [cite: 11]
@@ -151,29 +151,22 @@ def salvar_resumo(request):
     e o salva no banco de dados.
     """
     if request.method == 'POST':
-        # 1. Pega o texto do <textarea name="resumo">
         texto_resumo = request.POST.get('resumo', '')
-
         try:
-            # 2. Pega o perfil 'Candidato' do usuário que está logado
             candidato = request.user.candidato
 
-            # 3. Salva no banco de dados
-            # update_or_create: cria um novo ou atualiza um existente
+            # Salva no banco de dados
             Resumo_Profissional.objects.update_or_create(
                 candidato=candidato,
                 defaults={'texto': texto_resumo}
             )
 
-            messages.success(request, 'Resumo salvo com sucesso!')
-
-            # 4. Redireciona para o próximo passo (Experiência)
-            # (Vamos criar essa URL 'onboarding_experiencia' em seguida)
-            return redirect('onboarding_experiencia') 
+            # Redireciona de volta para o home_candidato
+            # Onde o JS (que vamos corrigir) vai mostrar o próximo passo
+            return redirect('home_candidato') 
 
         except Candidato.DoesNotExist:
             messages.error(request, 'Erro: Perfil de candidato não encontrado.')
             return redirect('home_candidato')
 
-    # Se alguém tentar acessar a URL via GET, apenas redireciona
     return redirect('home_candidato')

@@ -17,5 +17,5 @@ urlpatterns = [
     path('onboarding/bem-vindo/', views.onboarding_bem_vindo, name='onboarding_bem_vindo'),
     path('onboarding/resumo/', views.onboarding_resumo, name='onboarding_resumo'),
     path('onboarding/salvar-resumo/', views.salvar_resumo, name='salvar_resumo'),
-    path('onboarding/experiencia/', views.onboarding_experiencia, name='onboarding_experiencia'),
+
 ]
