@@ -1,246 +1,936 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Vagalume Carreiras - Ilumine sua Carreira{% endblock %}
-
-{% block content %}
-
-<style>
-    /* Reseta o padding do main-container SÓ nesta página */
-main.main-container {
-        padding-top: 0;
-        padding-bottom: 0;
-        display: block;
-        width: 100%;   
-        max-width: 100%;
-    }
-    /* --- PARTE 1: HERO TEXT --- */
-    .hero-section {
-        /* Cria o efeito "flutuante" */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        /* Define uma altura grande, ex: 80% da tela */
-        min-height: 80vh; 
-        padding: 0 20px;
-        background: none; /* Sem fundo */
-    }
-    
-    .hero-title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 800;
-        font-size: 4.5rem; /* BEM GRANDE */
-        color: #FFFFFF;
-        line-height: 1.1;
-        max-width: 800px; /* Limita a largura do texto */
-        margin-bottom: 20px;
-    }
-    
-    .hero-subtitle {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 1.25rem;
-        color: #8b949e; /* Cinza claro */
-        max-width: 500px;
-        margin-bottom: 40px;
-    }
-
-    /* --- PARTE 2: BOTÕES --- */
-    .hero-buttons .btn-cta-green {
-        display: inline-block;
-        text-decoration: none;
-        padding: 15px 35px;
-        background-color: #AFEB83; 
-        color: #0D1117; 
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin: 0 10px;
-    }
-    
-    .hero-buttons .btn-cta-outline {
-        display: inline-block;
-        text-decoration: none;
-        padding: 15px 35px;
-        background: transparent;
-        border: 2px solid #AFEB83;
-        color: #FFFFFF;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin: 0 10px;
-    }
-
-    /* --- PARTE 3: STATS --- */
-    .stats-section {
-        display: flex;
-        justify-content: center;
-        gap: 60px; /* Espaço entre os números */
-        padding: 50px 20px;
-        text-align: center;
-    }
-    .stat-item h3 {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 3rem; /* Números grandes */
-        font-weight: 700;
-        color: #BEF264; /* Verde Vagalume */
-        margin: 0;
-    }
-    .stat-item p {
-        color: #8b949e;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-    
-    /* --- PARTE 4: MARQUEE (LETREIRO) --- */
-    .marquee-section {
-        position: relative; /* Contexto para as faixas */
-        height: 250px; /* Altura para o "X" caber */
-        overflow: hidden; /* ESSENCIAL: esconde o que vaza */
-        margin: 80px 0; /* Espaçamento */
-        
-        /* Remove a necessidade das faixas serem 200% largas */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 150vw; /* Faz o wrapper ser MAIOR que a tela */
-    }
-
-    .marquee-stripe {
-        position: absolute;
-        width: 100%;
-        padding: 50px 0;
-        /* O gradiente que você pediu */
-        background: linear-gradient(to bottom, #BEF264, #ffffff);
-        color: #0D1B2A; /* Texto escuro para contrastar */
-        font-weight: 800;
-        font-size: 2rem;
-        
-        display: flex; /* Para o letreiro funcionar */
-        overflow: hidden; /* Esconde o texto que não está animando */
-    }
-
-    /* A inclinação do "X" */
-    .stripe-1 {
-        transform: rotate(3deg);
-        top: 100px; 
-        z-index: 2; /* Coloca a faixa 1 na frente */
-        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3); /* A sombra! */
-    }
-    
-    .stripe-2 {
-        transform: rotate(-3deg); 
-        bottom: 40px; 
-        z-index: 1;
-    }
-
-    /* O container da animação */
-    .marquee-inner {
-        display: flex;
-        width: 200%; 
-        animation: scroll-left 30s linear infinite;
-    }
-    
-    /* O grupo de logos (uma cópia) */
-    .marquee-group {
-        width: 100%;
-        display: flex;
-        /* Espalha os nomes */
-        justify-content: space-around; 
-        align-items: center;
-    }
-
-    .marquee-group span {
-        white-space: nowrap; /* Impede quebra de linha */
-        padding: 0 30px;
-    }
-    
-    /* A Animação do letreiro */
-    @keyframes scroll-left {
-        from {
-            transform: translateX(0);
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vagalume Carreiras - Ilumine sua Carreira</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        to {
-            /* Move 50% para a esquerda (o tamanho de um .marquee-group) */
-            transform: translateX(-50%);
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0D1117;
+            color: #c9d1d9;
+            overflow-x: hidden;
+            width: 100%;
         }
-    }
-    
-</style>
+        
+        html {
+            overflow-x: hidden;
+        }
 
-<section class="hero-section">
-    
-    <h1 class="hero-title">
-        A um passo do <br> emprego dos seus <br> Sonhos!
-    </h1>
-    
-    <p class="hero-subtitle">
-        Deixe-nos ajudá-lo a encontrar um emprego que seja ideal para você!
-    </p>
+        /* Reset do container principal */
+        .main-container {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+        }
 
-    <div class="hero-buttons">
-        <a href="{% url 'cadastro_candidato' %}" class="btn-cta-green">Vamos começar</a>
-        <a href="#" class="btn-cta-outline">Sou Empresa</a>
-    </div>
+        /* =========================
+           HERO SECTION
+        ========================= */
+        .hero-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 85vh;
+            padding: 60px 20px;
+        }
 
-</section>
+        .hero-title {
+            font-weight: 800;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            color: #FFFFFF;
+            line-height: 1.1;
+            max-width: 900px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease-out;
+        }
 
-<section class="stats-section">
-    <div class="stat-item">
-        <h3>+{{ total_candidatos }}</h3>
-        <p>Usuários Ativos</p>
-    </div>
-    <div class="stat-item">
-        <h3>+{{ total_vagas }}</h3>
-        <p>Empregos Abertos</p>
-    </div>
-    <div class="stat-item">
-        <h3>+{{ total_empresas }}</h3>
-        <p>Empresas Parceiras</p>
-    </div>
-</section>
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: #8b949e;
+            max-width: 600px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
 
-<section class="marquee-section">
-    
-    <div class="marquee-stripe stripe-1">
-        <div class="marquee-inner">
-            <div class="marquee-group">
-                <span>TechFlow</span>
-                <span>InovaSoft</span>
-                <span>PixelPerfect</span>
-                <span>CodeCrafters</span>
-                <span>NextGen Soluções</span>
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .btn-cta-green {
+            display: inline-block;
+            padding: 16px 40px;
+            background-color: #AFEB83;
+            color: #0D1117;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-cta-green:hover {
+            background-color: #BEF264;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(175, 235, 131, 0.3);
+        }
+
+        .btn-cta-outline {
+            display: inline-block;
+            padding: 16px 40px;
+            background: transparent;
+            border: 2px solid #AFEB83;
+            color: #FFFFFF;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-cta-outline:hover {
+            background-color: rgba(175, 235, 131, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           STATS SECTION
+        ========================= */
+        .stats-section {
+            display: flex;
+            justify-content: center;
+            gap: clamp(30px, 8vw, 80px);
+            padding: 60px 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .stat-item h3 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: #BEF264;
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            color: #8b949e;
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+        }
+
+        /* =========================
+           MARQUEE X
+        ========================= */
+        .marquee-wrapper {
+            width: 100%; 
+            overflow: hidden; 
+            margin: 80px 0;
+            padding: 40px 0;
+        }
+
+        .marquee-section {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        .marquee-stripe {
+            position: absolute;
+            width: 120%;
+            left: -10%;
+            padding: 50px 0;
+            background: linear-gradient(to bottom, #BEF264, #ffffff);
+            color: #0D1B2A;
+            font-weight: 800;
+            font-size: 2rem;
+            display: flex; 
+            overflow: hidden; 
+        }
+
+        .stripe-1 {
+            transform: rotate(3deg);
+            top: 60px; 
+            z-index: 2; 
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3); 
+        }
+        
+        .stripe-2 {
+            transform: rotate(-3deg); 
+            bottom: 60px; 
+            z-index: 1;
+        }
+
+        .marquee-inner {
+            display: flex;
+            width: 200%; 
+            animation: scroll-left 30s linear infinite;
+        }
+        
+        .marquee-group {
+            width: 100%;
+            display: flex;
+            justify-content: space-around; 
+            align-items: center;
+        }
+
+        .marquee-group span {
+            white-space: nowrap; 
+            padding: 0 30px;
+        }
+        
+        @keyframes scroll-left {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* =========================
+           PARTNERS BANNER
+        ========================= */
+        .partners-banner-wrapper {
+            width: 100%;
+            overflow: hidden;
+            margin: 80px 0;
+        }
+
+        .partners-banner {
+            padding: 30px 20px;
+            background: linear-gradient(90deg, #BEF264 0%, #f5f5f5 100%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            transform: rotate(-2deg) scale(1.05);
+        }
+
+        .partner-logo {
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: #333;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .partner-logo:hover {
+            opacity: 1;
+        }
+
+        /* =========================
+           COMPANIES SECTION
+        ========================= */
+        .companies-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 120px auto;
+            padding: 0 20px;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .companies-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .companies-text h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .companies-text p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #8b949e;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .companies-logos {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            position: relative;
+            border: 2px dashed #30363d;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #30363d;
+            font-size: 0.9rem;
+        }
+
+        /* =========================
+           JOBS SECTION
+        ========================= */
+        .jobs-section {
+            width: 100%;
+            background-color: #161B22;
+            padding: 80px 20px;
+        }
+
+        .jobs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .jobs-container h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .jobs-container h2 span {
+            color: #BEF264;
+        }
+
+        .jobs-container > p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #8b949e;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .jobs-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .jobs-tabs a {
+            text-decoration: none;
+            color: #8b949e;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+        }
+
+        .jobs-tabs a:hover {
+            background-color: rgba(190, 242, 100, 0.1);
+            color: #BEF264;
+        }
+
+        .jobs-tabs a.active {
+            background-color: #BEF264;
+            color: #0D1B2A;
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .job-card {
+            background: #0D1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+
+        .job-card:hover {
+            border-color: #BEF264;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(190, 242, 100, 0.1);
+        }
+
+        .job-card-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .job-card-tags span {
+            background-color: #30363d;
+            color: #8b949e;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .job-card h3 {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .job-card > p {
+            color: #8b949e;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .job-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-candidatar {
+            background-color: #AFEB83;
+            color: #0D1117;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-candidatar:hover {
+            background-color: #BEF264;
+            transform: translateY(-2px);
+        }
+
+        .job-card-candidates {
+            color: #8b949e;
+            font-size: 0.85rem;
+        }
+
+        .btn-ver-mais {
+            display: inline-block;
+            margin: 0 auto;
+            background-color: transparent;
+            border: 2px solid #30363d;
+            color: #c9d1d9;
+            padding: 14px 40px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-ver-mais:hover {
+            border-color: #BEF264;
+            color: #BEF264;
+        }
+
+        /* =========================
+           CATEGORIES SECTION
+        ========================= */
+        .categories-section {
+            max-width: 1200px;
+            margin: 120px auto;
+            padding: 0 20px;
+        }
+
+        .categories-section > h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .categories-section > p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #8b949e;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .categories-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+        }
+
+        .categories-list h3 {
+            color: #fff;
+            margin-bottom: 24px;
+            font-size: 1.3rem;
+        }
+
+        .category-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #30363d;
+            transition: all 0.3s;
+        }
+
+        .category-list-item:hover {
+            padding-left: 8px;
+            color: #BEF264;
+        }
+
+        .category-list-item span:first-child {
+            color: #c9d1d9;
+            font-weight: 500;
+        }
+
+        .category-list-item span:last-child {
+            background-color: #30363d;
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .category-grid-item {
+            background-color: #161B22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 28px 20px;
+            text-align: center;
+            color: #c9d1d9;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .category-grid-item:hover {
+            border-color: #BEF264;
+            background-color: rgba(190, 242, 100, 0.05);
+            transform: translateY(-4px);
+        }
+
+        /* =========================
+           WORLD PARTNERS
+        ========================= */
+        .world-partners-section {
+            max-width: 1200px;
+            margin: 120px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .world-partners-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 50px;
+        }
+
+        .world-partners-logos {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .world-partner-logo {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: #fff;
+            font-weight: 700;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .world-partner-logo:hover {
+            opacity: 1;
+        }
+
+        /* =========================
+           SOCIAL PROOF
+        ========================= */
+        .social-proof-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 120px auto 80px;
+            padding: 0 20px;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .social-proof-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .social-proof-text h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .social-proof-text p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #8b949e;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .social-proof-animation {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            position: relative;
+            border: 2px dashed #30363d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #30363d;
+            font-size: 0.9rem;
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================= */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+        @media (max-width: 900px) {
+            .categories-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .companies-section,
+            .social-proof-section {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-section {
+                min-height: 70vh;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-cta-green,
+            .btn-cta-outline {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .stats-section {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .marquee-section {
+                height: 220px;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- HERO -->
+        <section class="hero-section">
+            <h1 class="hero-title">
+                A um passo do<br>emprego dos seus<br>Sonhos!
+            </h1>
+            <p class="hero-subtitle">
+                Deixe-nos ajudá-lo a encontrar um emprego que seja ideal para você!
+            </p>
+            <div class="hero-buttons">
+                <a href="#" class="btn-cta-green">Vamos começar</a>
+                <a href="#" class="btn-cta-outline">Sou Empresa</a>
             </div>
-            <div class="marquee-group">
-                <span>TechFlow</span>
-                <span>InovaSoft</span>
-                <span>PixelPerfect</span>
-                <span>CodeCrafters</span>
-                <span>NextGen Soluções</span>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats-section">
+            <div class="stat-item">
+                <h3>+1250</h3>
+                <p>Usuários Ativos</p>
             </div>
+            <div class="stat-item">
+                <h3>+840</h3>
+                <p>Empregos Abertos</p>
+            </div>
+            <div class="stat-item">
+                <h3>+320</h3>
+                <p>Empresas Parceiras</p>
+            </div>
+        </section>
+
+        <!-- MARQUEE X -->
+        <div class="marquee-wrapper">
+            <section class="marquee-section">
+                <div class="marquee-stripe stripe-1">
+                    <div class="marquee-inner">
+                        <div class="marquee-group">
+                            <span>TechFlow</span>
+                            <span>InovaSoft</span>
+                            <span>PixelPerfect</span>
+                            <span>CodeCrafters</span>
+                            <span>NextGen Soluções</span>
+                        </div>
+                        <div class="marquee-group">
+                            <span>TechFlow</span>
+                            <span>InovaSoft</span>
+                            <span>PixelPerfect</span>
+                            <span>CodeCrafters</span>
+                            <span>NextGen Soluções</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="marquee-stripe stripe-2">
+                    <div class="marquee-inner" style="animation-direction: reverse;">
+                        <div class="marquee-group">
+                            <span>The Washington Post</span>
+                            <span>TechCrunch</span>
+                            <span>Bloomberg</span>
+                            <span>GIZMODO</span>
+                        </div>
+                        <div class="marquee-group">
+                            <span>The Washington Post</span>
+                            <span>TechCrunch</span>
+                            <span>Bloomberg</span>
+                            <span>GIZMODO</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-    </div>
-    
-    <div class="marquee-stripe stripe-2">
-        <div class="marquee-inner" style="animation-direction: reverse;"> <div class="marquee-group">
-                <span>Apex Digital</span>
-                <span>QuantumLeap</span>
-                <span>Zenith Tech</span>
-                <span>Stellar Labs</span>
-                <span>FutureWorks</span>
-            </div>
-            <div class="marquee-group">
-                <span>Apex Digital</span>
-                <span>QuantumLeap</span>
-                <span>Zenith Tech</span>
-                <span>Stellar Labs</span>
-                <span>FutureWorks</span>
-            </div>
-        </div>
-    </div>
 
-</section>
+        <!-- COMPANIES -->
+        <section class="companies-section">
+            <div class="companies-logos">
+                Logos Flutuantes (Spotify, etc)
+            </div>
+            <div class="companies-text">
+                <h2>Trabalhe em grandes companhias!</h2>
+                <p>Líderes no mercado e cheias de oportunidades.</p>
+                <a href="#" class="btn-cta-green">Vamos começar</a>
+            </div>
+        </section>
 
-{% endblock %}
+        <!-- JOBS -->
+        <section class="jobs-section">
+            <div class="jobs-container">
+                <h2>Novas <span>vagas</span> para você</h2>
+                <p>Consiga aplicar o mais rápido possível para diversas vagas</p>
+
+                <nav class="jobs-tabs">
+                    <a href="#" class="active">Recente</a>
+                    <a href="#">Finança</a>
+                    <a href="#">Desenvolvimento</a>
+                    <a href="#">Marketing</a>
+                    <a href="#">Especialista</a>
+                </nav>
+
+                <div class="jobs-grid">
+                    <div class="job-card">
+                        <div class="job-card-tags">
+                            <span>Integral</span>
+                            <span>No Site</span>
+                            <span>R$200K</span>
+                        </div>
+                        <h3>UX Designer</h3>
+                        <p>Advant Digital Agency</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="btn-candidatar">Candidatar-se</a>
+                            <span class="job-card-candidates">2k Candidatos</span>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-card-tags">
+                            <span>Integral</span>
+                            <span>No Site</span>
+                            <span>R$200K</span>
+                        </div>
+                        <h3>UX Designer</h3>
+                        <p>Advant Digital Agency</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="btn-candidatar">Candidatar-se</a>
+                            <span class="job-card-candidates">2k Candidatos</span>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-card-tags">
+                            <span>Integral</span>
+                            <span>No Site</span>
+                            <span>R$200K</span>
+                        </div>
+                        <h3>UX Designer</h3>
+                        <p>Advant Digital Agency</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="btn-candidatar">Candidatar-se</a>
+                            <span class="job-card-candidates">2k Candidatos</span>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-card-tags">
+                            <span>Integral</span>
+                            <span>No Site</span>
+                            <span>R$200K</span>
+                        </div>
+                        <h3>UX Designer</h3>
+                        <p>Advant Digital Agency</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="btn-candidatar">Candidatar-se</a>
+                            <span class="job-card-candidates">2k Candidatos</span>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-card-tags">
+                            <span>Integral</span>
+                            <span>No Site</span>
+                            <span>R$200K</span>
+                        </div>
+                        <h3>UX Designer</h3>
+                        <p>Advant Digital Agency</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="btn-candidatar">Candidatar-se</a>
+                            <span class="job-card-candidates">2k Candidatos</span>
+                        </div>
+                    </div>
+
+                    <div class="job-card">
+                        <div class="job-card-tags">
+                            <span>Integral</span>
+                            <span>No Site</span>
+                            <span>R$200K</span>
+                        </div>
+                        <h3>UX Designer</h3>
+                        <p>Advant Digital Agency</p>
+                        <div class="job-card-footer">
+                            <a href="#" class="btn-candidatar">Candidatar-se</a>
+                            <span class="job-card-candidates">2k Candidatos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="btn-ver-mais">Ver mais</a>
+            </div>
+        </section>
+
+        <!-- CATEGORIES -->
+        <section class="categories-section">
+            <h2>Explore pelas categorias</h2>
+            <p>Explore um vasto mundo de vagas</p>
+
+            <div class="categories-content">
+                <div class="categories-list">
+                    <h3>Categorias Populares</h3>
+                    <div class="category-list-item">
+                        <span>Analista de Sistemas</span>
+                        <span>6</span>
+                    </div>
+                    <div class="category-list-item">
+                        <span>Desenvolvedor Frontend</span>
+                        <span>12</span>
+                    </div>
+                    <div class="category-list-item">
+                        <span>Desenvolvedor Backend</span>
+                        <span>14</span>
+                    </div>
+                    <div class="category-list-item">
+                        <span>Desenvolvedor Full Stack</span>
+                        <span>8</span>
+                    </div>
+                </div>
+                <div class="categories-grid">
+                    <div class="category-grid-item">Artes, Mídia e Comunicação</div>
+                    <div class="category-grid-item">Recursos Humanos</div>
+                    <div class="category-grid-item">Tecnologia da Informação</div>
+                    <div class="category-grid-item">Contabilidade</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORLD PARTNERS -->
+        <section class="world-partners-section">
+            <h2>Trabalhe com grandes companhias no mundo</h2>
+            <div class="world-partners-logos">
+                <span class="world-partner-logo">Opentable</span>
+                <span class="world-partner-logo">shopify</span>
+                <span class="world-partner-logo">slack</span>
+                <span class="world-partner-logo">amazon</span>
+                <span class="world-partner-logo">HubSpot</span>
+            </div>
+        </section>
+
+        <!-- SOCIAL PROOF -->
+        <section class="social-proof-section">
+            <div class="social-proof-text">
+                <h2>Muitas pessoas estão usando pelo mundo</h2>
+                <p>Entre agora e anuncie sua vaga</p>
+                <a href="#" class="btn-cta-green">Postar uma vaga</a>
+            </div>
+            <div class="social-proof-animation">
+                Animação de Perfis
+            </div>
+        </section>
+    </div>
+</body>
+</html>
