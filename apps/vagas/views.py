@@ -9,7 +9,7 @@ from .forms import VagaForm
 from apps.usuarios.forms import (
     ExperienciaForm, FormacaoForm, SkillForm, CurriculoForm
 )
-from apps.matching.engine import get_tags_candidato, calcular_similaridade_tags
+from apps.matching.engine import calcular_similaridade_tags
 
 
 

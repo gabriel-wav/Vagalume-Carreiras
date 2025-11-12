@@ -1,62 +1,87 @@
-# Arquivo: apps/matching/engine.py (VERSÃO "TAGS")
+# Arquivo: apps/matching/engine.py (VERSÃO "IA")
 
-# Não precisamos mais de sklearn!
-from apps.usuarios.models import Candidato, Resumo_Profissional, Skill, Experiencia
+# 1. Importe as bibliotecas de IA
+from sentence_transformers import SentenceTransformer, util
+from apps.usuarios.models import Candidato
 from apps.vagas.models import Vaga
 
-# Esta função é chamada pelo "Radar de Talentos" E pelo "Ver Candidatos"
-def get_tags_candidato(candidato):
-    """
-    Pega a "lista de tags" de um candidato.
-    """
-    tags = set()
-    
-    # Pega todas as skills do modelo Skill
-    skills = [skill.nome.lower().strip() for skill in candidato.skills.all()]
-    tags.update(skills)
-    
-    # (Opcional, mas bom) Pega os cargos das experiências
-    cargos = [exp.cargo.lower().strip() for exp in candidato.experiencias.all()]
-    tags.update(cargos)
-    
-    return tags
+# 2. Carregue o modelo de IA (só uma vez, quando o app inicia)
+#    Vamos usar um modelo pré-treinado para o português.
+try:
+    # Este é um modelo leve e bom para o português
+    model = SentenceTransformer('distiluse-base-multilingual-cased-v1')
+except Exception as e:
+    # Se der erro no carregamento, você saberá
+    print(f"Erro ao carregar o modelo de IA: {e}")
+    model = None
 
-# Esta função é chamada pelo "Radar de Talentos" E pelo "Ver Candidatos"
-def get_tags_vaga(vaga):
+def get_texto_candidato(candidato: Candidato) -> str:
     """
-    Pega a "lista de tags" de uma vaga.
-    Vamos assumir que o recrutador as escreveu no campo 'requisitos',
-    separadas por vírgula.
+    Junta todo o perfil de texto do candidato em uma única string.
     """
-    tags = set()
+    textos = []
     
-    texto_requisitos = vaga.requisitos.lower()
-    lista_tags = [tag.strip() for tag in texto_requisitos.split(',')]
-    
-    palavras_titulo = [palavra.strip() for palavra in vaga.titulo.lower().split()]
+    # Pega o Resumo Profissional
+    if hasattr(candidato, 'resumo_profissional'):
+        textos.append(candidato.resumo_profissional.texto)
+        
+    # Pega as Skills
+    skills = [skill.nome for skill in candidato.skills.all()]
+    if skills:
+        textos.append("Habilidades: " + ", ".join(skills))
+        
+    # Pega as Experiências
+    for exp in candidato.experiencias.all():
+        textos.append(f"Experiência como {exp.cargo} em {exp.empresa}: {exp.descricao}")
+        
+    # Pega as Formações
+    for formacao in candidato.formacoes.all():
+        textos.append(f"Formação em {formacao.nome_formacao} na {formacao.nome_instituicao}")
+        
+    return ". ".join(textos)
 
-    tags.update(lista_tags)
-    tags.update(palavras_titulo)
-    
-    tags.discard("") # Remove tags vazias
-    
-    return tags
+def get_texto_vaga(vaga: Vaga) -> str:
+    """
+    Junta todo o texto da vaga em uma única string.
+    """
+    textos = [
+        vaga.titulo,
+        vaga.descricao,
+        "Requisitos: " + vaga.requisitos
+    ]
+    return ". ".join(textos)
 
-# Esta função é chamada pelo "Radar de Talentos" E pelo "Ver Candidatos"
 def calcular_similaridade_tags(vaga, candidato):
     """
-    A "Engine" de Tags!
-    Calcula o "Índice de Jaccard" (Interseção / União).
+    A "Engine" de IA!
+    Calcula a "Similaridade de Cosseno" entre os vetores da Vaga e do Candidato.
+    
+    (Mantivemos o nome da função para não quebrar suas views!)
     """
-    tags_vaga = get_tags_vaga(vaga)
-    tags_candidato = get_tags_candidato(candidato)
+    if model is None:
+        print("Modelo de IA não carregado. Retornando 0.")
+        return 0
 
-    if not tags_vaga or not tags_candidato:
-        return 0 # Não dá para comparar listas vazias
-        
-    intersecao = tags_vaga.intersection(tags_candidato)
-    uniao = tags_vaga.union(tags_candidato)
-    
-    score = len(intersecao) / len(uniao)
-    
-    return round(score * 100)
+    try:
+        # 1. Converte os perfis em texto puro
+        texto_vaga = get_texto_vaga(vaga)
+        texto_candidato = get_texto_candidato(candidato)
+
+        if not texto_vaga or not texto_candidato:
+            return 0 # Não dá para comparar textos vazios
+
+        # 2. Codifica os textos em Vetores (Embeddings) - A "IA" ACONTECE AQUI!
+        embedding_vaga = model.encode(texto_vaga, convert_to_tensor=True)
+        embedding_candidato = model.encode(texto_candidato, convert_to_tensor=True)
+
+        # 3. Calcula a Similaridade de Cosseno
+        # Isso retorna um score, por exemplo, 0.85
+        cosine_scores = util.cos_sim(embedding_vaga, embedding_candidato)
+        score = cosine_scores.item() # Pega o valor numérico
+
+        # 4. Converte para porcentagem (de 0 a 100)
+        return round(max(score, 0) * 100)
+
+    except Exception as e:
+        print(f"Erro ao calcular similaridade para vaga {vaga.id} e candidato {candidato.pk}: {e}")
+        return 0
