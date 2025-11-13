@@ -336,3 +336,11 @@ def radar_de_talentos(request):
     }
     
     return render(request, 'vagas/radar_de_talentos.html', contexto)
+
+def perfil_empresa(request):
+    return render(request, 'vagas/perfil_empresa.html')
+
+def planos_empresa(request):
+    return render(request, "planos_empresa.html")
+
+

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/planos_empresa.css' %}">
+
+<main class="planos-container">
+  <h1 class="titulo-planos">Escolha o plano ideal para sua empresa</h1>
+
+  <div class="planos-grid">
+    <div class="plano-card" data-plano="basico">
+      <h2>Plano Básico</h2>
+      <p class="preco">1 vaga grátis por mês</p>
+      <h3>Funcionalidades:</h3>
+      <ul class="lista-funcionalidades">
+        <li>Publicação de 1 vaga por mês</li>
+        <li>Painel para gerenciar candidatos</li>
+        <li>Sem destaque especial</li>
+      </ul>
+    </div>
+
+    <div class="plano-card" data-plano="intermediario">
+      <h2>Plano Intermediário</h2>
+      <p class="preco">R$ 150/mês</p>
+      <h3>Funcionalidades:</h3>
+      <ul class="lista-funcionalidades">
+        <li>Publicação de até 10 vagas por mês</li>
+        <li>Perfil da empresa com logo e descrição</li>
+        <li>Vagas aparecem com um selo "Destaque" na busca</li>
+      </ul>
+    </div>
+
+    <div class="plano-card destaque" data-plano="premium">
+      <div class="icone-destaque">👑</div>
+      <h2>Plano Premium</h2>
+      <p class="preco">R$ 400/mês</p>
+      <h3>Funcionalidades:</h3>
+      <ul class="lista-funcionalidades">
+        <li>Publicação de vagas ilimitadas</li>
+        <li>Tudo do Intermediário +</li>
+        <li>Vagas no topo das buscas e na página inicial</li>
+        <li>Acesso ao banco de currículos para buscar candidatos ativamente</li>
+        <li>Relatórios e estatísticas</li>
+      </ul>
+    </div>
+  </div>
+
+  <button class="confirmar-btn">Confirmar Plano</button>
+</main>
+
+<script>
+  const planos = document.querySelectorAll('.plano-card');
+  planos.forEach(plano => {
+    plano.addEventListener('click', () => {
+      planos.forEach(p => p.classList.remove('selecionado'));
+      plano.classList.add('selecionado');
+    });
+  });
+</script>
+{% endblock %}

@@ -14,4 +14,8 @@ urlpatterns = [
     path('perfil_empresa/', views.perfil_empresa, name='perfil_empresa'),
     path('vagas/<int:vaga_id>/candidatos/', views.ver_candidatos_vaga, name='ver_candidatos_vaga'),
     path('radar-de-talentos/', views.radar_de_talentos, name='radar_de_talentos'),
+
+    path('perfil_empresa/', views.perfil_empresa, name='perfil_empresa'),
+    path("planos_empresa/", views.planos_empresa, name="planos_empresa"),
+
 ]
