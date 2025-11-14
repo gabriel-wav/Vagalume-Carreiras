@@ -380,10 +380,4 @@ def painel_admin(request):
         'atividades_vagas': vagas_recentes,
     }
     
-    # Você ainda precisa criar o template 'vagas/painel_admin.html',
-    # mas a view está pronta.
-    # return render(request, 'vagas/painel_admin.html', contexto)
-    
-    # Por enquanto, vamos redirecionar para o admin padrão
-    messages.info(request, 'Painel customizado em construção. Usando o admin padrão.')
-    return redirect('admin:index')
+    return render(request, 'vagas/painel_admin.html', contexto)
