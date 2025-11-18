@@ -10,7 +10,6 @@
     main.main-container {
         display: block;
         padding: 20px 20px 40px 20px;
-        /* Garante que ele ocupe o espaço */
         max-width: 100%;
         width: 100%;
     }
@@ -25,7 +24,7 @@
         margin-bottom: 15px;
     }
     .hero h1 .username {
-        color: #BEF264; /* Cor verde do base.html */
+        color: #BEF264;
     }
     .hero p {
         color: #94a3b8;
@@ -71,21 +70,21 @@
         left: 0;
         right: 0;
         height: 3px;
-        background-color: #BEF264; /* Cor verde do base.html */
+        background-color: #BEF264;
     }
 
-    /* --- Jobs Grid --- */
+    /* --- Jobs Grid (Painel Vagas) --- */
     .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0; /* Removido padding para não duplicar */
+        padding: 0;
     }
     .jobs-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 25px;
     }
-.job-card {
+    .job-card {
         background: #111111;
         border: 1px solid #1e293b;
         border-radius: 12px;
@@ -93,20 +92,15 @@
         position: relative;
         overflow: hidden;
         transition: transform 0.3s, border-color 0.3s;
-        /* Adicionando a imagem de background aqui */
-        background-image: url("{% static 'vagas/img/vagalume_icon.png' %}"); /* Caminho para sua imagem */
+        background-image: url("{% static 'vagas/img/vagalume_icon.png' %}");
         background-repeat: no-repeat;
-        background-position: right 0px bottom -5px; /* Ajuste a posição para cortar e estilizar */
-        background-size: 500px; /* Ajuste o tamanho da imagem conforme desejar */
+        background-position: right 0px bottom -5px;
+        background-size: 500px;
     }
-
     .job-card:hover {
         transform: translateY(-5px);
         border-color: #2d3f52;
     }
-
-    /* O pseudo-elemento ::before pode ser mantido ou removido se a nova imagem for suficiente */
-    /* Se você quiser apenas a imagem, pode remover o ::before, pois ele também adiciona um efeito */
     .job-card::before {
         content: '';
         position: absolute;
@@ -117,169 +111,40 @@
         background: radial-gradient(circle, rgba(190, 242, 100, 0.03) 0%, transparent 70%);
         pointer-events: none;
     }
-    .tags {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-    .tag {
-        padding: 6px 16px;
-        background-color: transparent;
-        border: 1px solid #2d3f52;
-        border-radius: 20px;
-        font-size: 13px;
-        color: #94a3b8;
-    }
-    .job-title {
-        font-size: 22px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #fff; /* Garantindo a cor */
-    }
-    .company {
-        color: #64748b;
-        font-size: 14px;
-        margin-bottom: 25px;
-    }
-    .job-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .apply-btn {
-        padding: 10px 24px;
-        background-color: #AFEB83; /* Cor verde do base.html */
-        color: #0a1929;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .apply-btn:hover {
-        background-color: #c4f09c;
-        transform: scale(1.05);
-    }
-    .candidates {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #94a3b8;
-        font-size: 14px;
-    }
-    .candidates-icon {
-        width: 18px;
-        height: 18px;
-    }
+    .tags { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tag { padding: 6px 16px; background-color: transparent; border: 1px solid #2d3f52; border-radius: 20px; font-size: 13px; color: #94a3b8; }
+    .job-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; color: #fff; }
+    .company { color: #64748b; font-size: 14px; margin-bottom: 25px; }
+    .job-footer { display: flex; justify-content: space-between; align-items: center; }
+    .apply-btn { padding: 10px 24px; background-color: #AFEB83; color: #0a1929; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+    .apply-btn:hover { background-color: #c4f09c; transform: scale(1.05); }
+    .candidates { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 14px; }
+    .candidates-icon { width: 18px; height: 18px; }
 
-    /* --- CSS DO ONBOARDING --- */
-
-    .onboarding-container {
-        display: none; /* Começa escondido */
-        opacity: 0;
-        visibility: hidden;
-        text-align: center; 
-        max-width: 600px; 
-        margin: 40px auto; 
-        padding: 30px; 
-        background-color: #1a2332; /* Cor de fundo do seu novo dashboard */
-        border: 1px solid #1e293b; 
-        border-radius: 8px;
-    }
-    .container-ativo {
-        display: block;
-        opacity: 1;
-        visibility: visible;
-    }
-    .fade-in {
-        animation: fadeInUp 0.5s ease-out forwards;
-    }
-    .fade-out {
-        animation: fadeOutDown 0.5s ease-in forwards;
-    }
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeOutDown {
-        from { opacity: 1; transform: translateY(0); }
-        to { opacity: 0; transform: translateY(20px); visibility: hidden; }
-    }
-
-    /* Estilo da Barra (Corrigido) */
-    #progress-bar-fixed-wrapper {
-        max-width: 600px; 
-        margin: 20px auto 10px auto;
-        background-color: transparent; 
-        border: none;
-        padding: 0;
-    }
-    #progresso-texto {
-        margin-bottom: 10px; 
-        font-size: 1.1rem; 
-        color: #fff; 
-        font-weight: 700;
-        text-align: left;
-    }
-    .progress-bar-wrapper { 
-        width: 100%; 
-        height: 10px; 
-        background-color: #0a1929; /* Fundo do seu novo body */
-        border: 1px solid #1e293b; 
-        border-radius: 5px; 
-        overflow: hidden; 
-    }
-    .progress-bar-fill { 
-        width: 0%; 
-        height: 100%; 
-        background-color: #AFEB83; /* Verde Vagalume */
-        border-radius: 5px; 
-        transition: width 1.5s ease-out; 
-    }
-
-    /* Estilos dos Títulos e Botões do Onboarding */
+    /* --- CSS DO ONBOARDING (Popup) --- */
+    .onboarding-container { display: none; opacity: 0; visibility: hidden; text-align: center; max-width: 600px; margin: 40px auto; padding: 30px; background-color: #1a2332; border: 1px solid #1e293b; border-radius: 8px; }
+    .container-ativo { display: block; opacity: 1; visibility: visible; }
+    .fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+    .fade-out { animation: fadeOutDown 0.5s ease-in forwards; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); visibility: hidden; } }
+    #progress-bar-fixed-wrapper { max-width: 600px; margin: 20px auto 10px auto; background-color: transparent; border: none; padding: 0; }
+    #progresso-texto { margin-bottom: 10px; font-size: 1.1rem; color: #fff; font-weight: 700; text-align: left; }
+    .progress-bar-wrapper { width: 100%; height: 10px; background-color: #0a1929; border: 1px solid #1e293b; border-radius: 5px; overflow: hidden; }
+    .progress-bar-fill { width: 0%; height: 100%; background-color: #AFEB83; border-radius: 5px; transition: width 1.5s ease-out; }
     .onboarding-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 800; font-size: 2.2rem; color: #FFFFFF; margin-bottom: 10px; }
     .onboarding-subtitle { font-size: 1.1rem; color: #94a3b8; margin-bottom: 30px; }
-    
-    /* Botão Verde (reaproveita o .apply-btn) */
-    .btn-submit-green {
-        padding: 12px 30px;
-        background-color: #AFEB83;
-        color: #0a1929;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-decoration: none;
-        display: inline-block;
-    }
-    .btn-submit-green:hover {
-        background-color: #c4f09c;
-    }
-    
-    .btn-secondary {
-        display: inline-block; text-decoration: none; width: auto; padding: 12px 20px; background-color: #2d3f52; color: #c9d1d9; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-right: 10px;
-    }
+    .btn-submit-green { padding: 12px 30px; background-color: #AFEB83; color: #0a1929; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+    .btn-submit-green:hover { background-color: #c4f09c; }
+    .btn-secondary { display: inline-block; text-decoration: none; width: auto; padding: 12px 20px; background-color: #2d3f52; color: #c9d1d9; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-right: 10px; }
     .form-buttons { text-align: right; }
     .onboarding-form { width: 100%; margin-bottom: 20px; text-align: left; }
     .onboarding-textarea { width: 100%; min-height: 150px; background-color: #0a1929; border: 1px solid #1e293b; color: #c9d1d9; padding: 12px 15px; border-radius: 5px; font-size: 1rem; font-family: -apple-system, sans-serif; margin-bottom: 20px; }
-    
-    /* Estilos dos Forms .as_p do Onboarding */
-    .onboarding-form p {
-        margin-bottom: 15px;
-    }
-    .onboarding-form label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #c9d1d9;
-    }
+    .onboarding-form p { margin-bottom: 15px; }
+    .onboarding-form label { display: block; margin-bottom: 5px; font-weight: bold; color: #c9d1d9; }
     .onboarding-form input[type="text"],
     .onboarding-form input[type="date"],
+    .onboarding-form input[type="file"],
     .onboarding-form select,
     .onboarding-form textarea {
         width: 100%;
@@ -291,25 +156,261 @@
         font-size: 1rem;
         font-family: -apple-system, sans-serif;
     }
-    .onboarding-form input[type="checkbox"] {
-        width: auto; 
-        margin-right: 10px;
-        vertical-align: middle;
+    .onboarding-form input[type="checkbox"] { width: auto; margin-right: 10px; vertical-align: middle; }
+
+    /* --- CSS DO PAINEL DE PERFIL (ATUALIZADO) --- */
+    .perfil-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    .perfil-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .perfil-card {
+        background: #111111;
+        border: 1px solid #1e293b;
+        border-radius: 12px;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .perfil-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(190, 242, 100, 0.03) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .perfil-card h2 {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #1e293b;
+    }
+
+    .perfil-card h3 {
+        color: #BEF264;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        margin-top: 25px;
+    }
+
+    .perfil-card h3:first-of-type {
+        margin-top: 0;
+    }
+
+    .perfil-card p {
+        color: #94a3b8;
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 0;
+    }
+
+    .perfil-card p:empty:after {
+        content: 'Nenhuma informação adicionada.';
+        color: #64748b;
+        font-style: italic;
+    }
+
+    /* Formulário de Perfil */
+    .perfil-form {
+        width: 100%;
+    }
+
+    .perfil-form p {
+        margin-bottom: 20px;
+    }
+
+    .perfil-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #c9d1d9;
+        font-size: 14px;
+    }
+
+    .perfil-form input[type="text"],
+    .perfil-form input[type="email"],
+    .perfil-form input[type="date"],
+    .perfil-form select,
+    .perfil-form textarea {
+        width: 100%;
+        background-color: #0a1929;
+        border: 1px solid #1e293b;
+        color: #c9d1d9;
+        padding: 12px 15px;
+        border-radius: 6px;
+        font-size: 15px;
+        font-family: -apple-system, sans-serif;
+        transition: border-color 0.3s;
+    }
+
+    .perfil-form input:focus,
+    .perfil-form select:focus,
+    .perfil-form textarea:focus {
+        outline: none;
+        border-color: #2d3f52;
+    }
+
+    .perfil-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    /* Skills */
+    .skill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .skill-tag {
+        padding: 6px 16px;
+        background-color: transparent;
+        border: 1px solid #2d3f52;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #94a3b8;
+        transition: all 0.3s;
+    }
+
+    .skill-tag:hover {
+        border-color: #BEF264;
+        color: #BEF264;
+    }
+
+    /* Experiência e Formação */
+    .experiencia-item,
+    .formacao-item {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #1e293b;
+    }
+
+    .experiencia-item:last-child,
+    .formacao-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .experiencia-item strong,
+    .formacao-item strong {
+        color: #fff;
+        font-size: 17px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .experiencia-item p,
+    .formacao-item p {
+        color: #94a3b8;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    /* Seção vazia */
+    .empty-state {
+        color: #64748b;
+        font-style: italic;
+        font-size: 14px;
+        padding: 15px;
+        background-color: #0a1929;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+    /* --- CSS DO SLIDE (MELHORADO) --- */
+    .panels-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: hidden; 
+        min-height: 600px;
+    }
+    
+    .panel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        opacity: 1;
+        transform: translateX(0);
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .panel.active {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .slide-out-left {
+        transform: translateX(-100%) scale(0.95);
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .slide-out-right {
+        transform: translateX(100%) scale(0.95);
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .slide-in-from-right {
+        animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    .slide-in-from-left {
+        animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%) scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-100%) scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+        }
     }
 
     /* Responsividade */
     @media (max-width: 1024px) {
-        .jobs-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+        .perfil-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
-        .jobs-grid {
-            grid-template-columns: 1fr;
-        }
-        .tabs {
-            gap: 20px;
-        }
+        .jobs-grid { grid-template-columns: 1fr; }
+        .tabs { gap: 20px; }
+        .perfil-grid { grid-template-columns: 1fr; }
+        .hero h1 { font-size: 32px; }
     }
 
 </style>
@@ -342,7 +443,7 @@
         </p>
         <form id="form-step-2" action="{% url 'ajax_salvar_resumo' %}" method="POST" class="onboarding-form">
             {% csrf_token %}
-            <textarea name="resumo" class="onboarding-textarea" placeholder="Escreva sobre suas experiências, habilidades e objetivos..."></textarea>
+            <textarea name="resumo" class="onboarding-textarea" placeholder="Escreva sobre suas experiências, habilidades e objetivos...">{{ resumo_profissional }}</textarea>
             <div class="form-buttons">
                 <button type="submit" class="btn-submit-green">Continuar</button>
             </div>
@@ -402,62 +503,173 @@
             </div>
         </form>
     </div>
-</div> <div id="vagas-container" style="display: none;">
-    <section class="hero">
-        <h1>Olá, <span class="username">{{ user.first_name|default:user.username }}</span></h1>
-        <p>Separamos algumas vagas pra você, baseado no seu perfil.</p>
-        
-        {% if messages %}
-            {% for message in messages %}
-                {% if 'FIRST_LOGIN' not in message.tags %}
-                    <p class="popup-info" style="color: #AFEB83; text-align: center; font-size: 1.1rem;">{{ message }}</p>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </section>
+</div>
 
-    <div class="tabs">
-        <button class="tab active">Recomendados</button>
-        <button class="tab">Finança</button>
-        <button class="tab">Perfil</button>
-        <button class="tab">Configurações</button>
-    </div>
+<div class="panels-wrapper">
 
-    <div class="container">
-        <div class="jobs-grid">
+    <div id="vagas-container" class="panel">
+        <section class="hero">
+            <h1>Olá, <span class="username">{{ user.first_name|default:user.username }}</span></h1>
+            <p>Separamos algumas vagas pra você, baseado no seu perfil.</p>
             
-            {% for vaga in vagas %}
-                <div class="job-card">
-                    <div class="tags">
-                        <span class="tag">{{ vaga.tipo_contrato }}</span>
-                        <span class="tag">{{ vaga.localidade }}</span>
-                        {% if vaga.faixa_salarial %}
-                        <span class="tag">{{ vaga.faixa_salarial }}</span>
-                        {% endif %}
-                    </div>
-                    <h3 class="job-title">{{ vaga.titulo }}</h3>
-                    <p class="company">{{ vaga.empresa.nome }}</p>
-                    <div class="job-footer">
-                        <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin: 0;">
-                            {% csrf_token %}
-                            <button type="submit" class="apply-btn">Candidatar-Se</button>
-                        </form>
-                        <div class="candidates">
-                            <svg class="candidates-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            <span>+10 Candidatos</span> 
+            {% if messages %}
+                {% for message in messages %}
+                    {% if 'FIRST_LOGIN' not in message.tags %}
+                        <p class="popup-info" style="color: #AFEB83; text-align: center; font-size: 1.1rem;">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </section>
+
+        <div class="tabs">
+            <button class="tab active" data-panel="vagas-container" data-index="0">Recomendados</button>
+            <button class="tab" data-panel="perfil-container" data-index="1">Perfil</button>
+            <button class="tab" data-index="2">Finança</button>
+            <button class="tab" data-index="3">Configurações</button>
+        </div>
+
+        <div class="container">
+            <div class="jobs-grid">
+                
+                {% for vaga in vagas %}
+                    <div class="job-card">
+                        <div class="tags">
+                            <span class="tag">{{ vaga.tipo_contrato }}</span>
+                            <span class="tag">{{ vaga.localidade }}</span>
+                            {% if vaga.faixa_salarial %}
+                            <span class="tag">{{ vaga.faixa_salarial }}</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="job-title">{{ vaga.titulo }}</h3>
+                        <p class="company">{{ vaga.empresa.nome }}</p>
+                        <div class="job-footer">
+                            <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="apply-btn">Candidatar-Se</button>
+                            </form>
+                            <div class="candidates">
+                                <svg class="candidates-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                <span>+10 Candidatos</span> 
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% empty %}
-                <p style="color: #94a3b8; font-size: 1.2rem; text-align: center; grid-column: 1 / -1;">
-                    Nenhuma vaga encontrada no momento.
-                </p>
-            {% endfor %}
+                {% empty %}
+                    <p style="color: #94a3b8; font-size: 1.2rem; text-align: center; grid-column: 1 / -1;">
+                        Nenhuma vaga encontrada no momento.
+                    </p>
+                {% endfor %}
             </div>
+        </div>
     </div>
-</div> <script>
+
+    <div id="perfil-container" class="panel slide-out-right">
+        
+        <section class="hero">
+            <h1>Meu Perfil</h1>
+            <p>Mantenha seus dados atualizados para os recrutadores.</p>
+        </section>
+
+        <div class="tabs">
+            <button class="tab" data-panel="vagas-container" data-index="0">Recomendados</button>
+            <button class="tab active" data-panel="perfil-container" data-index="1">Perfil</button>
+            <button class="tab" data-index="2">Finança</button>
+            <button class="tab" data-index="3">Configurações</button>
+        </div>
+
+        <div class="perfil-wrapper">
+            <div class="perfil-grid">
+                
+                <!-- Card de Dados Pessoais -->
+                <div class="perfil-card">
+                    <h2>Dados Pessoais</h2>
+                    <form method="POST" class="perfil-form">
+                        {% csrf_token %}
+                        {{ perfil_usuario_form.as_p }}
+                        {{ perfil_candidato_form.as_p }}
+                        
+                        <div class="form-buttons" style="margin-top: 30px;">
+                            <button type="submit" class="btn-submit-green">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Card de Currículo -->
+                <div class="perfil-card">
+                    <h2>Meu Currículo</h2>
+
+                    <h3>Headline</h3>
+                    {% if user.candidato.headline %}
+                        <p>{{ user.candidato.headline }}</p>
+                    {% else %}
+                        <div class="empty-state">Você ainda não tem um headline.</div>
+                    {% endif %}
+
+                    <h3>Resumo Profissional</h3>
+                    {% if resumo_profissional %}
+                        <p>{{ resumo_profissional|linebreaksbr }}</p>
+                    {% else %}
+                        <div class="empty-state">Você ainda não tem um resumo profissional.</div>
+                    {% endif %}
+
+                    <h3>Hard Skills</h3>
+                    {% if hard_skills %}
+                        <div class="skill-list">
+                            {% for skill in hard_skills %}
+                                <span class="skill-tag">{{ skill.nome }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">Nenhuma hard skill adicionada.</div>
+                    {% endif %}
+
+                    <h3>Soft Skills</h3>
+                    {% if soft_skills %}
+                        <div class="skill-list">
+                            {% for skill in soft_skills %}
+                                <span class="skill-tag">{{ skill.nome }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">Nenhuma soft skill adicionada.</div>
+                    {% endif %}
+                    
+                    <h3>Experiência Profissional</h3>
+                    {% if experiencias %}
+                        {% for exp in experiencias %}
+                            <div class="experiencia-item">
+                                <strong>{{ exp.cargo }}</strong>
+                                <p>{{ exp.empresa }}</p>
+                                <p>{{ exp.data_inicio|date:"Y" }} - {% if exp.trabalha_atualmente %}Presente{% else %}{{ exp.data_fim|date:"Y" }}{% endif %}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">Nenhuma experiência adicionada.</div>
+                    {% endif %}
+                    
+                    <h3>Formação Acadêmica</h3>
+                    {% if formacoes %}
+                        {% for formacao in formacoes %}
+                            <div class="formacao-item">
+                                <strong>{{ formacao.nome_formacao }}</strong>
+                                <p>{{ formacao.nome_instituicao }}</p>
+                                <p>{{ formacao.nivel }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">Nenhuma formação adicionada.</div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- 1. MAPEAMENTO DOS ELEMENTOS ---
@@ -465,6 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBarFixedWrapper = document.getElementById('progress-bar-fixed-wrapper');
     const onboardingWrapper = document.getElementById('onboarding-wrapper');
     const vagasContainer = document.getElementById('vagas-container');
+    const perfilContainer = document.getElementById('perfil-container');
 
     const progressBar = document.getElementById('progresso-barra');
     const progressText = document.getElementById('progresso-texto');
@@ -486,6 +699,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentProgress = 0;
     let counterInterval = null;
+    
+    // --- ESTADO INICIAL DOS PAINÉIS ---
+    let activePanelId = 'vagas-container'; 
+    let activePanelIndex = 0;
 
     // --- 2. LÓGICA DE EXIBIÇÃO INICIAL ---
     let isFirstLogin = false;
@@ -498,30 +715,33 @@ document.addEventListener('DOMContentLoaded', function() {
     {% endif %}
 
     if (isFirstLogin) {
-        // 1. Mostra a barra de progresso
+        // MODO ONBOARDING
+        activePanelIndex = -1;
+        
         progressBarFixedWrapper.style.display = 'block';
         progressBarFixedWrapper.classList.add('fade-in');
-        
-        // 2. Mostra o wrapper dos steps
         onboardingWrapper.style.display = 'block';
-        
-        // 3. Mostra o PRIMEIRO step
         mostrarPasso(step1);
-        
-        // 4. Define o progresso inicial (e já anima de 0 a 10)
         atualizarProgresso(10); 
+        
+        vagasContainer.style.display = 'none';
+        perfilContainer.style.display = 'none';
+        
     } else {
-        // Se NÃO for o primeiro login, mostra o dashboard de vagas
+        // MODO DASHBOARD (Padrão)
+        activePanelId = 'vagas-container';
+        activePanelIndex = 0;
+        
         vagasContainer.style.display = 'block';
-        vagasContainer.classList.add('fade-in');
+        vagasContainer.classList.add('active');
+        perfilContainer.style.display = 'block';
+        perfilContainer.classList.add('slide-out-right');
     }
 
-    // --- 3. FUNÇÕES DE TRANSIÇÃO ---
+    // --- 3. FUNÇÕES DE TRANSIÇÃO (ONBOARDING) ---
     
     function animateCounter(start, end, duration) {
-        if (counterInterval) {
-            clearInterval(counterInterval);
-        }
+        if (counterInterval) clearInterval(counterInterval);
         if (start === end) {
             progressText.innerText = 'Progresso: ' + end + '%';
             return;
@@ -544,7 +764,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function atualizarProgresso(percentualAlvo) {
         if (progressBar && progressText) {
             progressBar.style.width = percentualAlvo + '%';
-            animateCounter(currentProgress, percentualAlvo, 1500); // 1.5s
+            animateCounter(currentProgress, percentualAlvo, 1500); 
             currentProgress = percentualAlvo;
         }
     }
@@ -565,7 +785,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500); 
     }
     
-    // --- 4. AJAX "HELPER" (Não muda) ---
+    // --- 4. AJAX "HELPER" (ONBOARDING) ---
     async function enviarFormulario(form, botaoPressionado) {
         const url = form.action;
         const formData = new FormData(form);
@@ -590,7 +810,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     return false; 
                 }
             } else {
-                alert('Erro: ' + data.errors);
+                let errorMsg = "Ocorreu um erro.";
+                if (data.errors) {
+                    try {
+                        const errors = JSON.parse(data.errors);
+                        errorMsg = Object.values(errors).map(e => e[0].message || e[0]).join('\n');
+                    } catch(e) {
+                        errorMsg = JSON.stringify(data.errors);
+                    }
+                }
+                alert('Erro: ' + errorMsg);
                 return false; 
             }
         } catch (error) {
@@ -607,96 +836,124 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- 5. EVENT LISTENERS (Ligando os botões) ---
+    // --- 5. EVENT LISTENERS (ONBOARDING) ---
 
     if(btnIniciar) {
-        btnIniciar.addEventListener('click', function(e) {
-            e.preventDefault();
-            transicao(step1, step2, 30); // Alvo: 30%
-        });
+        btnIniciar.addEventListener('click', function(e) { e.preventDefault(); transicao(step1, step2, 30); });
     }
-
     if(formStep2) {
         formStep2.addEventListener('submit', async function(e) {
             e.preventDefault(); 
-            const sucesso = await enviarFormulario(formStep2, e.submitter);
-            if (sucesso) {
-                transicao(step2, step3, 50); // Alvo: 50%
-            }
+            if (await enviarFormulario(formStep2, e.submitter)) { transicao(step2, step3, 50); }
         });
     }
-    
     if(formStep3) {
         formStep3.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const botaoClicado = e.submitter; 
-            const cargoInput = formStep3.querySelector('[name=cargo]'); 
-            if (botaoClicado.name === 'continuar' && cargoInput.value.trim() === '') {
-                transicao(step3, step4, 70); // Alvo: 70%
-                return; 
+            const btn = e.submitter; 
+            if (btn.name === 'continuar' && formStep3.querySelector('[name=cargo]').value.trim() === '') {
+                transicao(step3, step4, 70); return; 
             }
-            const avancar = await enviarFormulario(formStep3, botaoClicado);
-            if (avancar) { 
-                transicao(step3, step4, 70); // Alvo: 70%
-            }
+            if (await enviarFormulario(formStep3, btn)) { transicao(step3, step4, 70); }
         });
     }
-    
     if(formStep4) {
         formStep4.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const botaoClicado = e.submitter;
-            const formacaoInput = formStep4.querySelector('[name=nome_formacao]');
-            if (botaoClicado.name === 'continuar' && formacaoInput.value.trim() === '') {
-                transicao(step4, step5, 85); // Alvo: 85%
-                return; 
+            const btn = e.submitter;
+            if (btn.name === 'continuar' && formStep4.querySelector('[name=nome_formacao]').value.trim() === '') {
+                transicao(step4, step5, 85); return; 
             }
-            const avancar = await enviarFormulario(formStep4, botaoClicado);
-            if (avancar) {
-                transicao(step4, step5, 85); // Alvo: 85%
-            }
+            if (await enviarFormulario(formStep4, btn)) { transicao(step4, step5, 85); }
         });
     }
-
     if(formStep5) {
         formStep5.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const botaoClicado = e.submitter;
-            const skillInput = formStep5.querySelector('[name=nome]'); 
-            if (botaoClicado.name === 'continuar' && skillInput.value.trim() === '') {
-                transicao(step5, step6, 100); // Alvo: 100%
-                return; 
+            const btn = e.submitter;
+            if (btn.name === 'continuar' && formStep5.querySelector('[name=nome]').value.trim() === '') {
+                transicao(step5, step6, 100); return; 
             }
-            const avancar = await enviarFormulario(formStep5, botaoClicado);
-            if (avancar) { 
-                transicao(step5, step6, 100); // Alvo: 100%
-            }
+            if (await enviarFormulario(formStep5, btn)) { transicao(step5, step6, 100); }
         });
     }
-
     if(formStep6) {
         formStep6.addEventListener('submit', async function(e) {
             e.preventDefault();
             atualizarProgresso(100);
-            const avancar = await enviarFormulario(formStep6, e.submitter);
-
-            if (avancar) {
-                // Anima a saída do wrapper de onboarding
+            if (await enviarFormulario(formStep6, e.submitter)) {
                 progressBarFixedWrapper.classList.add('fade-out');
                 onboardingWrapper.classList.add('fade-out');
                 
                 setTimeout(() => {
-                    // Esconde eles de vez
                     progressBarFixedWrapper.style.display = 'none';
                     onboardingWrapper.style.display = 'none';
 
-                    // Mostra o container de vagas
-                    vagasContainer.style.display = 'block';
-                    vagasContainer.classList.add('fade-in');
+                    vagasContainer.style.display = 'block'; 
+                    vagasContainer.classList.add('active', 'slide-in-from-right');
+                    perfilContainer.style.display = 'block';
+                    perfilContainer.classList.add('slide-out-right');
+                    
+                    activePanelId = 'vagas-container'; 
+                    activePanelIndex = 0; 
                 }, 500);
             }
         });
     }
+
+    // --- 6. LÓGICA DOS PAINÉIS DESLIZANTES (MELHORADA) ---
+    
+    const tabs = document.querySelectorAll('.tab');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetPanelId = tab.dataset.panel;
+            const targetPanelIndex = parseInt(tab.dataset.index, 10);
+
+            if (!targetPanelId || targetPanelIndex === activePanelIndex) {
+                return;
+            }
+
+            const targetPanel = document.getElementById(targetPanelId);
+            const activePanel = document.getElementById(activePanelId);
+            
+            if (!activePanel) {
+                return;
+            }
+
+            // Remove classes anteriores
+            targetPanel.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left', 'slide-in-from-right');
+            activePanel.classList.remove('active');
+            
+            // Torna o painel alvo visível
+            targetPanel.style.display = 'block';
+
+            // Pequeno delay para garantir que o DOM atualize
+            requestAnimationFrame(() => {
+                if (targetPanelIndex > activePanelIndex) {
+                    // SLIDE PARA A ESQUERDA (Ex: Vagas (0) -> Perfil (1))
+                    activePanel.classList.add('slide-out-left');
+                    targetPanel.classList.add('slide-in-from-right', 'active');
+                } else {
+                    // SLIDE PARA A DIREITA (Ex: Perfil (1) -> Vagas (0))
+                    activePanel.classList.add('slide-out-right');
+                    targetPanel.classList.add('slide-in-from-left', 'active');
+                }
+            });
+
+            // Atualiza o estado
+            activePanelId = targetPanelId;
+            activePanelIndex = targetPanelIndex;
+            
+            // Atualiza o visual das tabs
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+                if (t.dataset.index == activePanelIndex) {
+                    t.classList.add('active');
+                }
+            });
+        });
+    });
 
 });
 </script>

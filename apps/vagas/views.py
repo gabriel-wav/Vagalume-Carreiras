@@ -15,6 +15,7 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from django.utils import timezone
 import datetime
+from apps.usuarios.models import Resumo_Profissional, Skill, Experiencia, Formacao_Academica, Redes_Sociais
 
 
 def landing_page(request):
@@ -65,33 +66,81 @@ def criar_vaga(request):
 @login_required
 def home_candidato(request):
     """
-    Painel do Candidato.
+    Painel do Candidato (Versão ATUALIZADA com Perfil).
     """
     if request.user.tipo_usuario != 'candidato':
         messages.error(request, 'Acesso negado.')
         return redirect('home_recrutador')
-    
+
+    # Pega o candidato e todos os seus dados relacionados
     candidato = request.user.candidato
     
+    # --- LÓGICA DE SALVAR O PERFIL (NOVO) ---
     if request.method == 'POST':
-        # (Aqui virá a lógica para SALVAR os forms de perfil,
-        # mas faremos isso depois. Primeiro vamos exibir.)
-        pass
+        # Verifica se não é um dos forms de onboarding (pela presença de 'continuar')
+        if 'continuar' not in request.POST:
+            # É um POST do formulário de perfil
+            perfil_usuario_form = PerfilUsuarioForm(request.POST, instance=request.user)
+            perfil_candidato_form = PerfilCandidatoForm(request.POST, instance=candidato)
+            
+            if perfil_usuario_form.is_valid() and perfil_candidato_form.is_valid():
+                perfil_usuario_form.save()
+                perfil_candidato_form.save()
+                messages.success(request, 'Perfil atualizado com sucesso!')
+                return redirect('home_candidato')
+            else:
+                messages.error(request, 'Erro ao atualizar o perfil. Verifique os campos.')
+        
+        # (A lógica do POST de 'aplicar_vaga' ainda funciona separadamente,
+        # pois ela é chamada por um POST em outra URL)
+    
+    # --- LÓGICA DE EXIBIÇÃO (GET) ---
+    
+    # 1. Formulários de Onboarding (para o popup)
+    experiencia_form = ExperienciaForm()
+    formacao_form = FormacaoForm()
+    skill_form = SkillForm()
+    curriculo_form = CurriculoForm()
 
-    # --- Instancia os formulários de perfil com dados existentes ---
+    # 2. Formulários de Edição de Perfil (pré-preenchidos)
     perfil_usuario_form = PerfilUsuarioForm(instance=request.user)
     perfil_candidato_form = PerfilCandidatoForm(instance=candidato)
 
+    # 3. Dados existentes do Candidato (para a "zona dentro da zona")
+    try:
+        resumo = candidato.resumo_profissional.texto
+    except Resumo_Profissional.DoesNotExist:
+        resumo = ""
+
+    hard_skills = Skill.objects.filter(candidato=candidato, tipo='hard')
+    soft_skills = Skill.objects.filter(candidato=candidato, tipo='soft')
+    formacoes = Formacao_Academica.objects.filter(candidato=candidato)
+    experiencias = Experiencia.objects.filter(candidato=candidato)
+    redes_sociais = Redes_Sociais.objects.filter(candidato=candidato)
+    
+    # 4. Vagas
     lista_de_vagas = Vaga.objects.filter(status=True).order_by('-data_publicacao')
     
     contexto = {
         'vagas': lista_de_vagas,
-        'experiencia_form': ExperienciaForm(),
-        'formacao_form': FormacaoForm(),
-        'skill_form': SkillForm(),
-        'curriculo_form': CurriculoForm(),
+        
+        # Forms do Onboarding
+        'experiencia_form': experiencia_form,
+        'formacao_form': formacao_form,
+        'skill_form': skill_form,
+        'curriculo_form': curriculo_form,
+        
+        # Forms de Edição de Perfil
         'perfil_usuario_form': perfil_usuario_form,
         'perfil_candidato_form': perfil_candidato_form,
+        
+        # Dados do "Currículo" (para exibir)
+        'resumo_profissional': resumo,
+        'hard_skills': hard_skills,
+        'soft_skills': soft_skills,
+        'formacoes': formacoes,
+        'experiencias': experiencias,
+        'redes_sociais': redes_sociais,
     }
     
     return render(request, 'vagas/home_candidato.html', contexto)
