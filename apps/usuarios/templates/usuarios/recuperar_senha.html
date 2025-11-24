@@ -1,0 +1,674 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Recuperar Senha - Vagalume{% endblock %}
+
+{% block content %}
+<style>
+    /* Container Central */
+    .recovery-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 48px 40px;
+        background: linear-gradient(135deg, #1a1f2e 0%, #161B22 100%);
+        border: 1px solid #30363d;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Brilho sutil de fundo */
+    .recovery-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(190, 242, 100, 0.03) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .recovery-wrapper h2 {
+        font-size: 1.875rem;
+        color: #fff;
+        margin-bottom: 12px;
+        font-weight: 800;
+        position: relative;
+        z-index: 1;
+    }
+
+    .recovery-subtitle {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin-bottom: 36px;
+        line-height: 1.5;
+    }
+
+    /* Seção que aparece/desaparece */
+    .recovery-section {
+        width: 100%;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .recovery-section.hidden {
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+        position: absolute;
+        visibility: hidden;
+    }
+
+    /* Opções de Recuperação */
+    .recovery-options {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 32px;
+        width: 100%;
+    }
+
+    .option-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background-color: #0D1B2A;
+        border: 2px solid #30363d;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .option-card:hover {
+        border-color: #BEF264;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(190, 242, 100, 0.15);
+    }
+
+    .option-card.active {
+        border-color: #BEF264;
+        background: linear-gradient(135deg, rgba(190, 242, 100, 0.1) 0%, rgba(74, 120, 86, 0.1) 100%);
+    }
+
+    .option-card input[type="radio"] {
+        display: none;
+    }
+
+    .custom-radio {
+        width: 24px;
+        height: 24px;
+        border: 2px solid #BEF264;
+        border-radius: 50%;
+        position: relative;
+        flex-shrink: 0;
+        transition: all 0.2s;
+    }
+
+    .option-card.active .custom-radio {
+        background-color: #BEF264;
+        box-shadow: 0 0 0 4px rgba(190, 242, 100, 0.2);
+    }
+
+    .option-card.active .custom-radio::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background-color: #0D1B2A;
+        border-radius: 50%;
+    }
+
+    .option-content {
+        flex: 1;
+        text-align: left;
+    }
+
+    .option-title {
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .option-description {
+        color: #94a3b8;
+        font-size: 0.875rem;
+    }
+
+    .option-icon {
+        font-size: 1.5rem;
+        opacity: 0.8;
+    }
+
+    /* Botão Principal */
+    .btn-send {
+        background: linear-gradient(135deg, #BEF264 0%, #AFEB83 100%);
+        color: #0D1B2A;
+        padding: 16px 32px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(190, 242, 100, 0.3);
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-send:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(190, 242, 100, 0.4);
+    }
+
+    .btn-send:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .btn-send:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-send .spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #0D1B2A;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+    }
+
+    .btn-send.loading .btn-text {
+        display: none;
+    }
+
+    .btn-send.loading .spinner {
+        display: block;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Seção do Código */
+    .code-section {
+        margin-top: 8px;
+    }
+
+    .code-header {
+        margin-bottom: 24px;
+    }
+
+    .code-sent-to {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .code-destination {
+        color: #BEF264;
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    .code-inputs {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .code-inputs input {
+        width: 56px;
+        height: 64px;
+        text-align: center;
+        font-size: 1.75rem;
+        border: 2px solid #30363d;
+        border-radius: 12px;
+        background-color: #0D1B2A;
+        color: #fff;
+        font-weight: 700;
+        transition: all 0.2s;
+        caret-color: #BEF264;
+    }
+
+    .code-inputs input:focus {
+        outline: none;
+        border-color: #BEF264;
+        box-shadow: 0 0 0 4px rgba(190, 242, 100, 0.15);
+        transform: scale(1.05);
+    }
+
+    .code-inputs input.error {
+        border-color: #ef4444;
+        animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
+    }
+
+    .code-inputs input.filled {
+        border-color: #BEF264;
+        background-color: rgba(190, 242, 100, 0.05);
+    }
+
+    /* Timer de reenvio */
+    .resend-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #30363d;
+    }
+
+    .resend-timer {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .btn-resend {
+        background: transparent;
+        color: #BEF264;
+        border: 1px solid #BEF264;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-resend:hover:not(:disabled) {
+        background-color: rgba(190, 242, 100, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .btn-resend:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Botão Voltar */
+    .btn-back {
+        background: transparent;
+        color: #94a3b8;
+        border: 1px solid #30363d;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    .btn-back:hover {
+        border-color: #BEF264;
+        color: #BEF264;
+        background-color: rgba(190, 242, 100, 0.05);
+    }
+
+    /* Mensagens de Feedback */
+    .feedback-message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .feedback-message.success {
+        background-color: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #4ade80;
+    }
+
+    .feedback-message.error {
+        background-color: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #f87171;
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+        .recovery-wrapper {
+            margin: 20px;
+            padding: 32px 24px;
+        }
+
+        .recovery-wrapper h2 {
+            font-size: 1.5rem;
+        }
+
+        .recovery-subtitle {
+            font-size: 0.875rem;
+        }
+
+        .option-card {
+            padding: 16px;
+        }
+
+        .option-title {
+            font-size: 1rem;
+        }
+
+        .code-inputs {
+            gap: 8px;
+        }
+
+        .code-inputs input {
+            width: 44px;
+            height: 52px;
+            font-size: 1.5rem;
+        }
+
+        .btn-send {
+            font-size: 1rem;
+            padding: 14px 24px;
+        }
+    }
+</style>
+
+<div class="recovery-wrapper">
+    <h2>Recuperar Senha</h2>
+    <p class="recovery-subtitle">Escolha como deseja receber o código de verificação</p>
+
+    <!-- Seção 1: Escolher método de recuperação -->
+    <div id="method-section" class="recovery-section">
+        <div id="feedback-container"></div>
+        
+        <form id="recovery-form" method="POST" action="#">
+            {% csrf_token %}
+            <div class="recovery-options">
+                <label class="option-card active" data-method="email">
+                    <input type="radio" name="recovery_method" value="email" checked>
+                    <div class="custom-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">E-mail</div>
+                        <div class="option-description">Enviaremos um código para seu e-mail cadastrado</div>
+                    </div>
+                    <span class="option-icon"></span>
+                </label>
+                
+                <label class="option-card" data-method="sms">
+                    <input type="radio" name="recovery_method" value="sms">
+                    <div class="custom-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">SMS</div>
+                        <div class="option-description">Enviaremos um código para seu celular cadastrado</div>
+                    </div>
+                    <span class="option-icon"></span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-send">
+                <span class="btn-text">Enviar Código</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+    </div>
+
+    <!-- Seção 2: Inserir código -->
+    <div id="code-section" class="recovery-section hidden">
+        <div class="code-section">
+            <div class="code-header">
+                <p class="code-sent-to">Código enviado para:</p>
+                <p class="code-destination" id="destination-display"></p>
+            </div>
+            
+            <form id="code-form" method="POST" action="{% url 'nova_senha' %}">
+                {% csrf_token %}
+                <div class="code-inputs">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+                </div>
+                
+                <button type="submit" class="btn-send">
+                    <span class="btn-text">Verificar Código</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="resend-section">
+                    <p class="resend-timer" id="resend-timer"></p>
+                    <button type="button" class="btn-resend" id="btn-resend" disabled>
+                        Reenviar Código
+                    </button>
+                </div>
+
+                <button type="button" class="btn-back" id="btn-back">
+                    ← Voltar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const methodSection = document.getElementById('method-section');
+    const codeSection = document.getElementById('code-section');
+    const recoveryForm = document.getElementById('recovery-form');
+    const codeForm = document.getElementById('code-form');
+    const btnBack = document.getElementById('btn-back');
+    const btnResend = document.getElementById('btn-resend');
+    const resendTimer = document.getElementById('resend-timer');
+    const destinationDisplay = document.getElementById('destination-display');
+    const feedbackContainer = document.getElementById('feedback-container');
+    
+    let resendCountdown;
+    let selectedMethod = 'email';
+
+    // Gerenciar seleção de método
+    const optionCards = document.querySelectorAll('.option-card');
+    optionCards.forEach(card => {
+        card.addEventListener('click', function() {
+            optionCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            this.querySelector('input[type="radio"]').checked = true;
+            selectedMethod = this.dataset.method;
+        });
+    });
+
+    // Mostrar feedback
+    function showFeedback(message, type = 'success') {
+        feedbackContainer.innerHTML = `
+            <div class="feedback-message ${type}">
+                <span>${type === 'success' ? '✓' : '⚠'}</span>
+                <span>${message}</span>
+            </div>
+        `;
+        setTimeout(() => {
+            feedbackContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    // Enviar código
+    recoveryForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('.btn-send');
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+
+        // Simular envio (substituir por requisição real)
+        setTimeout(() => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            
+            // Atualizar destino baseado no método
+            const destination = selectedMethod === 'email' 
+                ? 'u***@example.com' 
+                : '+55 (11) 9****-1234';
+            destinationDisplay.textContent = destination;
+            
+            // Trocar para seção de código
+            methodSection.classList.add('hidden');
+            setTimeout(() => {
+                codeSection.classList.remove('hidden');
+                document.querySelector('.code-inputs input').focus();
+            }, 200);
+            
+            // Iniciar timer de reenvio
+            startResendTimer(60);
+        }, 1500);
+    });
+
+    // Timer de reenvio
+    function startResendTimer(seconds) {
+        btnResend.disabled = true;
+        let timeLeft = seconds;
+        
+        resendCountdown = setInterval(() => {
+            timeLeft--;
+            resendTimer.textContent = `Reenviar código em ${timeLeft}s`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(resendCountdown);
+                resendTimer.textContent = 'Não recebeu o código?';
+                btnResend.disabled = false;
+            }
+        }, 1000);
+    }
+
+    // Reenviar código
+    btnResend.addEventListener('click', function() {
+        showFeedback('Código reenviado com sucesso!', 'success');
+        startResendTimer(60);
+    });
+
+    // Voltar
+    btnBack.addEventListener('click', function() {
+        codeSection.classList.add('hidden');
+        setTimeout(() => {
+            methodSection.classList.remove('hidden');
+        }, 200);
+        clearInterval(resendCountdown);
+        codeInputs.forEach(input => {
+            input.value = '';
+            input.classList.remove('filled', 'error');
+        });
+    });
+
+    // Gerenciar inputs de código
+    const codeInputs = document.querySelectorAll('.code-inputs input');
+    
+    codeInputs.forEach((input, index) => {
+        // Auto-foco e navegação
+        input.addEventListener('input', function(e) {
+            // Apenas números
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Adicionar classe filled
+            if (this.value) {
+                this.classList.add('filled');
+                this.classList.remove('error');
+            } else {
+                this.classList.remove('filled');
+            }
+            
+            // Avançar para próximo input
+            if (this.value.length === 1 && index < codeInputs.length - 1) {
+                codeInputs[index + 1].focus();
+            }
+        });
+
+        // Navegação com teclado
+        input.addEventListener('keydown', function(e) {
+            // Backspace - voltar input
+            if (e.key === 'Backspace' && !this.value && index > 0) {
+                codeInputs[index - 1].focus();
+            }
+            
+            // Setas esquerda/direita
+            if (e.key === 'ArrowLeft' && index > 0) {
+                codeInputs[index - 1].focus();
+            }
+            if (e.key === 'ArrowRight' && index < codeInputs.length - 1) {
+                codeInputs[index + 1].focus();
+            }
+        });
+
+        // Colar código completo
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+            
+            pastedData.split('').forEach((char, i) => {
+                if (index + i < codeInputs.length) {
+                    codeInputs[index + i].value = char;
+                    codeInputs[index + i].classList.add('filled');
+                }
+            });
+            
+            // Focar último input preenchido
+            const lastIndex = Math.min(index + pastedData.length - 1, codeInputs.length - 1);
+            codeInputs[lastIndex].focus();
+        });
+    });
+
+    // Verificar código
+    codeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('.btn-send');
+        const code = Array.from(codeInputs).map(input => input.value).join('');
+        
+        if (code.length !== 6) {
+            codeInputs.forEach(input => input.classList.add('error'));
+            return;
+        }
+        
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+
+        // Simular verificação (substituir por requisição real)
+        setTimeout(() => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            
+            // Se código correto, enviar formulário
+            // this.submit();
+            
+            // Se código incorreto (para demonstração):
+            // codeInputs.forEach(input => {
+            //     input.classList.add('error');
+            //     input.value = '';
+            // });
+            // codeInputs[0].focus();
+        }, 1500);
+    });
+});
+</script>
+{% endblock %}

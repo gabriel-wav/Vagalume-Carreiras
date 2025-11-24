@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Criar Nova Senha - Vagalume{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilo do Container Central */
+    .new-password-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: #161B22; 
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .new-password-wrapper h2 {
+        font-size: 2rem;
+        color: #fff;
+        margin-bottom: 30px;
+        font-weight: 800;
+    }
+    
+    .new-password-wrapper p {
+        color: #94a3b8;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    /* Formulário */
+    .password-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .password-form label {
+        display: block;
+        color: #c9d1d9;
+        font-weight: 500;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+    
+    .password-form input {
+        width: 100%;
+        padding: 15px;
+        background-color: #0D1B2A; 
+        border: 1px solid #30363d; 
+        color: #c9d1d9; 
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .btn-save-password {
+        background: linear-gradient(135deg, #AFEB83, #BEF264);
+        color: #0D1B2A;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 30px;
+        width: 100%; /* Garante que o botão seja full width no desktop também */
+        max-width: 300px; /* Limita o tamanho do botão no desktop */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .btn-save-password:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(175, 235, 131, 0.3);
+    }
+
+    /* Texto de cabeçalho fora do wrapper principal (como na imagem) */
+    .header-text {
+        text-align: center;
+        margin: 60px auto 40px;
+        max-width: 600px;
+    }
+    .header-text h1 {
+        font-size: 2.5rem;
+        color: #fff;
+        margin-bottom: 10px;
+    }
+    .header-text p {
+        color: #94a3b8;
+        font-size: 1.2rem;
+    }
+    
+    /* === Responsividade === */
+    @media (max-width: 600px) {
+        .new-password-wrapper {
+            padding: 20px;
+            margin: 20px 10px;
+            width: calc(100% - 20px); /* Usa a largura total da tela com margem */
+        }
+        .header-text {
+            margin: 30px auto 20px;
+            padding: 0 10px;
+        }
+        .header-text h1 {
+            font-size: 2rem;
+        }
+        .header-text p {
+            font-size: 1rem;
+        }
+        /* O botão deve ser full-width no mobile para melhor usabilidade */
+        .btn-save-password {
+            width: 100%;
+            max-width: none;
+        }
+    }
+</style>
+
+<div class="header-text">
+    <h1>Deixe sua carreira brilhar.</h1>
+    <p>Junte-se a milhares de profissionais e empresas.</p>
+</div>
+
+<div class="new-password-wrapper">
+    <h2>Criar Nova Senha</h2>
+
+    <form method="POST" action="{% url 'login' %}" class="password-form">
+        {% csrf_token %}
+        
+        <div>
+            <label for="id_senha">Senha</label>
+            <input type="password" name="senha" id="id_senha" required>
+        </div>
+        
+        <div>
+            <label for="id_confirmar_senha">Confirmar Senha</label>
+            <input type="password" name="confirmar_senha" id="id_confirmar_senha" required>
+        </div>
+
+        <button type="submit" class="btn-save-password">Salvar</button>
+    </form>
+</div>
+{% endblock %}
