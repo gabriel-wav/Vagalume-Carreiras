@@ -7,15 +7,15 @@ from .models import Vaga, Candidatura
 from apps.usuarios.models import Recrutador, Candidato, Empresa
 from .forms import VagaForm
 from apps.usuarios.forms import (
-    ExperienciaForm, FormacaoForm, SkillForm, CurriculoForm
+    ExperienciaForm, FormacaoForm, SkillForm, CurriculoForm, PerfilUsuarioForm, PerfilCandidatoForm
 )
 from apps.matching.engine import calcular_similaridade_tags
-
-# Imports para o painel_admin (que estavam faltando)
+from apps.usuarios.models import Resumo_Profissional
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from django.utils import timezone
 import datetime
+from apps.usuarios.models import Resumo_Profissional, Skill, Experiencia, Formacao_Academica, Redes_Sociais
 
 
 def landing_page(request):
@@ -65,25 +65,62 @@ def criar_vaga(request):
     
 @login_required
 def home_candidato(request):
-    """
-    Painel do Candidato.
-    """
     if request.user.tipo_usuario != 'candidato':
         messages.error(request, 'Acesso negado.')
         return redirect('home_recrutador')
 
-    lista_de_vagas = Vaga.objects.filter(status=True).order_by('-data_publicacao')
+    candidato = request.user.candidato
+
+    # --- SALVAR PERFIL ---
+    # Se for POST e não tiver 'continuar' (que é do onboarding), é edição de perfil
+    if request.method == 'POST' and 'continuar' not in request.POST:
+        perfil_user_form = PerfilUsuarioForm(request.POST, instance=request.user)
+        perfil_candidato_form = PerfilCandidatoForm(request.POST, instance=candidato)
+        
+        if perfil_user_form.is_valid() and perfil_candidato_form.is_valid():
+            perfil_user_form.save()
+            perfil_candidato_form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('home_candidato')
+        else:
+            messages.error(request, 'Erro ao atualizar. Verifique os dados.')
+
+    # --- PREPARAÇÃO DOS DADOS PARA EXIBIÇÃO ---
     
+    # Forms para Edição (Preenchidos com dados atuais)
+    perfil_user_form = PerfilUsuarioForm(instance=request.user)
+    perfil_candidato_form = PerfilCandidatoForm(instance=candidato)
+
+    # Forms para o Onboarding (Vazios)
+    experiencia_form = ExperienciaForm()
+    formacao_form = FormacaoForm()
+    skill_form = SkillForm()
+    curriculo_form = CurriculoForm()
+
+    # Dados do Currículo (Para leitura - Versão Segura)
+    resumo = getattr(candidato, 'resumo_profissional', None)
+    texto_resumo = resumo.texto if resumo else "Nenhum resumo cadastrado."
+
     contexto = {
-        'vagas': lista_de_vagas,
-        'experiencia_form': ExperienciaForm(),
-        'formacao_form': FormacaoForm(),
-        'skill_form': SkillForm(),
-        'curriculo_form': CurriculoForm(),
+        'vagas': Vaga.objects.filter(status=True).order_by('-data_publicacao'),
+        
+        # Forms
+        'perfil_user_form': perfil_user_form,
+        'perfil_candidato_form': perfil_candidato_form,
+        'experiencia_form': experiencia_form,
+        'formacao_form': formacao_form,
+        'skill_form': skill_form,
+        'curriculo_form': curriculo_form,
+
+        # Dados Visuais (Ordenados)
+        'texto_resumo': texto_resumo,
+        'hard_skills': Skill.objects.filter(candidato=candidato, tipo='hard'),
+        'soft_skills': Skill.objects.filter(candidato=candidato, tipo='soft'),
+        'experiencias': Experiencia.objects.filter(candidato=candidato).order_by('-data_inicio'),
+        'formacoes': Formacao_Academica.objects.filter(candidato=candidato).order_by('-data_inicio'),
     }
     
     return render(request, 'vagas/home_candidato.html', contexto)
-
 @login_required
 def home_recrutador(request):
     """
@@ -380,10 +417,4 @@ def painel_admin(request):
         'atividades_vagas': vagas_recentes,
     }
     
-    # Você ainda precisa criar o template 'vagas/painel_admin.html',
-    # mas a view está pronta.
-    # return render(request, 'vagas/painel_admin.html', contexto)
-    
-    # Por enquanto, vamos redirecionar para o admin padrão
-    messages.info(request, 'Painel customizado em construção. Usando o admin padrão.')
-    return redirect('admin:index')
+    return render(request, 'vagas/painel_admin.html', contexto)
