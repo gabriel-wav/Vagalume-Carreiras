@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Perfil de {{ candidato_alvo.usuario.first_name }}{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Reutilizando o CSS "Cyberpunk" que já fizemos */
+    body { background: #0D1117; color: #c9d1d9; }
+    
+    .public-profile-wrapper {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+        background: #161B22;
+        padding: 40px;
+        border-radius: 16px;
+        border: 1px solid #30363d;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Efeito de fundo no header */
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 5px;
+        background: linear-gradient(90deg, #4A7856, #BEF264);
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: #2d3f52;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #BEF264;
+        border: 2px solid #BEF264;
+    }
+
+    .profile-name { font-size: 2rem; color: #fff; margin-bottom: 5px; font-weight: 700; }
+    .profile-headline { color: #BEF264; font-size: 1.1rem; margin-bottom: 15px; }
+    .profile-contact { color: #8b949e; font-size: 0.95rem; }
+    
+    /* Seções (iguais ao dashboard) */
+    .cv-section { margin-bottom: 30px; }
+    .cv-section h3 { 
+        color: #BEF264; 
+        font-size: 1.1rem; 
+        margin-bottom: 15px; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        font-weight: 700;
+        border-bottom: 1px solid #30363d;
+        padding-bottom: 10px;
+    }
+    
+    .cv-content { color: #c9d1d9; line-height: 1.6; }
+    
+    .skill-tag { 
+        display: inline-block; 
+        background: #2d3f52; 
+        color: #fff; 
+        padding: 6px 14px; 
+        border-radius: 20px; 
+        font-size: 0.9rem; 
+        margin-right: 8px; 
+        margin-bottom: 8px; 
+        border: 1px solid #30363d; 
+    }
+
+    .xp-item, .edu-item { 
+        padding-left: 20px; 
+        border-left: 3px solid #30363d; 
+        margin-bottom: 25px; 
+        position: relative; 
+    }
+    .xp-item::before, .edu-item::before { 
+        content: ''; width: 12px; height: 12px; 
+        background: #BEF264; border-radius: 50%; 
+        position: absolute; left: -7.5px; top: 5px; 
+    }
+    .xp-item strong, .edu-item strong { color: #fff; display: block; font-size: 1.1rem; }
+    .xp-item span, .edu-item span { color: #8b949e; font-size: 0.9rem; display: block; margin: 5px 0; }
+    
+    .btn-voltar {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #8b949e;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .btn-voltar:hover { color: #fff; }
+    
+    .download-btn {
+        display: inline-block;
+        background: #BEF264;
+        color: #0D1B2A;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 700;
+        text-decoration: none;
+        margin-top: 20px;
+        transition: transform 0.2s;
+    }
+    .download-btn:hover { transform: translateY(-3px); }
+</style>
+
+<div class="public-profile-wrapper">
+    <a href="javascript:history.back()" class="btn-voltar">← Voltar</a>
+
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ candidato_alvo.usuario.first_name|first }}{{ candidato_alvo.usuario.last_name|first }}
+        </div>
+        <h1 class="profile-name">
+            {{ candidato_alvo.usuario.first_name }} {{ candidato_alvo.usuario.last_name }}
+        </h1>
+        <p class="profile-headline">
+            {{ candidato_alvo.headline|default:"Candidato Vagalume" }}
+        </p>
+        <p class="profile-contact">
+            <i class="fas fa-envelope"></i> {{ candidato_alvo.usuario.email }} 
+            {% if candidato_alvo.usuario.telefone %} | <i class="fas fa-phone"></i> {{ candidato_alvo.usuario.telefone }} {% endif %}
+            {% if candidato_alvo.bairro %} | <i class="fas fa-map-marker-alt"></i> {{ candidato_alvo.bairro }} {% endif %}
+        </p>
+        
+        {% if candidato_alvo.curriculo_pdf %}
+            <a href="{{ candidato_alvo.curriculo_pdf.url }}" target="_blank" class="download-btn">
+                <i class="fas fa-download"></i> Baixar Currículo PDF
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="cv-section">
+        <h3>Sobre</h3>
+        <p class="cv-content">{{ texto_resumo|linebreaksbr }}</p>
+    </div>
+
+    <div class="cv-section">
+        <h3>Habilidades</h3>
+        <div>
+            {% for skill in hard_skills %}
+                <span class="skill-tag" style="border-color: #BEF264;">{{ skill.nome }}</span>
+            {% endfor %}
+            {% for skill in soft_skills %}
+                <span class="skill-tag">{{ skill.nome }}</span>
+            {% endfor %}
+            {% if not hard_skills and not soft_skills %}
+                <p style="color:#64748b; font-style:italic;">Nenhuma habilidade listada.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="cv-section">
+        <h3>Experiência</h3>
+        {% for exp in experiencias %}
+            <div class="xp-item">
+                <strong>{{ exp.cargo }}</strong>
+                <span>{{ exp.empresa }} | {{ exp.data_inicio|date:"Y" }} - {% if exp.trabalha_atualmente %}Presente{% else %}{{ exp.data_fim|date:"Y" }}{% endif %}</span>
+                {% if exp.descricao %}<p>{{ exp.descricao }}</p>{% endif %}
+            </div>
+        {% empty %}
+            <p style="color:#64748b; font-style:italic;">Nenhuma experiência registrada.</p>
+        {% endfor %}
+    </div>
+
+    <div class="cv-section">
+        <h3>Formação</h3>
+        {% for edu in formacoes %}
+            <div class="edu-item">
+                <strong>{{ edu.nome_formacao }}</strong>
+                <span>{{ edu.nome_instituicao }} ({{ edu.nivel }})</span>
+                <span style="font-size:0.8rem; color:#64748b;">{{ edu.data_inicio|date:"Y" }} - {{ edu.data_fim|date:"Y"|default:"Cursando" }}</span>
+            </div>
+        {% empty %}
+            <p style="color:#64748b; font-style:italic;">Nenhuma formação registrada.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

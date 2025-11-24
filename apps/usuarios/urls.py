@@ -9,6 +9,7 @@ urlpatterns = [
     path('financas/', views.financas_view, name='financas_candidato'),
     path('cadastro/candidato/', views.cadastrar_candidato, name='cadastro_candidato'),
     path('cadastro/recrutador/', views.cadastrar_recrutador, name='cadastro_recrutador'),
+    path('perfil/<str:username>/', views.perfil_publico, name='perfil_publico'),
 
     
     
@@ -28,4 +29,5 @@ urlpatterns = [
     path('api/formacao/', views.FormacaoAPIView.as_view(), name='api_salvar_formacao'),
     path('api/skill/', views.SkillAPIView.as_view(), name='api_salvar_skill'),
     path('api/curriculo/', views.CurriculoAPIView.as_view(), name='api_salvar_curriculo'),
+
 ]

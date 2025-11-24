@@ -25,7 +25,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsCandidato
 from django.views.decorators.http import require_http_methods
-
+from django.shortcuts import get_object_or_404
 
 
 @transaction.atomic
@@ -531,3 +531,35 @@ def ajax_deletar_formacao(request, edu_id):
         return JsonResponse({'status': 'success'})
     except Formacao_Academica.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Formação não encontrada'}, status=404)
+
+@login_required
+def perfil_publico(request, username):
+    """
+    Visualização pública (ou para recrutadores) do perfil do candidato.
+    """
+    # Busca o usuário pelo username (que é único)
+    usuario_alvo = get_object_or_404(Usuario, username=username)
+    
+    # Tenta pegar o perfil de candidato dele
+    try:
+        candidato = usuario_alvo.candidato
+    except Candidato.DoesNotExist:
+        messages.error(request, 'Este usuário não possui um perfil de candidato.')
+        return redirect('home_recrutador')
+
+    # Pega os dados (Igual ao home_candidato, mas filtrando pelo candidato_alvo)
+    try:
+        resumo = candidato.resumo_profissional.texto
+    except:
+        resumo = "Sem resumo cadastrado."
+
+    contexto = {
+        'candidato_alvo': candidato, # Passamos o objeto candidato para pegar nome, etc.
+        'texto_resumo': resumo,
+        'hard_skills': Skill.objects.filter(candidato=candidato, tipo='hard'),
+        'soft_skills': Skill.objects.filter(candidato=candidato, tipo='soft'),
+        'experiencias': Experiencia.objects.filter(candidato=candidato).order_by('-data_inicio'),
+        'formacoes': Formacao_Academica.objects.filter(candidato=candidato).order_by('-data_inicio'),
+    }
+    
+    return render(request, 'usuarios/perfil_publico.html', contexto)
