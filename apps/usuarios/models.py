@@ -49,6 +49,20 @@ class Candidato(models.Model):
     cpf = models.CharField(max_length=11, unique=True)
     headline = models.CharField(max_length=255, blank=True, null=True)
     curriculo_pdf = models.FileField(upload_to='curriculos_pdf/', blank=True, null=True)
+    
+    GENERO_CHOICES = (
+        ('M', 'Masculino'),
+        ('F', 'Feminino'),
+        ('O', 'Outro'),
+        ('P', 'Prefiro não informar'),
+    )
+    genero = models.CharField(
+        max_length=1, 
+        choices=GENERO_CHOICES, 
+        blank=True, 
+        null=True
+    )
+    bairro = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.usuario.email # Puxa o email do sistema de login

@@ -19,15 +19,12 @@ from .forms import (
 )
 from django import forms
 import re
-
-# --- NOVAS IMPORTAÇÕES (DO MERGE) ---
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-# Importa as permissões corrigidas que criamos no passo anterior
 from .permissions import IsCandidato
-# --- FIM DAS NOVAS IMPORTAÇÕES ---
+
 
 
 @transaction.atomic
@@ -486,5 +483,3 @@ class CurriculoAPIView(APIView):
             return Response({'status': 'success', 'action': 'next_step'}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'error', 'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-# --- FIM DOS NOVOS ENDPOINTS DE API ---
