@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.db import transaction
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from .models import (
@@ -101,6 +101,22 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login') # Redireciona para 'login' (do seu 'main')
+
+@login_required # 1. Garante que o usuário está logado (via sessão)
+def financas_view(request):
+    """
+    Renderiza a página de Finanças, protegida para candidatos.
+    """
+    # 2. Garante que é um candidato (baseado no seu 'tipo_usuario')
+    if request.user.tipo_usuario != 'candidato':
+        # Se um recrutador tentar acessar, ele é barrado.
+        return HttpResponseForbidden("Acesso negado.")
+
+    # Se passou nas verificações, renderiza o template
+    context = {
+        'pagina_ativa': 'financas' # Para o sub-nav
+    }
+    return render(request, 'usuarios/financas.html', context)
 
 # ---
 # AQUI COMEÇA A "CUTSCENE" DE ONBOARDING

@@ -1,0 +1,122 @@
+{% extends 'base.html' %} {% load static %}
+
+{% block title %}Finanças do Candidato{% endblock %}
+
+{% block content %}
+<style>
+    /* Você pode colocar o CSS aqui ou em um arquivo .css separado */
+    .financas-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        color: #fff; /* Cor do texto principal (branco) */
+    }
+
+    /* Título da Página */
+    .financas-header h1 {
+        font-size: 2.5rem; /* Aprox. */
+    }
+    .financas-header p {
+        font-size: 1.1rem;
+        color: #aaa; /* Subtítulo cinza */
+        margin-bottom: 30px;
+    }
+
+    /* Sub-Navegação (Recomendados, Finança, Perfil...) */
+    .financas-subnav {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 15px;
+    }
+    .financas-subnav a {
+        color: #aaa;
+        text-decoration: none;
+        font-size: 1.2rem;
+        padding-bottom: 15px;
+    }
+    .financas-subnav a.active {
+        color: #fff; /* Branco para o ativo */
+        border-bottom: 2px solid #fff; /* Linha branca */
+    }
+
+    /* Botões Superiores (Calculadora, Dicas...) */
+    .tool-buttons {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+    .tool-buttons .btn {
+        background-color: #BDFF84; /* Verde-limão */
+        color: #000; /* Texto preto */
+        padding: 15px 30px;
+        border-radius: 25px; /* Arredondado */
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .tool-buttons .btn.active {
+        /* Se precisar de um estilo diferente pro ativo (como na imagem) */
+        /* (Na imagem, o primeiro é destacado, mas pode ser só um estado 'hover') */
+        /* Vamos assumir que é só o estado padrão */
+    }
+
+    /* Grade de Conteúdo (4 Cards) */
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+        gap: 30px;
+    }
+    .content-card {
+        background-color: #BDFF84; /* Verde-limão */
+        color: #000; /* Texto preto */
+        min-height: 250px;
+        border-radius: 20px;
+        padding: 30px;
+        display: flex;
+        align-items: center; /* Centraliza o texto verticalmente */
+    }
+    .content-card h2 {
+        font-size: 2rem; /* Aprox. */
+        font-weight: bold;
+    }
+</style>
+
+<div class="financas-container">
+    
+    <div class="financas-header">
+        <h1>Finanças do candidato</h1>
+        <p>Organize seu dinheiro e tome decisões melhores para o seu futuro profissional.</p>
+    </div>
+
+    <nav class="financas-subnav">
+        <a href="#">Recomendados</a>
+        <a href="{% url 'financas_candidato' %}" class="active">Finança</a>
+        <a href="#">Perfil</a>
+        <a href="#">Configurações</a>
+    </nav>
+
+    <div class="tool-buttons">
+        <a href="#" class="btn active">Calculadora de Salário Líquido</a>
+        <a href="#" class="btn">Dicas de Orçamento Pessoal</a>
+        <a href="#" classa="btn">Benefícios Trabalhistas Explicados</a>
+    </div>
+
+    <div class="content-grid">
+        <a href="#" class="content-card">
+            <h2>Como organizar o primeiro salário</h2>
+        </a>
+        <a href="#" class="content-card">
+            <h2>Planejamento para emergências</h2>
+        </a>
+        <a href="#" class="content-card">
+            <h2>Entendendo descontos no contracheque</h2>
+        </a>
+        <a href="#" class="content-card">
+            <h2>Guia rápido sobre FGTS e 13°</h2>
+        </a>
+    </div>
+
+</div>
+{% endblock %}
