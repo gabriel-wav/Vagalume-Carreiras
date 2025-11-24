@@ -43,14 +43,22 @@
         <p>"{{ vaga.titulo }}"</p>
     </div>
 
-    {% for item in candidatos_ordenados %}
+{% for item in candidatos_ordenados %}
         <div class="candidato-card">
             <div class="candidato-info">
                 <h3>{{ item.candidato.usuario.get_full_name }}</h3>
                 <p>{{ item.candidato.headline|default:"Sem headline" }}</p>
-                <p style="font-size: 0.8rem; margin-top: 5px;">
+                <p style="font-size: 0.8rem; margin-top: 5px; color: #8b949e;">
                     Aplicou em: {{ item.data_aplicacao }} | Status: {{ item.status }}
                 </p>
+                
+                <div style="margin-top: 15px;">
+                    <a href="{% url 'perfil_publico' item.candidato.usuario.username %}" 
+                       style="background-color: #2d3f52; color: #fff; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+                       Ver Perfil Completo
+                    </a>
+                </div>
+
             </div>
             <div class="candidato-match-score">
                 <h2>{{ item.score|floatformat:0 }}%</h2>
