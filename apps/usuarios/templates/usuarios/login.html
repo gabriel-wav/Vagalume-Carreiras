@@ -2,6 +2,10 @@
 {% load static %}
 {% block title %}Login - Vagalume Carreiras{% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="login-wrapper">
     
@@ -23,7 +27,7 @@
             {% if messages %}
                 <div class="messages">
                     {% for message in messages %}
-                        <p class="error">{{ message }}</p>
+                        <p class="form-error-message">{{ message }}</p>
                     {% endfor %}
                 </div>
             {% endif %}
