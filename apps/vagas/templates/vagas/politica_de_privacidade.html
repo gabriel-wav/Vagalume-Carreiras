@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Política de Privacidade{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilo Específico para a Página de Política */
+    .politica-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: #161B22; /* Fundo do card */
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        color: #c9d1d9;
+        line-height: 1.6;
+    }
+
+    .politica-container h1 {
+        font-size: 2rem;
+        color: #BEF264;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #30363d;
+        padding-bottom: 10px;
+    }
+
+    .politica-container h2 {
+        font-size: 1.5rem;
+        color: #fff;
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+
+    .politica-container h3 {
+        font-size: 1.2rem;
+        color: #BEF264;
+        margin-top: 25px;
+        margin-bottom: 10px;
+    }
+
+    .politica-container p, 
+    .politica-container ul {
+        margin-bottom: 20px;
+        color: #8b949e;
+    }
+
+    .politica-container ul {
+        list-style-type: disc;
+        padding-left: 40px;
+    }
+
+    .politica-container ul li {
+        margin-bottom: 8px;
+        color: #c9d1d9; /* Cor do texto da lista */
+    }
+    
+    .politica-container ul li strong {
+        color: #fff;
+    }
+    
+    .destaque-email {
+        color: #BEF264;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 900px) {
+        .politica-container {
+            margin: 20px 15px;
+            padding: 25px;
+        }
+    }
+</style>
+
+<div class="politica-container">
+    <h1>Política de Privacidade - Vagalume Carreiras</h1>
+
+    <p>
+        A Vagalume Carreiras valoriza a sua privacidade e está comprometida em proteger os dados pessoais de nossos usuários. Nós utilizamos esta plataforma para cadastrar currículos, procurar vagas ou anunciar oportunidades de emprego. 
+        Ao acessar e utilizar nosso site, você concorda com os termos desta Política de Privacidade.
+    </p>
+
+    <h2>1. Informações que coletamos</h2>
+    <p>Coletamos as seguintes informações:</p>
+    <ul>
+        <li><strong>Dados de cadastro:</strong> Nome, e-mail, telefone, cidade, estado, senha de acesso e demais informações fornecidas no cadastramento.</li>
+        <li><strong>Dados profissionais:</strong> Currículo, formação acadêmica, experiências profissionais, referências, salários e qualquer dado inserido para candidaturas de emprego.</li>
+        <li><strong>Dados de navegação:</strong> Endereço IP, tipo de dispositivo, navegador utilizado, páginas acessadas e tempo de uso da plataforma.</li>
+    </ul>
+
+    <h2>2. Como usamos as informações</h2>
+    <p>Utilizamos seus dados para:</p>
+    <ul>
+        <li>Permitir o cadastro de candidatos e empresas.</li>
+        <li>Divulgar e gerenciar vagas de emprego.</li>
+        <li>Promover a comunicação entre candidatos e recrutadores.</li>
+        <li>Personalizar a experiência do usuário.</li>
+        <li>Enviar comunicações sobre novas vagas, atualizações ou avisos importantes.</li>
+        <li>Cumprir obrigações legais e regulatórias.</li>
+    </ul>
+
+    <h2>3. Compartilhamento de informações</h2>
+    <p>Suas informações podem ser compartilhadas da seguinte forma:</p>
+    <ul>
+        <li><strong>Com recrutadores:</strong> Apenas os dados necessários para participação em processos seletivos.</li>
+        <li><strong>Com provedores de serviço:</strong> Empresas de tecnologia, responsáveis por manter a segurança e o funcionamento da plataforma.</li>
+        <li><strong>Mediante ordem judicial:</strong> Ou obrigação legal, quando solicitado por autoridades competentes.</li>
+    </ul>
+    <p>Não vendemos ou alugamos informações pessoais dos usuários.</p>
+
+    <h2>4. Armazenamento e segurança dos dados</h2>
+    <p>Empregamos métodos de segurança rigorosos e o acesso aos dados é restrito:</p>
+    <ul>
+        <li>Seus dados são armazenados em servidores seguros e acessados apenas por profissionais autorizados.</li>
+        <li>Utilizamos técnicas e organizacionais para proteger contra acessos não autorizados, perda ou divulgação indevida.</li>
+        <li>O usuário é responsável por manter a confidencialidade de sua senha.</li>
+    </ul>
+
+    <h2>5. Direitos do Usuário</h2>
+    <p>De acordo com a Lei Geral de Proteção de Dados (LGPD), você pode:</p>
+    <ul>
+        <li>Solicitar cópia de suas informações pessoais.</li>
+        <li>Corrigir dados incompletos, inexatos ou desatualizados.</li>
+        <li>Solicitar a exclusão de seus dados da plataforma.</li>
+        <li>Revogar o consentimento do uso para o processamento.</li>
+    </ul>
+    <p>As solicitações podem ser feitas através do e-mail: <span class="destaque-email">suportevagalumecarreiras@gmail.com</span>.</p>
+
+    <h2>6. Cookies</h2>
+    <p>Utilizamos cookies para melhorar a navegação, personalizar conteúdos e analisar estatísticas de uso. Você pode configurar seu navegador para bloquear cookies, mas isso pode afetar algumas funcionalidades do site.</p>
+
+    <h2>7. Alterações nesta Política</h2>
+    <p>Podemos atualizar esta Política de Privacidade periodicamente para refletir melhorias na plataforma ou mudanças legais. A versão atualizada estará sempre disponível em nosso site.</p>
+
+    <h2>8. Contato</h2>
+    <p>Em caso de dúvidas sobre esta Política de Privacidade ou sobre o uso de seus dados pessoais, entre em contato pelo e-mail: <span class="destaque-email">vagalumecarreiras@gmail.com</span>.</p>
+</div>
+{% endblock %}

@@ -3,15 +3,20 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # URLs de autenticação (permanecem iguais)
+    # URLs de autenticação
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('financas/', views.financas_view, name='financas_candidato'),
     path('financas/', views.financas_view, name='financas_candidato'),
     path('cadastro/candidato/', views.cadastrar_candidato, name='cadastro_candidato'),
     path('cadastro/recrutador/', views.cadastrar_recrutador, name='cadastro_recrutador'),
     path('perfil/<str:username>/', views.perfil_publico, name='perfil_publico'),
 
     
+
+    # NOVAS URLs DE RECUPERAÇÃO DE SENHA
+    path('recuperar-senha/', views.recuperar_senha_view, name='recuperar_senha'),
+    path('nova-senha/', views.nova_senha_view, name='nova_senha'),
     
     # --- URLs de AJAX ---
     path('ajax/salvar-resumo/', views.ajax_salvar_resumo, name='ajax_salvar_resumo'),

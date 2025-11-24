@@ -563,3 +563,15 @@ def perfil_publico(request, username):
     }
     
     return render(request, 'usuarios/perfil_publico.html', contexto)
+# --- VIEWS PARA RECUPERAÇÃO DE SENHA ---
+def recuperar_senha_view(request):
+    """
+    Renderiza a página inicial de recuperação de senha (Pedir Código).
+    """
+    return render(request, 'usuarios/recuperar_senha.html')
+
+def nova_senha_view(request):
+    """
+    Renderiza a página de criação de nova senha após a validação do código.
+    """
+    return render(request, 'usuarios/nova_senha.html')
