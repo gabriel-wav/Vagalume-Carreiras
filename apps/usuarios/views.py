@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.db import transaction
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from .models import (
@@ -24,7 +24,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsCandidato
-
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 
 
 @transaction.atomic
@@ -101,6 +102,22 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login') # Redireciona para 'login' (do seu 'main')
+
+@login_required # 1. Garante que o usuário está logado (via sessão)
+def financas_view(request):
+    """
+    Renderiza a página de Finanças, protegida para candidatos.
+    """
+    # 2. Garante que é um candidato (baseado no seu 'tipo_usuario')
+    if request.user.tipo_usuario != 'candidato':
+        # Se um recrutador tentar acessar, ele é barrado.
+        return HttpResponseForbidden("Acesso negado.")
+
+    # Se passou nas verificações, renderiza o template
+    context = {
+        'pagina_ativa': 'financas' # Para o sub-nav
+    }
+    return render(request, 'usuarios/financas.html', context)
 
 # ---
 # AQUI COMEÇA A "CUTSCENE" DE ONBOARDING
@@ -483,3 +500,66 @@ class CurriculoAPIView(APIView):
             return Response({'status': 'success', 'action': 'next_step'}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'error', 'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@login_required
+@require_http_methods(["DELETE"])
+def ajax_deletar_skill(request, skill_id):
+    try:
+        skill = Skill.objects.get(id=skill_id, candidato=request.user.candidato)
+        skill.delete()
+        return JsonResponse({'status': 'success'})
+    except Skill.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Skill não encontrada'}, status=404)
+
+@login_required
+@require_http_methods(["DELETE"])
+def ajax_deletar_experiencia(request, xp_id):
+    try:
+        exp = Experiencia.objects.get(id=xp_id, candidato=request.user.candidato)
+        exp.delete()
+        return JsonResponse({'status': 'success'})
+    except Experiencia.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Experiência não encontrada'}, status=404)
+
+@login_required
+@require_http_methods(["DELETE"])
+def ajax_deletar_formacao(request, edu_id):
+    try:
+        formacao = Formacao_Academica.objects.get(id=edu_id, candidato=request.user.candidato)
+        formacao.delete()
+        return JsonResponse({'status': 'success'})
+    except Formacao_Academica.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Formação não encontrada'}, status=404)
+
+@login_required
+def perfil_publico(request, username):
+    """
+    Visualização pública (ou para recrutadores) do perfil do candidato.
+    """
+    # Busca o usuário pelo username (que é único)
+    usuario_alvo = get_object_or_404(Usuario, username=username)
+    
+    # Tenta pegar o perfil de candidato dele
+    try:
+        candidato = usuario_alvo.candidato
+    except Candidato.DoesNotExist:
+        messages.error(request, 'Este usuário não possui um perfil de candidato.')
+        return redirect('home_recrutador')
+
+    # Pega os dados (Igual ao home_candidato, mas filtrando pelo candidato_alvo)
+    try:
+        resumo = candidato.resumo_profissional.texto
+    except:
+        resumo = "Sem resumo cadastrado."
+
+    contexto = {
+        'candidato_alvo': candidato, # Passamos o objeto candidato para pegar nome, etc.
+        'texto_resumo': resumo,
+        'hard_skills': Skill.objects.filter(candidato=candidato, tipo='hard'),
+        'soft_skills': Skill.objects.filter(candidato=candidato, tipo='soft'),
+        'experiencias': Experiencia.objects.filter(candidato=candidato).order_by('-data_inicio'),
+        'formacoes': Formacao_Academica.objects.filter(candidato=candidato).order_by('-data_inicio'),
+    }
+    
+    return render(request, 'usuarios/perfil_publico.html', contexto)

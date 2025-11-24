@@ -151,6 +151,8 @@ class RecrutadorCadastroForm(forms.Form):
         
         return cleaned_data
 
+# apps/usuarios/forms.py
+
 class PerfilUsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
@@ -164,7 +166,7 @@ class PerfilUsuarioForm(forms.ModelForm):
 class PerfilCandidatoForm(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = ['headline', 'genero', 'bairro'] 
+        fields = ['headline', 'genero', 'bairro']
         widgets = {
             'headline': forms.TextInput(attrs={'placeholder': 'Ex: Desenvolvedor Full Stack'}),
             'bairro': forms.TextInput(attrs={'placeholder': 'Seu Bairro'}),
