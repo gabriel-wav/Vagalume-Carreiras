@@ -17,4 +17,6 @@ urlpatterns = [
     path("planos_empresa/", views.planos_empresa, name="planos_empresa"),
     path('painel-admin/', views.painel_admin, name='painel_admin'),
     path('politica-de-privacidade/', views.politica_privacidade, name='politica_de_privacidade'),
+    path('explorar/', views.explorar_vagas, name='explorar_vagas'),
+    path('empresa/<int:empresa_id>/', views.ver_empresa, name='ver_empresa'),
 ]
