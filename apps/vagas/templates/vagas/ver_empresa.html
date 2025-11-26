@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ empresa.nome }} - Avaliações{% endblock %}
+
+{% block content %}
+<style>
+    .empresa-header { background: #161B22; padding: 40px; border-bottom: 1px solid #30363d; text-align: center; }
+    .rating-box { background: #0D1117; padding: 20px; border-radius: 12px; border: 1px solid #30363d; margin-top: 20px; }
+    .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; }
+    .star-rating input { display: none; }
+    .star-rating label { font-size: 30px; color: #30363d; cursor: pointer; transition: color 0.2s; }
+    .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #BEF264; }
+    .review-item { border-bottom: 1px solid #30363d; padding: 15px 0; }
+    .review-stars { color: #BEF264; }
+</style>
+
+<div class="empresa-header">
+    <h1 style="color: #fff; font-size: 3rem; margin-bottom: 10px;">{{ empresa.nome }}</h1>
+    <p style="color: #8b949e; font-size: 1.2rem;">{{ empresa.setor }}</p>
+    
+    <div style="margin-top: 20px;">
+        <span style="font-size: 2.5rem; font-weight: bold; color: #BEF264;">{{ media_nota }}</span>
+        <span style="color: #8b949e;">/ 5.0</span>
+        <p style="color: #8b949e; font-size: 0.9rem;">Baseado em {{ avaliacoes.count }} avaliações</p>
+    </div>
+</div>
+
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+    
+    <div>
+        <h3 style="color: #fff; border-bottom: 2px solid #BEF264; padding-bottom: 10px; margin-bottom: 20px;">Vagas Abertas</h3>
+        {% for vaga in vagas_abertas %}
+            <div style="background: #161B22; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #30363d;">
+                <strong style="color: #fff; display: block;">{{ vaga.titulo }}</strong>
+                <span style="color: #8b949e; font-size: 0.9rem;">{{ vaga.localidade }}</span>
+                <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin-top: 10px;">
+                    {% csrf_token %}
+                    <button style="background: transparent; border: 1px solid #BEF264; color: #BEF264; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Aplicar Rápido</button>
+                </form>
+            </div>
+        {% empty %}
+            <p style="color: #64748b;">Nenhuma vaga aberta no momento.</p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h3 style="color: #fff; border-bottom: 2px solid #BEF264; padding-bottom: 10px; margin-bottom: 20px;">Avaliações</h3>
+        
+        <div class="rating-box">
+            <h4 style="color: #fff; text-align: center; margin-bottom: 15px;">Avalie esta empresa</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="star-rating">
+                    <input type="radio" id="s5" name="nota" value="5" {% if minha_avaliacao.nota == 5 %}checked{% endif %}><label for="s5">★</label>
+                    <input type="radio" id="s4" name="nota" value="4" {% if minha_avaliacao.nota == 4 %}checked{% endif %}><label for="s4">★</label>
+                    <input type="radio" id="s3" name="nota" value="3" {% if minha_avaliacao.nota == 3 %}checked{% endif %}><label for="s3">★</label>
+                    <input type="radio" id="s2" name="nota" value="2" {% if minha_avaliacao.nota == 2 %}checked{% endif %}><label for="s2">★</label>
+                    <input type="radio" id="s1" name="nota" value="1" {% if minha_avaliacao.nota == 1 %}checked{% endif %}><label for="s1">★</label>
+                </div>
+                <textarea name="comentario" placeholder="Conte sua experiência..." style="width: 100%; background: #0a121a; border: 1px solid #30363d; color: #fff; padding: 10px; margin-top: 10px; border-radius: 6px; min-height: 80px;">{{ minha_avaliacao.comentario|default:'' }}</textarea>
+                <button type="submit" style="width: 100%; background: #BEF264; color: #0D1B2A; border: none; padding: 10px; margin-top: 10px; border-radius: 6px; font-weight: bold; cursor: pointer;">Enviar Avaliação</button>
+            </form>
+        </div>
+
+        <div style="margin-top: 30px;">
+            {% for av in avaliacoes %}
+                <div class="review-item">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #fff;">Anônimo</strong>
+                        <span class="review-stars">
+                            {% if av.nota >= 1 %}★{% endif %}{% if av.nota >= 2 %}★{% endif %}{% if av.nota >= 3 %}★{% endif %}{% if av.nota >= 4 %}★{% endif %}{% if av.nota == 5 %}★{% endif %}
+                        </span>
+                    </div>
+                    <p style="color: #c9d1d9; margin-top: 5px;">{{ av.comentario }}</p>
+                    <small style="color: #64748b;">{{ av.data|date:"d/m/Y" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
