@@ -497,34 +497,53 @@ def ver_empresa(request, empresa_id):
     """
     empresa = get_object_or_404(Empresa, id=empresa_id)
     
-    # Processar Avaliação (POST)
+    # Processar Avaliação (POST) - SÓ PARA CANDIDATOS
     if request.method == 'POST':
-        try:
-            nota = int(request.POST.get('nota'))
-            comentario = request.POST.get('comentario')
+        if request.user.tipo_usuario == 'candidato':
+            try:
+                nota = int(request.POST.get('nota'))
+                comentario = request.POST.get('comentario')
+                
+                AvaliacaoEmpresa.objects.update_or_create(
+                    empresa=empresa,
+                    candidato=request.user.candidato,
+                    defaults={'nota': nota, 'comentario': comentario}
+                )
+                messages.success(request, 'Avaliação enviada com sucesso!')
+            except Exception as e:
+                messages.error(request, f'Erro ao avaliar: {e}')
+        else:
+            messages.error(request, 'Apenas candidatos podem avaliar empresas.')
             
-            AvaliacaoEmpresa.objects.update_or_create(
-                empresa=empresa,
-                candidato=request.user.candidato,
-                defaults={'nota': nota, 'comentario': comentario}
-            )
-            messages.success(request, 'Avaliação enviada com sucesso!')
-        except Exception as e:
-            messages.error(request, f'Erro ao avaliar: {e}')
         return redirect('ver_empresa', empresa_id=empresa.id)
 
     # Dados para exibição
     avaliacoes = empresa.avaliacoes.all().order_by('-data')
     media = avaliacoes.aggregate(Avg('nota'))['nota__avg']
     
-    # Verifica se o usuário já avaliou
-    minha_avaliacao = avaliacoes.filter(candidato=request.user.candidato).first()
+    # Verifica se o usuário JÁ avaliou (SE FOR CANDIDATO)
+    minha_avaliacao = None
+    if request.user.tipo_usuario == 'candidato':
+        try:
+            minha_avaliacao = avaliacoes.filter(candidato=request.user.candidato).first()
+        except:
+            pass # Se der erro de perfil, ignora
 
     contexto = {
         'empresa': empresa,
         'vagas_abertas': Vaga.objects.filter(empresa=empresa, status=True),
         'avaliacoes': avaliacoes,
         'media_nota': round(media, 1) if media else "N/A",
-        'minha_avaliacao': minha_avaliacao
+        'minha_avaliacao': minha_avaliacao,
+        'is_dono': False # Flag para mostrar botões de edição no futuro
     }
+    
+    # Verifica se o usuário é o DONO da empresa
+    if request.user.tipo_usuario == 'recrutador':
+        try:
+            if request.user.recrutador.empresa == empresa:
+                contexto['is_dono'] = True
+        except:
+            pass
+
     return render(request, 'vagas/ver_empresa.html', contexto)
