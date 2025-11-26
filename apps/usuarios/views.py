@@ -26,6 +26,9 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsCandidato
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
+from apps.usuarios.models import AvaliacaoEmpresa
+
 
 
 @transaction.atomic
@@ -563,6 +566,55 @@ def perfil_publico(request, username):
     }
     
     return render(request, 'usuarios/perfil_publico.html', contexto)
+<<<<<<< HEAD
+
+@login_required
+def explorar_vagas(request):
+    """
+    Lista TODAS as vagas abertas no sistema.
+    """
+    vagas = Vaga.objects.filter(status=True).order_by('-data_publicacao')
+    return render(request, 'vagas/explorar_vagas.html', {'vagas': vagas})
+
+@login_required
+def ver_empresa(request, empresa_id):
+    """
+    Perfil público da empresa com sistema de avaliações.
+    """
+    empresa = get_object_or_404(Empresa, id=empresa_id)
+    
+    # Processar Avaliação (POST)
+    if request.method == 'POST':
+        try:
+            nota = int(request.POST.get('nota'))
+            comentario = request.POST.get('comentario')
+            
+            AvaliacaoEmpresa.objects.update_or_create(
+                empresa=empresa,
+                candidato=request.user.candidato,
+                defaults={'nota': nota, 'comentario': comentario}
+            )
+            messages.success(request, 'Avaliação enviada com sucesso!')
+        except Exception as e:
+            messages.error(request, f'Erro ao avaliar: {e}')
+        return redirect('ver_empresa', empresa_id=empresa.id)
+
+    # Dados para exibição
+    avaliacoes = empresa.avaliacoes.all().order_by('-data')
+    media = avaliacoes.aggregate(Avg('nota'))['nota__avg']
+    
+    # Verifica se o usuário já avaliou
+    minha_avaliacao = avaliacoes.filter(candidato=request.user.candidato).first()
+
+    contexto = {
+        'empresa': empresa,
+        'vagas_abertas': Vaga.objects.filter(empresa=empresa, status=True),
+        'avaliacoes': avaliacoes,
+        'media_nota': round(media, 1) if media else "N/A",
+        'minha_avaliacao': minha_avaliacao
+    }
+    return render(request, 'vagas/ver_empresa.html', contexto)
+=======
 # --- VIEWS PARA RECUPERAÇÃO DE SENHA ---
 def recuperar_senha_view(request):
     """
@@ -575,3 +627,4 @@ def nova_senha_view(request):
     Renderiza a página de criação de nova senha após a validação do código.
     """
     return render(request, 'usuarios/nova_senha.html')
+>>>>>>> f42748a391db477dcd189929e8651325e6a9927e

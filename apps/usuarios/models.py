@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Usuario(AbstractUser):
     
@@ -129,3 +130,16 @@ class Formacao_Academica(models.Model):
     data_inicio = models.DateField()
     data_fim = models.DateField(blank=True, null=True)
     cursando_atualmente = models.BooleanField(default=False)
+
+class AvaliacaoEmpresa(models.Model):
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='avaliacoes')
+    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE)
+    nota = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comentario = models.TextField(blank=True, null=True)
+    data = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('empresa', 'candidato') # Um candidato só avalia a empresa uma vez
+
+    def __str__(self):
+        return f"{self.empresa.nome} - {self.nota} estrelas"

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Explorar Vagas{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="color: #fff; font-size: 2.5rem;">Explorar Oportunidades</h1>
+        <p style="color: #8b949e;">Veja todas as vagas disponíveis na plataforma.</p>
+    </div>
+
+    <div class="jobs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
+        {% for vaga in vagas %}
+        <div class="job-card" style="background: #161B22; border: 1px solid #30363d; padding: 25px; border-radius: 12px; transition: transform 0.2s;">
+            <h3 style="color: #fff; margin-bottom: 5px;">{{ vaga.titulo }}</h3>
+            <p style="color: #BEF264; font-weight: bold; margin-bottom: 15px;">{{ vaga.empresa.nome }}</p>
+            
+            <div style="margin-bottom: 20px;">
+                <span style="background: #2d3f52; color: #c9d1d9; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">{{ vaga.localidade }}</span>
+                <span style="background: #2d3f52; color: #c9d1d9; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">{{ vaga.tipo_contrato }}</span>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'ver_empresa' vaga.empresa.id %}" 
+                   style="flex: 1; text-align: center; border: 1px solid #30363d; color: #fff; padding: 10px; border-radius: 6px; text-decoration: none;">
+                   Ver Empresa
+                </a>
+                
+                <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="flex: 1;">
+                    {% csrf_token %}
+                    <button type="submit" style="width: 100%; background: #AFEB83; color: #0D1B2A; border: none; padding: 11px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                        Aplicar
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <p style="color: #8b949e;">Nenhuma vaga encontrada.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
