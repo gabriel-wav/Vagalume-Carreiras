@@ -130,20 +130,20 @@
 <div class="new-password-wrapper">
     <h2>Criar Nova Senha</h2>
 
-    <form method="POST" action="{% url 'login' %}" class="password-form">
-        {% csrf_token %}
-        
-        <div>
-            <label for="id_senha">Senha</label>
-            <input type="password" name="senha" id="id_senha" required>
-        </div>
-        
-        <div>
-            <label for="id_confirmar_senha">Confirmar Senha</label>
-            <input type="password" name="confirmar_senha" id="id_confirmar_senha" required>
-        </div>
+    <form method="POST" action="{% url 'nova_senha' %}" class="password-form">
+    {% csrf_token %}
+    
+    <div>
+        <label for="id_new_password">Nova Senha</label>
+        <input type="password" name="new_password" id="id_new_password" placeholder="Nova Senha" required>
+    </div>
+    
+    <div>
+        <label for="id_confirm_password">Confirmar Senha</label>
+        <input type="password" name="confirm_password" id="id_confirm_password" placeholder="Confirmar Senha" required>
+    </div>
 
-        <button type="submit" class="btn-save-password">Salvar</button>
-    </form>
+    <button type="submit" class="btn-save-password">Salvar</button>
+</form>
 </div>
 {% endblock %}

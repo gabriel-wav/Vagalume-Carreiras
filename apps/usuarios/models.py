@@ -129,3 +129,27 @@ class Formacao_Academica(models.Model):
     data_inicio = models.DateField()
     data_fim = models.DateField(blank=True, null=True)
     cursando_atualmente = models.BooleanField(default=False)
+    
+# -------------------------------------------------------------------
+# MODELO PARA RECUPERAÇÃO DE SENHA
+# -------------------------------------------------------------------
+
+class RecuperacaoSenha(models.Model):
+    METODO_CHOICES = [
+        ('email', 'E-mail'),
+        ('sms', 'SMS'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    codigo = models.CharField(max_length=6)
+    metodo = models.CharField(max_length=5, choices=METODO_CHOICES)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    expira_em = models.DateTimeField()
+    usado = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'recuperacao_senha'
+        ordering = ['-criado_em']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.codigo} ({self.metodo})"

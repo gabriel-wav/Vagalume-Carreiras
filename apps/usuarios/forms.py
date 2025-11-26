@@ -171,3 +171,23 @@ class PerfilCandidatoForm(forms.ModelForm):
             'headline': forms.TextInput(attrs={'placeholder': 'Ex: Desenvolvedor Full Stack'}),
             'bairro': forms.TextInput(attrs={'placeholder': 'Seu Bairro'}),
         }
+        
+class NovaSenhaForm(forms.Form):
+    """
+    Formulário para definir a nova senha.
+    """
+    new_password = forms.CharField(label='Nova Senha', widget=forms.PasswordInput(attrs={'placeholder': 'Nova Senha'}))
+    confirm_password = forms.CharField(label='Confirmar Senha', widget=forms.PasswordInput(attrs={'placeholder': 'Confirmar Senha'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if new_password and confirm_password and new_password != confirm_password:
+            raise forms.ValidationError("As senhas não coincidem.")
+        
+        # Nota: A validação de complexidade de senha (UserAttributeSimilarityValidator, etc.)
+        # deve ser aplicada na view (nova_senha_view).
+        
+        return cleaned_data

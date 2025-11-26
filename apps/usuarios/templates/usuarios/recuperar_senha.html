@@ -200,7 +200,9 @@
     }
 
     @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     /* Seção do Código */
@@ -258,9 +260,19 @@
     }
 
     @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-8px); }
-        75% { transform: translateX(8px); }
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-8px);
+        }
+
+        75% {
+            transform: translateX(8px);
+        }
     }
 
     .code-inputs input.filled {
@@ -341,6 +353,7 @@
             opacity: 0;
             transform: translateY(-10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -406,31 +419,20 @@
     <!-- Seção 1: Escolher método de recuperação -->
     <div id="method-section" class="recovery-section">
         <div id="feedback-container"></div>
-        
-        <form id="recovery-form" method="POST" action="#">
+
+        <form id="recovery-form" method="POST" action="{% url 'recuperar_senha' %}">
             {% csrf_token %}
-            <div class="recovery-options">
-                <label class="option-card active" data-method="email">
-                    <input type="radio" name="recovery_method" value="email" checked>
-                    <div class="custom-radio"></div>
-                    <div class="option-content">
-                        <div class="option-title">E-mail</div>
-                        <div class="option-description">Enviaremos um código para seu e-mail cadastrado</div>
-                    </div>
-                    <span class="option-icon"></span>
-                </label>
-                
-                <label class="option-card" data-method="sms">
-                    <input type="radio" name="recovery_method" value="sms">
-                    <div class="custom-radio"></div>
-                    <div class="option-content">
-                        <div class="option-title">SMS</div>
-                        <div class="option-description">Enviaremos um código para seu celular cadastrado</div>
-                    </div>
-                    <span class="option-icon"></span>
-                </label>
+
+            <div style="margin-bottom: 20px;">
+                <label for="id_email_ou_telefone" style="display: none;">Email ou Telefone</label>
+                <input type="text" name="email_ou_telefone" id="id_email_ou_telefone"
+                    placeholder="Seu Email ou Telefone Cadastrado" required
+                    style="width: 100%; padding: 15px; background-color: #0D1B2A; border: 1px solid #30363d; color: #c9d1d9; border-radius: 8px; font-size: 1.1rem; font-family: 'Plus Jakarta Sans', sans-serif;">
             </div>
-            
+
+            <div class="recovery-options">
+            </div>
+
             <button type="submit" class="btn-send">
                 <span class="btn-text">Enviar Código</span>
                 <div class="spinner"></div>
@@ -445,230 +447,215 @@
                 <p class="code-sent-to">Código enviado para:</p>
                 <p class="code-destination" id="destination-display"></p>
             </div>
-            
-            <form id="code-form" method="POST" action="{% url 'nova_senha' %}">
-                {% csrf_token %}
-                <div class="code-inputs">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
-                </div>
-                
-                <button type="submit" class="btn-send">
-                    <span class="btn-text">Verificar Código</span>
-                    <div class="spinner"></div>
-                </button>
 
-                <div class="resend-section">
-                    <p class="resend-timer" id="resend-timer"></p>
-                    <button type="button" class="btn-resend" id="btn-resend" disabled>
-                        Reenviar Código
-                    </button>
-                </div>
-
-                <button type="button" class="btn-back" id="btn-back">
-                    ← Voltar
-                </button>
-            </form>
+            <form id="code-form" method="POST" action="{% url 'recuperar_senha' %}">
+    {% csrf_token %}
+    <div class="code-inputs">
+        <input type="text" name="codigo_1" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+        <input type="text" name="codigo_2" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+        <input type="text" name="codigo_3" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+        <input type="text" name="codigo_4" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+        <input type="text" name="codigo_5" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+        <input type="text" name="codigo_6" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off">
+    </div>
+    
+    </form>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const methodSection = document.getElementById('method-section');
-    const codeSection = document.getElementById('code-section');
-    const recoveryForm = document.getElementById('recovery-form');
-    const codeForm = document.getElementById('code-form');
-    const btnBack = document.getElementById('btn-back');
-    const btnResend = document.getElementById('btn-resend');
-    const resendTimer = document.getElementById('resend-timer');
-    const destinationDisplay = document.getElementById('destination-display');
-    const feedbackContainer = document.getElementById('feedback-container');
-    
-    let resendCountdown;
-    let selectedMethod = 'email';
+    document.addEventListener('DOMContentLoaded', function () {
+        const methodSection = document.getElementById('method-section');
+        const codeSection = document.getElementById('code-section');
+        const recoveryForm = document.getElementById('recovery-form');
+        const codeForm = document.getElementById('code-form');
+        const btnBack = document.getElementById('btn-back');
+        const btnResend = document.getElementById('btn-resend');
+        const resendTimer = document.getElementById('resend-timer');
+        const destinationDisplay = document.getElementById('destination-display');
+        const feedbackContainer = document.getElementById('feedback-container');
 
-    // Gerenciar seleção de método
-    const optionCards = document.querySelectorAll('.option-card');
-    optionCards.forEach(card => {
-        card.addEventListener('click', function() {
-            optionCards.forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            this.querySelector('input[type="radio"]').checked = true;
-            selectedMethod = this.dataset.method;
+        let resendCountdown;
+        let selectedMethod = 'email';
+
+        // Gerenciar seleção de método
+        const optionCards = document.querySelectorAll('.option-card');
+        optionCards.forEach(card => {
+            card.addEventListener('click', function () {
+                optionCards.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                this.querySelector('input[type="radio"]').checked = true;
+                selectedMethod = this.dataset.method;
+            });
         });
-    });
 
-    // Mostrar feedback
-    function showFeedback(message, type = 'success') {
-        feedbackContainer.innerHTML = `
+        // Mostrar feedback
+        function showFeedback(message, type = 'success') {
+            feedbackContainer.innerHTML = `
             <div class="feedback-message ${type}">
                 <span>${type === 'success' ? '✓' : '⚠'}</span>
                 <span>${message}</span>
             </div>
         `;
-        setTimeout(() => {
-            feedbackContainer.innerHTML = '';
-        }, 5000);
-    }
-
-    // Enviar código
-    recoveryForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const submitBtn = this.querySelector('.btn-send');
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-
-        // Simular envio (substituir por requisição real)
-        setTimeout(() => {
-            submitBtn.classList.remove('loading');
-            submitBtn.disabled = false;
-            
-            // Atualizar destino baseado no método
-            const destination = selectedMethod === 'email' 
-                ? 'u***@example.com' 
-                : '+55 (11) 9****-1234';
-            destinationDisplay.textContent = destination;
-            
-            // Trocar para seção de código
-            methodSection.classList.add('hidden');
             setTimeout(() => {
-                codeSection.classList.remove('hidden');
-                document.querySelector('.code-inputs input').focus();
-            }, 200);
-            
-            // Iniciar timer de reenvio
-            startResendTimer(60);
-        }, 1500);
-    });
+                feedbackContainer.innerHTML = '';
+            }, 5000);
+        }
 
-    // Timer de reenvio
-    function startResendTimer(seconds) {
-        btnResend.disabled = true;
-        let timeLeft = seconds;
-        
-        resendCountdown = setInterval(() => {
-            timeLeft--;
-            resendTimer.textContent = `Reenviar código em ${timeLeft}s`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(resendCountdown);
-                resendTimer.textContent = 'Não recebeu o código?';
-                btnResend.disabled = false;
-            }
-        }, 1000);
-    }
-
-    // Reenviar código
-    btnResend.addEventListener('click', function() {
-        showFeedback('Código reenviado com sucesso!', 'success');
-        startResendTimer(60);
-    });
-
-    // Voltar
-    btnBack.addEventListener('click', function() {
-        codeSection.classList.add('hidden');
-        setTimeout(() => {
-            methodSection.classList.remove('hidden');
-        }, 200);
-        clearInterval(resendCountdown);
-        codeInputs.forEach(input => {
-            input.value = '';
-            input.classList.remove('filled', 'error');
-        });
-    });
-
-    // Gerenciar inputs de código
-    const codeInputs = document.querySelectorAll('.code-inputs input');
-    
-    codeInputs.forEach((input, index) => {
-        // Auto-foco e navegação
-        input.addEventListener('input', function(e) {
-            // Apenas números
-            this.value = this.value.replace(/[^0-9]/g, '');
-            
-            // Adicionar classe filled
-            if (this.value) {
-                this.classList.add('filled');
-                this.classList.remove('error');
-            } else {
-                this.classList.remove('filled');
-            }
-            
-            // Avançar para próximo input
-            if (this.value.length === 1 && index < codeInputs.length - 1) {
-                codeInputs[index + 1].focus();
-            }
-        });
-
-        // Navegação com teclado
-        input.addEventListener('keydown', function(e) {
-            // Backspace - voltar input
-            if (e.key === 'Backspace' && !this.value && index > 0) {
-                codeInputs[index - 1].focus();
-            }
-            
-            // Setas esquerda/direita
-            if (e.key === 'ArrowLeft' && index > 0) {
-                codeInputs[index - 1].focus();
-            }
-            if (e.key === 'ArrowRight' && index < codeInputs.length - 1) {
-                codeInputs[index + 1].focus();
-            }
-        });
-
-        // Colar código completo
-        input.addEventListener('paste', function(e) {
+        // Enviar código
+        recoveryForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-            
-            pastedData.split('').forEach((char, i) => {
-                if (index + i < codeInputs.length) {
-                    codeInputs[index + i].value = char;
-                    codeInputs[index + i].classList.add('filled');
+            const submitBtn = this.querySelector('.btn-send');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            // Simular envio (substituir por requisição real)
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+
+                // Atualizar destino baseado no método
+                const destination = selectedMethod === 'email'
+                    ? 'u***@example.com'
+                    : '+55 (11) 9****-1234';
+                destinationDisplay.textContent = destination;
+
+                // Trocar para seção de código
+                methodSection.classList.add('hidden');
+                setTimeout(() => {
+                    codeSection.classList.remove('hidden');
+                    document.querySelector('.code-inputs input').focus();
+                }, 200);
+
+                // Iniciar timer de reenvio
+                startResendTimer(60);
+            }, 1500);
+        });
+
+        // Timer de reenvio
+        function startResendTimer(seconds) {
+            btnResend.disabled = true;
+            let timeLeft = seconds;
+
+            resendCountdown = setInterval(() => {
+                timeLeft--;
+                resendTimer.textContent = `Reenviar código em ${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(resendCountdown);
+                    resendTimer.textContent = 'Não recebeu o código?';
+                    btnResend.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Reenviar código
+        btnResend.addEventListener('click', function () {
+            showFeedback('Código reenviado com sucesso!', 'success');
+            startResendTimer(60);
+        });
+
+        // Voltar
+        btnBack.addEventListener('click', function () {
+            codeSection.classList.add('hidden');
+            setTimeout(() => {
+                methodSection.classList.remove('hidden');
+            }, 200);
+            clearInterval(resendCountdown);
+            codeInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled', 'error');
+            });
+        });
+
+        // Gerenciar inputs de código
+        const codeInputs = document.querySelectorAll('.code-inputs input');
+
+        codeInputs.forEach((input, index) => {
+            // Auto-foco e navegação
+            input.addEventListener('input', function (e) {
+                // Apenas números
+                this.value = this.value.replace(/[^0-9]/g, '');
+
+                // Adicionar classe filled
+                if (this.value) {
+                    this.classList.add('filled');
+                    this.classList.remove('error');
+                } else {
+                    this.classList.remove('filled');
+                }
+
+                // Avançar para próximo input
+                if (this.value.length === 1 && index < codeInputs.length - 1) {
+                    codeInputs[index + 1].focus();
                 }
             });
-            
-            // Focar último input preenchido
-            const lastIndex = Math.min(index + pastedData.length - 1, codeInputs.length - 1);
-            codeInputs[lastIndex].focus();
+
+            // Navegação com teclado
+            input.addEventListener('keydown', function (e) {
+                // Backspace - voltar input
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+
+                // Setas esquerda/direita
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+                if (e.key === 'ArrowRight' && index < codeInputs.length - 1) {
+                    codeInputs[index + 1].focus();
+                }
+            });
+
+            // Colar código completo
+            input.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+
+                pastedData.split('').forEach((char, i) => {
+                    if (index + i < codeInputs.length) {
+                        codeInputs[index + i].value = char;
+                        codeInputs[index + i].classList.add('filled');
+                    }
+                });
+
+                // Focar último input preenchido
+                const lastIndex = Math.min(index + pastedData.length - 1, codeInputs.length - 1);
+                codeInputs[lastIndex].focus();
+            });
+        });
+
+        // Verificar código
+        codeForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('.btn-send');
+            const code = Array.from(codeInputs).map(input => input.value).join('');
+
+            if (code.length !== 6) {
+                codeInputs.forEach(input => input.classList.add('error'));
+                return;
+            }
+
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            // Simular verificação (substituir por requisição real)
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+
+                // Se código correto, enviar formulário
+                // this.submit();
+
+                // Se código incorreto (para demonstração):
+                // codeInputs.forEach(input => {
+                //     input.classList.add('error');
+                //     input.value = '';
+                // });
+                // codeInputs[0].focus();
+            }, 1500);
         });
     });
-
-    // Verificar código
-    codeForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const submitBtn = this.querySelector('.btn-send');
-        const code = Array.from(codeInputs).map(input => input.value).join('');
-        
-        if (code.length !== 6) {
-            codeInputs.forEach(input => input.classList.add('error'));
-            return;
-        }
-        
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-
-        // Simular verificação (substituir por requisição real)
-        setTimeout(() => {
-            submitBtn.classList.remove('loading');
-            submitBtn.disabled = false;
-            
-            // Se código correto, enviar formulário
-            // this.submit();
-            
-            // Se código incorreto (para demonstração):
-            // codeInputs.forEach(input => {
-            //     input.classList.add('error');
-            //     input.value = '';
-            // });
-            // codeInputs[0].focus();
-        }, 1500);
-    });
-});
 </script>
 {% endblock %}
