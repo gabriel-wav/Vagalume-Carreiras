@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ empresa.nome }} - Vagalume Carreiras{% endblock %}
+
+{% block content %}
+<style>
+    /* --- LAYOUT GERAL --- */
+    main.main-container {
+        display: block;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* --- HEADER DA EMPRESA --- */
+    .empresa-header {
+        background: linear-gradient(180deg, #0D1117 0%, #161B22 100%);
+        padding: 60px 20px;
+        text-align: center;
+        border-bottom: 1px solid #30363d;
+        position: relative;
+    }
+    
+    .empresa-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, #4A7856, #BEF264, #4A7856);
+    }
+
+    .empresa-logo-placeholder {
+        width: 100px; height: 100px;
+        background: #2d3f52;
+        color: #BEF264;
+        font-size: 2.5rem;
+        font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 20px;
+        margin: 0 auto 20px;
+        border: 2px solid #BEF264;
+        text-transform: uppercase;
+    }
+
+    .empresa-title {
+        font-size: 3rem;
+        color: #fff;
+        margin-bottom: 10px;
+        font-weight: 800;
+    }
+
+    .empresa-setor {
+        color: #8b949e;
+        font-size: 1.2rem;
+        background: rgba(255,255,255,0.05);
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    /* --- NOTA MÉDIA --- */
+    .rating-display {
+        margin-top: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    .rating-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #BEF264;
+        line-height: 1;
+    }
+    .rating-stars {
+        color: #BEF264;
+        font-size: 1.5rem;
+    }
+    .rating-count {
+        color: #64748b;
+        font-size: 0.9rem;
+        display: block;
+        margin-top: 5px;
+    }
+
+    /* --- CONTAINER DE CONTEÚDO --- */
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+
+    .section-title {
+        color: #fff;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #30363d;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-title i { color: #BEF264; }
+
+    /* --- LISTA DE VAGAS (ESQUERDA) --- */
+    .vaga-card-mini {
+        background: #161B22;
+        border: 1px solid #30363d;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .vaga-card-mini:hover {
+        transform: translateY(-3px);
+        border-color: #BEF264;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .vaga-card-mini h3 {
+        color: #fff;
+        margin: 0 0 5px 0;
+        font-size: 1.2rem;
+    }
+    .vaga-card-mini .info {
+        color: #8b949e;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    .vaga-card-mini .btn-apply {
+        width: 100%;
+        background: transparent;
+        border: 1px solid #BEF264;
+        color: #BEF264;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .vaga-card-mini .btn-apply:hover {
+        background: #BEF264;
+        color: #0D1B2A;
+    }
+
+    /* --- ÁREA DE AVALIAÇÃO (DIREITA) --- */
+    .review-form-box {
+        background: #0D1117;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px dashed #30363d;
+        margin-bottom: 30px;
+    }
+    
+    /* Estrelas Interativas */
+    .star-rating-input {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+    .star-rating-input input { display: none; }
+    .star-rating-input label {
+        font-size: 2rem;
+        color: #30363d;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .star-rating-input input:checked ~ label,
+    .star-rating-input label:hover,
+    .star-rating-input label:hover ~ label {
+        color: #BEF264;
+    }
+
+    .review-textarea {
+        width: 100%;
+        background: #161B22;
+        border: 1px solid #30363d;
+        color: #fff;
+        padding: 12px;
+        border-radius: 8px;
+        min-height: 80px;
+        font-family: inherit;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+    .review-textarea:focus {
+        outline: none;
+        border-color: #BEF264;
+    }
+
+    .btn-submit-review {
+        background: #BEF264;
+        color: #0D1B2A;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        width: 100%;
+    }
+    .btn-submit-review:hover { background: #a7e052; }
+
+    /* Lista de Reviews */
+    .review-item {
+        border-bottom: 1px solid #30363d;
+        padding: 20px 0;
+    }
+    .review-item:last-child { border-bottom: none; }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .review-author { color: #fff; font-weight: 700; }
+    .review-date { color: #64748b; font-size: 0.85rem; }
+    .review-stars-static { color: #BEF264; font-size: 0.9rem; }
+    .review-body { color: #c9d1d9; line-height: 1.5; font-size: 0.95rem; }
+
+    @media (max-width: 900px) {
+        .content-wrapper { grid-template-columns: 1fr; }
+        .empresa-title { font-size: 2rem; }
+    }
+</style>
+
+<div class="empresa-header">
+    <div class="empresa-logo-placeholder">
+        {{ empresa.nome|slice:":1" }}
+    </div>
+    <h1 class="empresa-title">{{ empresa.nome }}</h1>
+    <span class="empresa-setor">{{ empresa.setor }}</span>
+
+    <div class="rating-display">
+        <div class="rating-number">{{ media_nota }}</div>
+        <div>
+            <div class="rating-stars">
+                {% if media_nota != "N/A" %}
+                    ★ ★ ★ ★ ☆ {% else %}
+                    <span style="font-size:1rem; color:#64748b;">Sem avaliações</span>
+                {% endif %}
+            </div>
+            <span class="rating-count">{{ avaliacoes.count }} opiniões de candidatos</span>
+        </div>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    
+    <div>
+        <h2 class="section-title"><i class="fas fa-briefcase"></i> Vagas Abertas</h2>
+        
+        {% for vaga in vagas_abertas %}
+            <div class="vaga-card-mini">
+                <h3>{{ vaga.titulo }}</h3>
+                <div class="info">
+                    <span><i class="fas fa-map-marker-alt"></i> {{ vaga.localidade }}</span>
+                    <span>•</span>
+                    <span>{{ vaga.tipo_contrato }}</span>
+                </div>
+                
+                <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-apply">Candidatar-se Agora</button>
+                </form>
+            </div>
+        {% empty %}
+            <p style="color:#8b949e; text-align:center; padding: 20px; border: 1px dashed #30363d; border-radius: 8px;">
+                Nenhuma vaga aberta no momento.
+            </p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h2 class="section-title"><i class="fas fa-star"></i> Avaliações e Opiniões</h2>
+
+        <div class="review-form-box">
+            <h4 style="color:#fff; margin-bottom:15px;">Avalie esta empresa</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="star-rating-input">
+                    <input type="radio" id="s5" name="nota" value="5" {% if minha_avaliacao.nota == 5 %}checked{% endif %}><label for="s5" title="Excelente">★</label>
+                    <input type="radio" id="s4" name="nota" value="4" {% if minha_avaliacao.nota == 4 %}checked{% endif %}><label for="s4" title="Muito Bom">★</label>
+                    <input type="radio" id="s3" name="nota" value="3" {% if minha_avaliacao.nota == 3 %}checked{% endif %}><label for="s3" title="Bom">★</label>
+                    <input type="radio" id="s2" name="nota" value="2" {% if minha_avaliacao.nota == 2 %}checked{% endif %}><label for="s2" title="Ruim">★</label>
+                    <input type="radio" id="s1" name="nota" value="1" {% if minha_avaliacao.nota == 1 %}checked{% endif %}><label for="s1" title="Péssimo">★</label>
+                </div>
+                
+                <textarea name="comentario" class="review-textarea" placeholder="Conte sua experiência (ambiente, entrevistas, salário...)" required>{{ minha_avaliacao.comentario|default:'' }}</textarea>
+                
+                <button type="submit" class="btn-submit-review">
+                    {% if minha_avaliacao %}Atualizar Avaliação{% else %}Enviar Avaliação{% endif %}
+                </button>
+            </form>
+        </div>
+
+        <div class="reviews-list">
+            {% for av in avaliacoes %}
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">Usuário Anônimo</span>
+                        <span class="review-date">{{ av.data|date:"d M, Y" }}</span>
+                    </div>
+                    <div class="review-stars-static">
+                        {% if av.nota >= 1 %}★{% endif %}{% if av.nota >= 2 %}★{% endif %}{% if av.nota >= 3 %}★{% endif %}{% if av.nota >= 4 %}★{% endif %}{% if av.nota == 5 %}★{% endif %}
+                    </div>
+                    <p class="review-body">{{ av.comentario }}</p>
+                </div>
+            {% empty %}
+                <p style="color:#64748b; text-align:center; margin-top:20px;">Seja o primeiro a avaliar!</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
