@@ -33,11 +33,6 @@ def landing_page(request):
     """
     Renderiza a Home Page (Landing Page) do site.
     """
-    if request.user.is_authenticated:
-        if request.user.tipo_usuario == "candidato":
-            return redirect("home_candidato")
-        elif request.user.tipo_usuario == "recrutador":
-            return redirect("home_recrutador")
 
     total_candidatos = Candidato.objects.count()
     total_vagas = Vaga.objects.filter(status=True).count()

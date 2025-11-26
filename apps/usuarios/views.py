@@ -566,7 +566,6 @@ def perfil_publico(request, username):
     }
     
     return render(request, 'usuarios/perfil_publico.html', contexto)
-<<<<<<< HEAD
 
 @login_required
 def explorar_vagas(request):
@@ -614,7 +613,7 @@ def ver_empresa(request, empresa_id):
         'minha_avaliacao': minha_avaliacao
     }
     return render(request, 'vagas/ver_empresa.html', contexto)
-=======
+
 # --- VIEWS PARA RECUPERAÇÃO DE SENHA ---
 def recuperar_senha_view(request):
     """
@@ -627,4 +626,3 @@ def nova_senha_view(request):
     Renderiza a página de criação de nova senha após a validação do código.
     """
     return render(request, 'usuarios/nova_senha.html')
->>>>>>> f42748a391db477dcd189929e8651325e6a9927e
