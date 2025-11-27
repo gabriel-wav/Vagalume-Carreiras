@@ -94,15 +94,39 @@ DATABASES = {
     }
 }
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'vagalumecarreirasteste2@gmail.com'  # <-- Seu e-mail
+# EMAIL_HOST_PASSWORD = 'kiru gliq zage zuxz' # <-- Senha de aplicativo do Gmail (ou similar)
+
+
+# ============================================
+# CONFIGURAÇÃO DE E-MAIL (GMAIL)
+# ============================================
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Servidor SMTP do Gmail
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'vagalumecarreirasteste@gmail.com'  # <-- Seu e-mail
-EMAIL_HOST_PASSWORD = '@Tortuguita100' # <-- Senha de aplicativo do Gmail (ou similar)
 
+# IMPORTANTE: Use uma "Senha de App" do Google, não sua senha normal
+# Como criar: https://myaccount.google.com/apppasswords
+EMAIL_HOST_USER = 'vagalumecarreirasteste2@gmail.com'  # <-- SEU E-MAIL AQUI
+EMAIL_HOST_PASSWORD = 'kiru gliq zage zuxz'  # <-- SUA SENHA DE APP AQUI
+
+# E-mail padrão de remetente
+DEFAULT_FROM_EMAIL = 'Vagalume Carreiras <vagalumecarreirasteste2@gmail.com>'
+SERVER_EMAIL = EMAIL_HOST_USER
+
+# Timeout para envio
+EMAIL_TIMEOUT = 30
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
