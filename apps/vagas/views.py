@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
 from django.db import IntegrityError
-from .models import Vaga, Candidatura
+from .models import Vaga, Candidatura, Plano
 from apps.usuarios.models import Recrutador, Candidato, Empresa
 from .forms import VagaForm
 from apps.usuarios.forms import (
@@ -49,6 +49,22 @@ def criar_vaga(request):
         return redirect('home_candidato') 
 
     recrutador_logado = get_object_or_404(Recrutador, usuario=request.user)
+    empresa = recrutador_logado.empresa
+    
+    # --- LÓGICA DE RESTRIÇÃO DE PLANO ---
+    plano_atual = empresa.plano_assinado
+    
+    # Contabiliza APENAS vagas ativas (status=True) publicadas por esta empresa
+    vagas_ativas_count = Vaga.objects.filter(recrutador__empresa=empresa, status=True).count()
+
+    # Verifica se é Plano Básico E se já atingiu o limite de 1 vaga ativa
+    if plano_atual == 'basico' and vagas_ativas_count >= 1:
+        messages.error(
+            request, 
+            'Seu **Plano Básico** permite apenas **1 vaga ativa**. Para publicar mais, altere para o Plano Intermediário ou Premium.'
+        )
+        return redirect('planos_empresa') # Redireciona para a página de planos
+    # --- FIM LÓGICA DE RESTRIÇÃO DE PLANO ---
 
     if request.method == 'POST':
         form = VagaForm(request.POST, empresa=recrutador_logado.empresa)
@@ -125,6 +141,7 @@ def home_candidato(request):
 def home_recrutador(request):
     """
     Painel do Recrutador, lista as vagas criadas por ele. (R do CRUD)
+    Adiciona o plano atual da empresa ao contexto.
     """
     if request.user.tipo_usuario != 'recrutador':
         messages.error(request, 'Acesso negado.')
@@ -132,6 +149,20 @@ def home_recrutador(request):
 
     try:
         recrutador = request.user.recrutador
+        # 1. Obter a Empresa do Recrutador
+        empresa = recrutador.empresa
+
+        # 2. Dicionário para formatar o nome do plano
+        planos_nomes = {
+            "basico": "Plano Básico",
+            "intermediario": "Plano Intermediário",
+            "premium": "Plano Premium"
+        }
+
+        plano_atual_slug = empresa.plano_assinado 
+        # Obtém o nome amigável. Usa 'Nenhum Plano' como fallback
+        plano_atual_nome = planos_nomes.get(plano_atual_slug, "Nenhum Plano") 
+
     except Recrutador.DoesNotExist:
         messages.error(request, 'Você não possui um perfil de recrutador associado.')
         return redirect('home_candidato')
@@ -139,7 +170,9 @@ def home_recrutador(request):
     minhas_vagas = Vaga.objects.filter(recrutador=recrutador)
     
     contexto = {
-        'vagas': minhas_vagas
+        'vagas': minhas_vagas,
+        # 3. Adiciona o nome do plano ao contexto
+        'plano_atual_nome': plano_atual_nome 
     }
     return render(request, 'vagas/home_recrutador.html', contexto)
 
@@ -418,3 +451,42 @@ def painel_admin(request):
     }
     
     return render(request, 'vagas/painel_admin.html', contexto)
+
+# Arquivo: apps/vagas/views.py (substituir a função existente)
+
+@login_required
+def confirmar_plano(request):
+    if request.user.tipo_usuario != 'recrutador':
+        messages.error(request, "Apenas recrutadores podem escolher planos.")
+        return redirect('home_candidato')
+
+    # Renomeando a variável para clareza
+    plano_selecionado = request.POST.get("plano") 
+
+    # Dicionário para traduzir o valor técnico para o nome completo (NOVO)
+    planos_nomes = {
+        "basico": "Plano Básico",
+        "intermediario": "Plano Intermediário",
+        "premium": "Plano Premium"
+    }
+    
+    # 1. Validação aprimorada (Substitui o bloco antigo)
+    if plano_selecionado not in planos_nomes:
+        messages.error(request, "Selecione um plano antes de confirmar.")
+        return redirect("planos_empresa")
+    
+    # Obtém o nome amigável para a mensagem
+    nome_plano = planos_nomes[plano_selecionado]
+
+    recrutador = request.user.recrutador
+    empresa = recrutador.empresa
+
+    # 2. Salva o plano escolhido no modelo Empresa
+    empresa.plano_assinado = plano_selecionado  
+    empresa.save()
+
+    # 3. Adiciona a mensagem de sucesso usando o nome amigável
+    messages.success(request, f"🎉 Parabéns! Sua empresa agora está utilizando o **{nome_plano}**.")
+
+    # 4. Redireciona para o painel do recrutador
+    return redirect("home_recrutador")

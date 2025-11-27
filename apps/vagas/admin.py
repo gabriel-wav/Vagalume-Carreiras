@@ -1,7 +1,7 @@
 # Arquivo: apps/vagas/admin.py
 
 from django.contrib import admin
-from .models import Vaga, Candidatura
+from .models import Vaga, Candidatura, Plano
 
 @admin.register(Vaga)
 class VagaAdmin(admin.ModelAdmin):
@@ -27,3 +27,12 @@ class CandidaturaAdmin(admin.ModelAdmin):
     
     # Melhora a performance
     raw_id_fields = ('candidato', 'vaga')
+
+# NOVO REGISTRO: Adiciona o modelo Plano ao Admin
+@admin.register(Plano)
+class PlanoAdmin(admin.ModelAdmin):
+    list_display = ('nome_exibicao', 'nome_chave', 'preco', 'limite_vagas')
+    list_filter = ('nome_chave', 'preco', 'limite_vagas')
+    search_fields = ('nome_exibicao', 'descricao_curta')
+    ordering = ('preco',) # Ordena por preço (do mais barato para o mais caro)
+    list_editable = ('preco', 'limite_vagas') # Permite edição rápida na lista    

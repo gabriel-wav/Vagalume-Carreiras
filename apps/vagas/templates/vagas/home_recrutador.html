@@ -4,6 +4,14 @@
 
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alerta alerta-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <style>
     .recrutador-container {
         max-width: 900px;
@@ -71,12 +79,68 @@
 .btn-radar i { /* O ícone */
     margin-right: 8px;
 }
+
+.btn-plano {
+        background-color: #1B263B; /* Ardósia */
+        color: #E2E8F0; /* Platina */
+        padding: 12px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        border: 1px solid #BEF264; /* Verde Vagalume */
+    }
+
+/* Estilo Base para o Bloco de Mensagens */
+    .alerta {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 15px;
+        border: 1px solid;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+        /* Fundo em Ardósia para dar um contraste sutil (como os cards de vaga) */
+        background-color: #1B263B; 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Sombra para destacar do fundo */
+    }
+
+    /* Estilo para a Mensagem de SUCESSO */
+    .alerta-success { 
+        /* Cor de texto e borda no padrão Verde Vagalume (#BEF264) */
+        color: #BEF264; 
+        border-color: #BEF264; 
+    }
+
+    /* Estilo para a Mensagem de ERRO (Opcional, mas útil) */
+    .alerta-error {
+        color: #F85149; /* Exemplo de cor de erro (vermelho do GitHub/vagas fechadas) */
+        border-color: #F85149; 
+    }
+
+/* NOVO ESTILO PARA O BOTÃO DO PLANO */
+    .btn-plano {
+        /* Cores base da paleta */
+        background-color: #1B263B; /* Ardósia (como os cards) */
+        color: #E2E8F0; /* Platina (texto principal) */
+        
+        padding: 12px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-right: 15px; 
+        /* Borda de destaque para ser facilmente clicável e visível */
+        border: 1px solid #BEF264; /* Verde Vagalume */
+    }
+
 </style>
 
 <div class="recrutador-container">
 <div class="recrutador-header">
     <h1>Painel do Recrutador</h1>
     <div>
+        <a href="{% url 'planos_empresa' %}" class="btn-plano">
+            Plano Atual: {{ plano_atual_nome }} (Alterar) 
+        </a>
         <a href="{% url 'criar_vaga' %}" class="btn-criar">Criar Nova Vaga</a>
         <a href="{% url 'radar_de_talentos' %}" class="btn-radar">
             <i class="fa-solid fa-satellite-dish"></i> Radar de Talentos

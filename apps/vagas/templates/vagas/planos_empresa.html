@@ -44,16 +44,24 @@
       </ul>
     </div>
   </div>
+  
 
-  <button class="confirmar-btn">Confirmar Plano</button>
-</main>
+<form action="{% url 'confirmar_plano' %}" method="POST" id="formPlano">
+  {% csrf_token %}
+  <input type="hidden" name="plano" id="planoSelecionado">
+  <button type="submit" class="confirmar-btn">Confirmar Plano</button>
+</form>
+
 
 <script>
   const planos = document.querySelectorAll('.plano-card');
+  const inputPlano = document.getElementById('planoSelecionado');
+
   planos.forEach(plano => {
     plano.addEventListener('click', () => {
       planos.forEach(p => p.classList.remove('selecionado'));
       plano.classList.add('selecionado');
+      inputPlano.value = plano.getAttribute('data-plano');
     });
   });
 </script>
