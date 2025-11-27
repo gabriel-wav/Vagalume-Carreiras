@@ -836,5 +836,35 @@ def enviar_codigo_sms(usuario, codigo):
     print(f"SIMULANDO ENVIO SMS para {usuario.telefone}: Código {codigo}")
     return True
 
+@login_required
+def deletar_conta(request):
+    """
+    Permite que o usuário (Candidato ou Recrutador) exclua sua própria conta.
+    """
+    if request.method == 'POST':
+        user = request.user
+        
+        # Se for recrutador, também apagamos a empresa associada (opcional, mas recomendado para limpeza)
+        if user.tipo_usuario == 'recrutador':
+            try:
+                # Apaga a empresa se este for o único recrutador dela
+                # (Para simplificar o TCC, assumimos que apaga a empresa)
+                empresa = user.recrutador.empresa
+                empresa.delete() 
+            except:
+                pass
 
+        # Apaga o usuário (o Django deleta o Candidato/Recrutador em cascata automaticamente)
+        user.delete()
+        
+        # Desloga o usuário apagado
+        logout(request)
+        
+        messages.success(request, 'Sua conta foi excluída com sucesso.')
+        return redirect('landing_page')
+    
+    # Se tentar acessar via GET (pela barra de endereço), chuta de volta
+    if request.user.tipo_usuario == 'recrutador':
+        return redirect('home_recrutador')
+    return redirect('home_candidato')
 

@@ -13,7 +13,7 @@ urlpatterns = [
     path('perfil/<str:username>/', views.perfil_publico, name='perfil_publico'),
     path('explorar/', views.explorar_vagas, name='explorar_vagas'),
     path('empresa/<int:empresa_id>/', views.ver_empresa, name='ver_empresa'),
-
+    path('deletar-conta/', views.deletar_conta, name='deletar_conta'),
     
 
     # NOVAS URLs DE RECUPERAÇÃO DE SENHA
