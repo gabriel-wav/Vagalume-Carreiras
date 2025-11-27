@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre Nós - Vagalume Carreiras{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos exclusivos desta página */
+    :root {
+        --vagalume-bg: #f8f9fa;
+        --card-radius: 50px; /* Borda redonda estilo "pílula" */
+    }
+
+    /* Marca d'água do GitHub no fundo */
+    .github-bg {
+        position: absolute;
+        left: -50px;
+        top: 80px;
+        font-size: 30rem;
+        color: rgba(0, 0, 0, 0.03);
+        z-index: -1;
+        transform: rotate(15deg);
+        pointer-events: none;
+    }
+
+    .dev-card {
+        background: white;
+        border: 2px solid #000;
+        border-radius: var(--card-radius);
+        padding: 12px 20px;
+        transition: transform 0.2s;
+        box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    }
+
+    .dev-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 6px 6px 0px rgba(0,0,0,0.15);
+    }
+
+    .dev-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
+
+    .github-link {
+        font-size: 1.8rem;
+        color: #000;
+    }
+    
+    .follow-box {
+        background: #e9ecef;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="container py-5 position-relative overflow-hidden" style="min-height: 85vh;">
+    <i class="bi bi-github github-bg"></i>
+
+    <div class="row gx-5">
+        <div class="col-lg-7 mb-5">
+            <h1 class="display-4 fw-bold mb-5" style="line-height: 1.1;">
+                Veja mais dos nossos <br>
+                projetos no nosso <br>
+                <span style="font-weight: 900;">github!</span>
+            </h1>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="dev-card d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Danilo&background=random" class="dev-avatar">
+                            <span class="fw-bold fs-5">danilo</span>
+                        </div>
+                        <a href="https://github.com/danilinhotj187" target="_blank" class="github-link"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="dev-card d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Pedro&background=random" class="dev-avatar">
+                            <span class="fw-bold fs-5">pedro</span>
+                        </div>
+                        <a href="https://github.com/pedroH901" target="_blank" class="github-link"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="dev-card d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Gabriel&background=random" class="dev-avatar">
+                            <span class="fw-bold fs-5">gabriel</span>
+                        </div>
+                        <a href="https://github.com/gabriel-wav" target="_blank" class="github-link"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="dev-card d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Antonio&background=random" class="dev-avatar">
+                            <span class="fw-bold fs-5">antonio</span>
+                        </div>
+                        <a href="https://github.com/Antoniojferreira3" target="_blank" class="github-link"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 d-flex flex-column align-items-end">
+            <div class="follow-box shadow-sm w-75 mb-5">
+                <h5 class="fw-bold m-0">Follow us</h5>
+                <small class="text-muted">on social media</small>
+                <div class="d-flex justify-content-center gap-3 fs-4 mt-2">
+                    <a href="#" class="text-dark"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-dark"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="text-dark"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="fst-italic fw-bold">Sobre Nós</h3>
+            <p class="fst-italic fs-5 text-muted" style="max-width: 900px;">
+                Somos Danilo, Gabriel, Pedro Henrique e Antonio, quatro estudantes que uniram ideias e dedicação para criar este projeto como parte do nosso TCC.<br><br>
+                Nosso objetivo é oferecer uma plataforma simples e eficiente que conecte candidatos e empresas, tornando a busca por emprego mais fácil e acessível para todos.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
