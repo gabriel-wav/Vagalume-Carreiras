@@ -132,10 +132,15 @@
                 </div>
             </div>
 
-            <div class="candidato-botoes">
-                <a href="#" class="btn-ver-perfil">Ver Perfil</a>
-                <a href="#" class="btn-contato">Entrar em contato</a>
-            </div>
+<div class="candidato-botoes">
+    <a href="{% url 'perfil_publico' item.candidato.usuario.username %}" class="btn-ver-perfil">
+        Ver Perfil
+    </a>
+    
+    <a href="mailto:{{ item.candidato.usuario.email }}" class="btn-contato">
+        Entrar em contato
+    </a>
+</div>
 
         </div>
         {% empty %}

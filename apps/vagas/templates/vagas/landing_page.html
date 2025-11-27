@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Vagalume Carreiras - Landing page{% endblock %}
+{% block title %}Vagalume Carreiras - Ilumine sua Carreira{% endblock %}
 
 {% block content %}
 
@@ -9,12 +9,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vagalume Carreiras - Ilumine sua Carreira</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-         * {
+        /* =========================
+           RESET E GERAL
+        ========================= */
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -26,18 +25,6 @@
             color: #c9d1d9;
             overflow-x: hidden;
             width: 100%;
-        }
-        
-        html {
-            overflow-x: hidden;
-        }
-
-        /* Reset do container principal */
-        .main-container {
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            max-width: 100%;
         }
 
         /* =========================
@@ -51,6 +38,7 @@
             text-align: center;
             min-height: 85vh;
             padding: 60px 20px;
+            background: radial-gradient(circle at center, rgba(190, 242, 100, 0.03) 0%, transparent 70%);
         }
 
         .hero-title {
@@ -61,6 +49,10 @@
             max-width: 900px;
             margin-bottom: 24px;
             animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-title span {
+            color: #BEF264; /* Verde Vagalume */
         }
 
         .hero-subtitle {
@@ -91,12 +83,13 @@
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(175, 235, 131, 0.2);
         }
 
         .btn-cta-green:hover {
             background-color: #BEF264;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(175, 235, 131, 0.3);
+            box-shadow: 0 8px 20px rgba(175, 235, 131, 0.4);
         }
 
         .btn-cta-outline {
@@ -127,6 +120,9 @@
             gap: clamp(30px, 8vw, 80px);
             padding: 60px 20px;
             flex-wrap: wrap;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+            background-color: #0d1117;
         }
 
         .stat-item {
@@ -144,160 +140,100 @@
         .stat-item p {
             color: #8b949e;
             font-size: clamp(0.95rem, 2vw, 1.1rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* =========================
-           MARQUEE X
+/* =========================
+           MARQUEE X (CORREÇÃO DEFINITIVA - FULL WIDTH)
         ========================= */
         .marquee-wrapper {
-            width: 100%; 
+            /* A MÁGICA DO BREAKOUT: */
+            width: 100vw; /* Largura total da janela (Viewport Width) */
+            margin-left: calc(50% - 50vw); /* Puxa para a esquerda para centralizar na tela, ignorando o pai */
+            margin-right: calc(50% - 50vw); /* Mesma coisa para a direita */
+            
             overflow: hidden; 
-            margin: 80px 0;
-            padding: 40px 0;
+            position: relative;
+            background-color: #0D1117;
+            padding: 80px 0; /* Altura do respiro */
+            margin-top: 80px;
+            margin-bottom: 80px;
         }
 
         .marquee-section {
             position: relative;
-            height: 280px;
+            height: 1000px; /* Altura suficiente para o X girar sem cortar */
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .marquee-stripe {
             position: absolute;
-            width: 120%;
-            left: -10%;
-            padding: 50px 0;
+            /* Como o wrapper já é 100vw, 150% aqui garante sobra para a rotação */
+            width: 150%; 
+            left: 50%;
+            top: 50%;
+            
+            padding: 30px 0;
             background: linear-gradient(to bottom, #BEF264, #ffffff);
             color: #0D1B2A;
             font-weight: 800;
-            font-size: 2rem;
+            font-size: 2.5rem;
             display: flex; 
-            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            
+            /* Centraliza o ponto de rotação */
+            transform-origin: center center;
         }
 
+        /* Faixa 1 (Descendo) */
         .stripe-1 {
-            transform: rotate(3deg);
-            top: 60px; 
+            /* Centraliza (x, y) e Gira */
+            transform: translate(-50%, -50%) rotate(4deg);
             z-index: 2; 
-            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3); 
         }
         
+        /* Faixa 2 (Subindo) */
         .stripe-2 {
-            transform: rotate(-3deg); 
-            bottom: 60px; 
+            /* Centraliza (x, y) e Gira Inverso */
+            transform: translate(-50%, -50%) rotate(-4deg);
             z-index: 1;
+            opacity: 0.9; 
+            filter: brightness(0.9);
         }
 
         .marquee-inner {
             display: flex;
-            width: 200%; 
-            animation: scroll-left 30s linear infinite;
+            width: 100%; 
+            animation: scroll-left 20s linear infinite;
         }
         
         .marquee-group {
-            width: 100%;
             display: flex;
             justify-content: space-around; 
             align-items: center;
+            width: 100%;
+            flex-shrink: 0; 
         }
 
         .marquee-group span {
             white-space: nowrap; 
-            padding: 0 30px;
+            padding: 0 50px;
         }
         
         @keyframes scroll-left {
-            from {
-                transform: translateX(0);
-            }
-            to {
-                transform: translateX(-50%);
-            }
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
         }
 
         /* =========================
-           PARTNERS BANNER
-        ========================= */
-        .partners-banner-wrapper {
-            width: 100%;
-            overflow: hidden;
-            margin: 80px 0;
-        }
-
-        .partners-banner {
-            padding: 30px 20px;
-            background: linear-gradient(90deg, #BEF264 0%, #f5f5f5 100%);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            transform: rotate(-2deg) scale(1.05);
-        }
-
-        .partner-logo {
-            font-family: 'Times New Roman', serif;
-            font-weight: bold;
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            color: #333;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .partner-logo:hover {
-            opacity: 1;
-        }
-
-        /* =========================
-           COMPANIES SECTION
-        ========================= */
-        .companies-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 120px auto;
-            padding: 0 20px;
-            gap: 60px;
-            flex-wrap: wrap;
-        }
-
-        .companies-text {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .companies-text h2 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            color: #fff;
-            line-height: 1.2;
-            margin-bottom: 20px;
-        }
-
-        .companies-text p {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            color: #8b949e;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .companies-logos {
-            flex: 1;
-            min-width: 300px;
-            height: 400px;
-            position: relative;
-            border: 2px dashed #30363d;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #30363d;
-            font-size: 0.9rem;
-        }
-
-        /* =========================
-           JOBS SECTION
+           JOBS SECTION (Dinâmica)
         ========================= */
         .jobs-section {
             width: 100%;
@@ -329,34 +265,6 @@
             text-align: center;
         }
 
-        .jobs-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-
-        .jobs-tabs a {
-            text-decoration: none;
-            color: #8b949e;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: clamp(0.9rem, 1.5vw, 1rem);
-        }
-
-        .jobs-tabs a:hover {
-            background-color: rgba(190, 242, 100, 0.1);
-            color: #BEF264;
-        }
-
-        .jobs-tabs a.active {
-            background-color: #BEF264;
-            color: #0D1B2A;
-        }
-
         .jobs-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -364,12 +272,15 @@
             margin-bottom: 40px;
         }
 
+        /* Card de Vaga */
         .job-card {
             background: #0D1117;
             border: 1px solid #30363d;
             border-radius: 12px;
             padding: 24px;
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
 
         .job-card:hover {
@@ -386,21 +297,22 @@
         }
 
         .job-card-tags span {
-            background-color: #30363d;
+            background-color: rgba(255, 255, 255, 0.05);
             color: #8b949e;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
+            border: 1px solid #30363d;
         }
 
         .job-card h3 {
             font-size: 1.3rem;
             color: #fff;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
-        .job-card > p {
+        .job-card p {
             color: #8b949e;
             margin-bottom: 20px;
             font-size: 0.95rem;
@@ -412,6 +324,7 @@
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
+            margin-top: auto;
         }
 
         .btn-candidatar {
@@ -423,6 +336,8 @@
             font-weight: 700;
             font-size: 0.9rem;
             transition: all 0.3s;
+            cursor: pointer;
+            border: none;
         }
 
         .btn-candidatar:hover {
@@ -436,7 +351,8 @@
         }
 
         .btn-ver-mais {
-            display: inline-block;
+            display: block;
+            width: fit-content;
             margin: 0 auto;
             background-color: transparent;
             border: 2px solid #30363d;
@@ -446,10 +362,6 @@
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s;
-            display: block;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .btn-ver-mais:hover {
@@ -646,778 +558,80 @@
         }
 
         /* =========================
-           RESPONSIVE - APRIMORADO
+           RESPONSIVE
         ========================= */
-        
-        /* Desktop Grande (1920px+) */
-        @media (min-width: 1920px) {
-            .hero-section {
-                min-height: 90vh;
-                padding: 80px 40px;
+        @media (max-width: 900px) {
+            .categories-content {
+                grid-template-columns: 1fr;
             }
             
-            .stats-section {
-                gap: 100px;
-                padding: 80px 40px;
-            }
-            
-            .marquee-section {
-                height: 320px;
-            }
-            
-            .marquee-stripe {
-                padding: 60px 0;
-                font-size: 2.5rem;
-            }
-            
-            .companies-section,
             .social-proof-section {
-                margin: 150px auto;
-                gap: 80px;
-            }
-            
-            .jobs-section {
-                padding: 100px 40px;
-            }
-            
-            .categories-section,
-            .world-partners-section {
-                margin: 150px auto;
-            }
-        }
-
-        /* Desktop Padrão (1024px - 1919px) - já está otimizado */
-        
-        /* Tablet Landscape (900px - 1023px) */
-        @media (max-width: 1023px) and (min-width: 900px) {
-            .hero-section {
-                min-height: 80vh;
-                padding: 50px 30px;
-            }
-            
-            .stats-section {
-                gap: 50px;
-            }
-            
-            .marquee-section {
-                height: 250px;
-            }
-            
-            .marquee-stripe {
-                padding: 45px 0;
-                font-size: 1.8rem;
-            }
-            
-            .companies-section,
-            .social-proof-section {
-                margin: 100px auto;
-                gap: 50px;
-            }
-            
-            .jobs-section {
-                padding: 70px 30px;
-            }
-            
-            .jobs-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .categories-section {
-                margin: 100px auto;
-            }
-            
-            .world-partners-section {
-                margin: 100px auto;
-            }
-            
-            .world-partners-logos {
-                gap: 30px;
-            }
-        }
-        
-        /* Tablet Portrait (768px - 899px) */
-        @media (max-width: 899px) and (min-width: 768px) {
-            .hero-section {
-                min-height: 75vh;
-                padding: 40px 24px;
-            }
-            
-            .hero-buttons {
-                gap: 12px;
-            }
-            
-            .btn-cta-green,
-            .btn-cta-outline {
-                padding: 14px 32px;
-                font-size: 1rem;
-            }
-            
-            .stats-section {
-                gap: 40px;
-                padding: 50px 24px;
-            }
-            
-            .stat-item {
-                min-width: 120px;
-            }
-            
-            .marquee-section {
-                height: 230px;
-            }
-            
-            .marquee-stripe {
-                padding: 40px 0;
-                font-size: 1.6rem;
-            }
-            
-            .companies-section,
-            .social-proof-section {
-                margin: 80px auto;
-                gap: 40px;
                 flex-direction: column;
                 text-align: center;
             }
-            
-            .companies-logos,
-            .social-proof-animation {
-                height: 350px;
-                width: 100%;
-                max-width: 500px;
-            }
-            
-            .jobs-section {
-                padding: 60px 24px;
-            }
-            
-            .jobs-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-            
-            .job-card {
-                padding: 20px;
-            }
-            
-            .categories-section {
-                margin: 80px auto;
-            }
-            
-            .categories-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .categories-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .world-partners-section {
-                margin: 80px auto;
-            }
-            
-            .world-partners-logos {
-                gap: 25px;
-            }
         }
 
-        /* Tablet Small & Mobile Large (600px - 767px) */
-        @media (max-width: 767px) and (min-width: 600px) {
+        @media (max-width: 600px) {
             .hero-section {
                 min-height: 70vh;
-                padding: 40px 20px;
             }
-            
-            .hero-title {
-                margin-bottom: 20px;
-            }
-            
-            .hero-subtitle {
-                margin-bottom: 32px;
-            }
-            
-            .hero-buttons {
-                gap: 12px;
-                width: 100%;
-            }
-            
-            .btn-cta-green,
-            .btn-cta-outline {
-                padding: 14px 32px;
-                font-size: 1rem;
-                flex: 1;
-                min-width: 160px;
-            }
-            
-            .stats-section {
-                gap: 30px;
-                padding: 50px 20px;
-                flex-direction: row;
-                justify-content: space-around;
-            }
-            
-            .stat-item {
-                min-width: 100px;
-            }
-            
-            .marquee-section {
-                height: 200px;
-            }
-            
-            .marquee-stripe {
-                padding: 35px 0;
-                font-size: 1.4rem;
-            }
-            
-            .stripe-1 {
-                top: 50px;
-            }
-            
-            .stripe-2 {
-                bottom: 50px;
-            }
-            
-            .companies-section,
-            .social-proof-section {
-                margin: 70px auto;
-                gap: 35px;
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .companies-text,
-            .social-proof-text {
-                min-width: 100%;
-            }
-            
-            .companies-logos,
-            .social-proof-animation {
-                height: 300px;
-                width: 100%;
-            }
-            
-            .jobs-section {
-                padding: 60px 20px;
-            }
-            
-            .jobs-tabs {
-                gap: 8px;
-            }
-            
-            .jobs-tabs a {
-                padding: 10px 18px;
-            }
-            
-            .jobs-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .job-card {
-                padding: 20px;
-            }
-            
-            .job-card-footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .btn-candidatar {
-                width: 100%;
-                text-align: center;
-            }
-            
-            .categories-section {
-                margin: 70px auto;
-            }
-            
-            .categories-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .category-grid-item {
-                padding: 24px 20px;
-            }
-            
-            .world-partners-section {
-                margin: 70px auto;
-            }
-            
-            .world-partners-logos {
-                gap: 20px;
-                justify-content: center;
-            }
-        }
 
-        /* Mobile (até 599px) */
-        @media (max-width: 599px) {
-            .hero-section {
-                min-height: 65vh;
-                padding: 30px 16px;
-            }
-            
-            .hero-title {
-                margin-bottom: 16px;
-            }
-            
-            .hero-subtitle {
-                margin-bottom: 28px;
-            }
-            
             .hero-buttons {
                 flex-direction: column;
                 width: 100%;
-                gap: 12px;
             }
 
             .btn-cta-green,
             .btn-cta-outline {
                 width: 100%;
-                max-width: 100%;
-                padding: 16px 24px;
-                font-size: 1rem;
+                max-width: 300px;
             }
 
             .stats-section {
                 flex-direction: column;
-                gap: 35px;
-                padding: 40px 16px;
-            }
-            
-            .stat-item {
-                min-width: auto;
-            }
-
-            .marquee-wrapper {
-                margin: 60px 0;
-                padding: 30px 0;
+                gap: 40px;
             }
 
             .marquee-section {
-                height: 180px;
-            }
-            
-            .marquee-stripe {
-                padding: 30px 0;
-                font-size: 1.2rem;
-                width: 130%;
-                left: -15%;
-            }
-            
-            .stripe-1 {
-                top: 40px;
-                transform: rotate(4deg);
-            }
-            
-            .stripe-2 {
-                bottom: 40px;
-                transform: rotate(-4deg);
-            }
-            
-            .marquee-group span {
-                padding: 0 20px;
-            }
-            
-            .partners-banner-wrapper {
-                margin: 60px 0;
-            }
-            
-            .partners-banner {
-                padding: 20px 16px;
-                gap: 20px;
-            }
-
-            .companies-section,
-            .social-proof-section {
-                margin: 60px auto;
-                gap: 30px;
-                flex-direction: column;
-                text-align: center;
-                padding: 0 16px;
-            }
-            
-            .companies-text,
-            .social-proof-text {
-                min-width: 100%;
-            }
-
-            .companies-logos,
-            .social-proof-animation {
-                height: 280px;
-                min-width: 100%;
-                width: 100%;
-            }
-            
-            .social-proof-animation {
-                border-radius: 12px;
-            }
-
-            .jobs-section {
-                padding: 50px 16px;
-            }
-            
-            .jobs-container h2 {
-                margin-bottom: 8px;
-            }
-            
-            .jobs-container > p {
-                margin-bottom: 32px;
-            }
-
-            .jobs-tabs {
-                gap: 8px;
-                margin-bottom: 32px;
-            }
-
-            .jobs-tabs a {
-                padding: 10px 16px;
-                font-size: 0.85rem;
-            }
-
-            .jobs-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-                margin-bottom: 32px;
-            }
-            
-            .job-card {
-                padding: 18px;
-            }
-            
-            .job-card h3 {
-                font-size: 1.15rem;
-            }
-            
-            .job-card-footer {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-            
-            .btn-candidatar {
-                width: 100%;
-                text-align: center;
-                padding: 12px 20px;
-            }
-            
-            .btn-ver-mais {
-                padding: 12px 32px;
-                font-size: 0.95rem;
-            }
-
-            .categories-section {
-                margin: 60px auto;
-                padding: 0 16px;
-            }
-            
-            .categories-section > h2 {
-                margin-bottom: 8px;
-            }
-            
-            .categories-section > p {
-                margin-bottom: 40px;
-            }
-
-            .categories-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .categories-list h3 {
-                font-size: 1.15rem;
-                margin-bottom: 20px;
-            }
-            
-            .category-list-item {
-                padding: 14px 0;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            
-            .category-list-item span:first-child {
-                font-size: 0.95rem;
+                height: 220px;
             }
 
             .categories-grid {
                 grid-template-columns: 1fr;
-                gap: 16px;
             }
-            
-            .category-grid-item {
-                padding: 22px 18px;
-                font-size: 0.95rem;
-            }
-
-            .world-partners-section {
-                margin: 60px auto;
-                padding: 0 16px;
-            }
-            
-            .world-partners-section h2 {
-                margin-bottom: 40px;
-            }
-
-            .world-partners-logos {
-                gap: 20px;
-                justify-content: center;
-                flex-direction: column;
-            }
-            
-            .world-partner-logo {
-                display: block;
-            }
-        }
-        
-        /* Mobile Extra Small (até 374px) */
-        @media (max-width: 374px) {
-            .hero-section {
-                min-height: 60vh;
-                padding: 24px 12px;
-            }
-            
-            .btn-cta-green,
-            .btn-cta-outline {
-                padding: 14px 20px;
-                font-size: 0.95rem;
-            }
-            
-            .stats-section {
-                padding: 35px 12px;
-                gap: 30px;
-            }
-            
-            .stat-item h3 {
-                font-size: 2.2rem;
-            }
-            
-            .marquee-section {
-                height: 160px;
-            }
-            
-            .marquee-stripe {
-                padding: 25px 0;
-                font-size: 1rem;
-            }
-            
-            .stripe-1 {
-                top: 35px;
-            }
-            
-            .stripe-2 {
-                bottom: 35px;
-            }
-            
-            .companies-section,
-            .social-proof-section {
-                margin: 50px auto;
-                padding: 0 12px;
-            }
-            
-            .companies-logos,
-            .social-proof-animation {
-                height: 250px;
-            }
-            
-            .jobs-section {
-                padding: 40px 12px;
-            }
-            
-            .jobs-tabs a {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .job-card {
-                padding: 16px;
-            }
-            
-            .job-card-tags span {
-                font-size: 0.7rem;
-                padding: 5px 10px;
-            }
-            
-            .categories-section,
-            .world-partners-section {
-                margin: 50px auto;
-                padding: 0 12px;
-            }
-            
-            .category-grid-item {
-                padding: 20px 16px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        /* Landscape Mode para Mobile */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .hero-section {
-                min-height: auto;
-                padding: 40px 20px;
-            }
-            
-            .hero-title {
-                font-size: 2rem;
-                margin-bottom: 12px;
-            }
-            
-            .hero-subtitle {
-                font-size: 0.95rem;
-                margin-bottom: 20px;
-            }
-            
-            .hero-buttons {
-                flex-direction: row;
-                gap: 12px;
-            }
-            
-            .btn-cta-green,
-            .btn-cta-outline {
-                width: auto;
-                padding: 12px 28px;
-                font-size: 0.95rem;
-            }
-            
-            .stats-section {
-                flex-direction: row;
-                padding: 40px 20px;
-                gap: 30px;
-            }
-            
-            .companies-logos,
-            .social-proof-animation {
-                height: 300px;
-            }
-        }
-        
-        /* Touch Device Optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .btn-cta-green,
-            .btn-cta-outline,
-            .btn-candidatar,
-            .btn-ver-mais {
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .jobs-tabs a {
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-            }
-            
-            .category-grid-item {
-                min-height: 80px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .job-card:hover,
-            .category-grid-item:hover,
-            .btn-cta-green:hover,
-            .btn-cta-outline:hover {
-                transform: none;
-            }
-            
-            .job-card:active {
-                transform: scale(0.98);
-            }
-        }
-        
-        /* Print Styles */
-        @media print {
-            .hero-buttons,
-            .btn-cta-green,
-            .btn-cta-outline,
-            .btn-candidatar,
-            .btn-ver-mais {
-                display: none;
-            }
-            
-            body {
-                background-color: white;
-                color: black;
-            }
-            
-            .job-card,
-            .category-grid-item {
-                break-inside: avoid;
-            }
-        }
-        
-        /* Reduced Motion */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            
-            .marquee-inner {
-                animation: none;
-            }
-        }
-        
-        /* High Contrast Mode */
-        @media (prefers-contrast: high) {
-            .btn-cta-green {
-                border: 2px solid #000;
-            }
-            
-            .job-card,
-            .category-grid-item {
-                border-width: 2px;
-            }
-        }
-        
-        /* Dark Mode Support (caso necessário no futuro) */
-        @media (prefers-color-scheme: dark) {
-            /* Já está em dark mode por padrão */
         }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- HERO -->
         <section class="hero-section">
             <h1 class="hero-title">
-                A um passo do<br>emprego dos seus<br>Sonhos!
+                A um passo do<br>emprego dos seus<br><span>Sonhos!</span>
             </h1>
             <p class="hero-subtitle">
                 Deixe-nos ajudá-lo a encontrar um emprego que seja ideal para você!
             </p>
             <div class="hero-buttons">
-                <a href="{% url 'cadastro_candidato' %}" class="btn-cta-green">Vamos começar</a>
+                <a href="{% url 'cadastro_candidato' %}" class="btn-cta-green">Começar Agora</a>
                 <a href="{% url 'cadastro_recrutador' %}" class="btn-cta-outline">Sou Empresa</a>
             </div>
         </section>
 
-        <!-- STATS -->
         <section class="stats-section">
             <div class="stat-item">
-                <h3>+1250</h3>
+                <h3>+{{ total_candidatos|default:"0" }}</h3>
                 <p>Usuários Ativos</p>
             </div>
             <div class="stat-item">
-                <h3>+840</h3>
+                <h3>+{{ total_vagas|default:"0" }}</h3>
                 <p>Empregos Abertos</p>
             </div>
             <div class="stat-item">
-                <h3>+320</h3>
+                <h3>+{{ total_empresas|default:"0" }}</h3>
                 <p>Empresas Parceiras</p>
             </div>
         </section>
 
-        <!-- MARQUEE X -->
         <div class="marquee-wrapper">
             <section class="marquee-section">
                 <div class="marquee-stripe stripe-1">
@@ -1458,159 +672,82 @@
             </section>
         </div>
 
-        <!-- COMPANIES -->
-        <section class="companies-section">
-            <div class="companies-logos">
-                Logos Flutuantes (Spotify, etc)
-            </div>
-            <div class="companies-text">
-                <h2>Trabalhe em grandes companhias!</h2>
-                <p>Líderes no mercado e cheias de oportunidades.</p>
-                <a href="#" class="btn-cta-green">Vamos começar</a>
-            </div>
-        </section>
-
-        <!-- JOBS -->
         <section class="jobs-section">
             <div class="jobs-container">
                 <h2>Novas <span>vagas</span> para você</h2>
                 <p>Consiga aplicar o mais rápido possível para diversas vagas</p>
 
-                <nav class="jobs-tabs">
-                    <a href="#" class="active">Recente</a>
-                    <a href="#">Finança</a>
-                    <a href="#">Desenvolvimento</a>
-                    <a href="#">Marketing</a>
-                    <a href="#">Especialista</a>
-                </nav>
-
                 <div class="jobs-grid">
+                    {% for vaga in vagas_recentes %}
                     <div class="job-card">
                         <div class="job-card-tags">
-                            <span>Integral</span>
-                            <span>No Site</span>
-                            <span>R$200K</span>
+                            <span>{{ vaga.tipo_contrato }}</span>
+                            <span>{{ vaga.localidade }}</span>
+                            {% if vaga.faixa_salarial %}<span>{{ vaga.faixa_salarial }}</span>{% endif %}
                         </div>
-                        <h3>UX Designer</h3>
-                        <p>Advant Digital Agency</p>
+                        <h3>{{ vaga.titulo }}</h3>
+                        <p>{{ vaga.empresa.nome }}</p>
                         <div class="job-card-footer">
-                            <a href="#" class="btn-candidatar">Candidatar-se</a>
-                            <span class="job-card-candidates">2k Candidatos</span>
+                            {% if user.is_authenticated and user.tipo_usuario == 'candidato' %}
+                                <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-candidatar">Candidatar-se</button>
+                                </form>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn-candidatar">Login p/ Aplicar</a>
+                            {% endif %}
+                            <span class="job-card-candidates">Nova</span>
                         </div>
                     </div>
-
-                    <div class="job-card">
-                        <div class="job-card-tags">
-                            <span>Integral</span>
-                            <span>No Site</span>
-                            <span>R$200K</span>
-                        </div>
-                        <h3>UX Designer</h3>
-                        <p>Advant Digital Agency</p>
-                        <div class="job-card-footer">
-                            <a href="#" class="btn-candidatar">Candidatar-se</a>
-                            <span class="job-card-candidates">2k Candidatos</span>
-                        </div>
-                    </div>
-
-                    <div class="job-card">
-                        <div class="job-card-tags">
-                            <span>Integral</span>
-                            <span>No Site</span>
-                            <span>R$200K</span>
-                        </div>
-                        <h3>UX Designer</h3>
-                        <p>Advant Digital Agency</p>
-                        <div class="job-card-footer">
-                            <a href="#" class="btn-candidatar">Candidatar-se</a>
-                            <span class="job-card-candidates">2k Candidatos</span>
-                        </div>
-                    </div>
-
-                    <div class="job-card">
-                        <div class="job-card-tags">
-                            <span>Integral</span>
-                            <span>No Site</span>
-                            <span>R$200K</span>
-                        </div>
-                        <h3>UX Designer</h3>
-                        <p>Advant Digital Agency</p>
-                        <div class="job-card-footer">
-                            <a href="#" class="btn-candidatar">Candidatar-se</a>
-                            <span class="job-card-candidates">2k Candidatos</span>
-                        </div>
-                    </div>
-
-                    <div class="job-card">
-                        <div class="job-card-tags">
-                            <span>Integral</span>
-                            <span>No Site</span>
-                            <span>R$200K</span>
-                        </div>
-                        <h3>UX Designer</h3>
-                        <p>Advant Digital Agency</p>
-                        <div class="job-card-footer">
-                            <a href="#" class="btn-candidatar">Candidatar-se</a>
-                            <span class="job-card-candidates">2k Candidatos</span>
-                        </div>
-                    </div>
-
-                    <div class="job-card">
-                        <div class="job-card-tags">
-                            <span>Integral</span>
-                            <span>No Site</span>
-                            <span>R$200K</span>
-                        </div>
-                        <h3>UX Designer</h3>
-                        <p>Advant Digital Agency</p>
-                        <div class="job-card-footer">
-                            <a href="#" class="btn-candidatar">Candidatar-se</a>
-                            <span class="job-card-candidates">2k Candidatos</span>
-                        </div>
-                    </div>
+                    {% empty %}
+                        <p style="color: #8b949e; text-align: center; grid-column: 1/-1;">
+                            Nenhuma vaga publicada recentemente.
+                        </p>
+                    {% endfor %}
                 </div>
 
-                <a href="#" class="btn-ver-mais">Ver mais</a>
+                <a href="{% url 'explorar_vagas' %}" class="btn-ver-mais">Ver todas as vagas</a>
             </div>
         </section>
 
-        <!-- CATEGORIES -->
-        <section class="categories-section">
+    <section class="categories-section">
             <h2>Explore pelas categorias</h2>
-            <p>Explore um vasto mundo de vagas</p>
+            <p>Veja as áreas com mais oportunidades no momento</p>
 
             <div class="categories-content">
+                
                 <div class="categories-list">
-                    <h3>Categorias Populares</h3>
-                    <div class="category-list-item">
-                        <span>Analista de Sistemas</span>
-                        <span>6</span>
-                    </div>
-                    <div class="category-list-item">
-                        <span>Desenvolvedor Frontend</span>
-                        <span>12</span>
-                    </div>
-                    <div class="category-list-item">
-                        <span>Desenvolvedor Backend</span>
-                        <span>14</span>
-                    </div>
-                    <div class="category-list-item">
-                        <span>Desenvolvedor Full Stack</span>
-                        <span>8</span>
-                    </div>
+                    <h3>Cargos em Alta</h3>
+                    
+                    {% for cargo in top_cargos %}
+                        <div class="category-list-item">
+                            <span>{{ cargo.titulo }}</span>
+                            <span>{{ cargo.total }}</span>
+                        </div>
+                    {% empty %}
+                        <p style="color: #8b949e;">Nenhuma vaga cadastrada ainda.</p>
+                    {% endfor %}
                 </div>
+
                 <div class="categories-grid">
-                    <div class="category-grid-item">Artes, Mídia e Comunicação</div>
-                    <div class="category-grid-item">Recursos Humanos</div>
-                    <div class="category-grid-item">Tecnologia da Informação</div>
-                    <div class="category-grid-item">Contabilidade</div>
+                    {% for setor in top_setores %}
+                        <div class="category-grid-item">
+                            {{ setor.empresa__setor }}
+                            
+                            <div style="font-size: 0.8rem; color: #8b949e; margin-top: 5px;">
+                                {{ setor.total }} vagas
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="category-grid-item">Sem setores disponíveis</div>
+                    {% endfor %}
                 </div>
+
             </div>
         </section>
 
-        <!-- WORLD PARTNERS -->
         <section class="world-partners-section">
-            <h2>Trabalhe agora em grandes corporações no mundo!</h2>
+            <h2>Trabalhe com grandes companhias no mundo</h2>
             <div class="world-partners-logos">
                 <span class="world-partner-logo">Opentable</span>
                 <span class="world-partner-logo">shopify</span>
@@ -1620,15 +757,16 @@
             </div>
         </section>
 
-        <!-- SOCIAL PROOF -->
         <section class="social-proof-section">
             <div class="social-proof-text">
-                <h2>Milhares de pessoas estão usando pelo Brasil!</h2>
+                <h2>Muitas pessoas estão usando pelo mundo</h2>
                 <p>Entre agora e anuncie sua vaga</p>
-                <a href="#" class="btn-cta-green">Postar uma vaga</a>
+                <a href="{% url 'cadastro_recrutador' %}" class="btn-cta-green">Postar uma vaga</a>
             </div>
             <div class="social-proof-animation">
-                Animação de Perfis
+                <div style="width: 100%; height: 100%; background: #161B22; border-radius: 20px; border: 1px dashed #30363d; display: flex; align-items: center; justify-content: center; color: #30363d;">
+                    Animação de Perfis
+                 </div>
             </div>
         </section>
     </div>

@@ -1,21 +1,143 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Vaga</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Editar Vaga: {{ vaga.titulo }}{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: #161B22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        position: relative;
+    }
+    
+    /* Cabeçalho */
+    .form-header {
+        border-bottom: 1px solid #30363d;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    
+    h2 { color: #fff; margin-bottom: 5px; font-size: 2rem; }
+    .subtitle { color: #8b949e; font-size: 1rem; }
+    
+    /* Estilo dos campos do Django */
+    .form-group { margin-bottom: 20px; }
+    
+    label { 
+        display: block; 
+        margin-bottom: 8px; 
+        color: #c9d1d9; 
+        font-weight: 600; 
+        font-size: 0.95rem;
+    }
+    
+    input[type="text"], 
+    textarea, 
+    select {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #0D1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        color: #fff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        box-sizing: border-box; /* Garante que padding não estoure a largura */
+    }
+    
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #BEF264;
+        box-shadow: 0 0 0 3px rgba(190, 242, 100, 0.1);
+    }
+    
+    /* Botões de Ação */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #30363d;
+    }
+    
+    .btn-save {
+        background-color: #AFEB83;
+        color: #0D1B2A;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-weight: 800;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        flex: 1;
+    }
+    .btn-save:hover {
+        background-color: #BEF264;
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background: transparent;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+    }
+    .btn-cancel:hover {
+        border-color: #8b949e;
+        color: #fff;
+    }
+    
+    /* Ajustes para Checkbox (se houver, como 'status') */
+    input[type="checkbox"] {
+        width: auto;
+        margin-right: 10px;
+        transform: scale(1.2);
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>Editar Vaga</h2>
+        <p class="subtitle">Atualize as informações da vaga: <strong>{{ vaga.titulo }}</strong></p>
+    </div>
 
     <form method="POST">
-        <h2>Editando Vaga: {{ vaga.titulo }}</h2>
-        <p>Ajuste os campos abaixo e salve as alterações.</p>
-
         {% csrf_token %}
         
-        {{ form.as_p }}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #ff6b6b; font-size: 0.85rem; margin-top: 5px;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+                {% if field.help_text %}
+                    <div style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">
+                        {{ field.help_text }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
 
-        <button type="submit">Salvar Alterações</button>
+        <div class="form-actions">
+            <a href="{% url 'home_recrutador' %}" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-save">Salvar Alterações</button>
+        </div>
     </form>
-
-</body>
-</html>
+</div>
+{% endblock %}

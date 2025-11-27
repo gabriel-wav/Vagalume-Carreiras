@@ -1,21 +1,79 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Criar Nova Vaga</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Criar Nova Vaga{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: #161B22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    
+    h2 { color: #fff; margin-bottom: 10px; font-size: 2rem; }
+    .subtitle { color: #8b949e; margin-bottom: 30px; }
+    
+    /* Estilo dos campos (reaproveitando do seu CSS global se houver, mas garantindo aqui) */
+    label { display: block; margin-top: 15px; margin-bottom: 5px; color: #c9d1d9; font-weight: 600; }
+    input, textarea, select {
+        width: 100%;
+        padding: 12px;
+        background-color: #0D1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        color: #fff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 1rem;
+    }
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #BEF264;
+        box-shadow: 0 0 0 3px rgba(190, 242, 100, 0.1);
+    }
+    
+    button[type="submit"] {
+        background-color: #AFEB83;
+        color: #0D1B2A;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 30px;
+        width: 100%;
+        transition: transform 0.2s;
+    }
+    button[type="submit"]:hover {
+        background-color: #BEF264;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="form-container">
+    <h2>Criar Nova Vaga</h2>
+    <p class="subtitle">Preencha os detalhes abaixo para encontrar o candidato ideal.</p>
 
     <form method="POST">
-        <h2>Criar Nova Vaga</h2>
-        <p>Preencha os campos abaixo para publicar uma nova oportunidade.</p>
-
         {% csrf_token %}
-
-        {{ form.as_p }}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #ff6b6b; font-size: 0.9rem; margin-top: 5px;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
 
         <button type="submit">Publicar Vaga</button>
     </form>
-
-</body>
-</html>
+</div>
+{% endblock %}

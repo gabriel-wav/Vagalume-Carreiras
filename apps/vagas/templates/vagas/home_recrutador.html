@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Meu Painel - Vagas{% endblock %}
+
+{% block title %}Painel da Empresa{% endblock %}
 
 {% block content %}
 
@@ -13,58 +14,63 @@
 {% endif %}
 
 <style>
-    .recrutador-container {
-        max-width: 900px;
-        margin: auto;
-        padding: 20px;
+    /* =========================
+       1. LAYOUT E SLIDER
+       ========================= */
+    main.main-container { display: block; padding: 20px 0; width: 100%; max-width: 100%; overflow-x: hidden; }
+    
+    .hero { text-align: center; padding: 40px 20px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; transition: opacity 0.3s ease; }
+    .hero.transitioning { opacity: 0; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 2.5rem); margin-bottom: 10px; color: #fff; }
+    .hero h1 span { color: #BEF264; }
+    .hero p { color: #94a3b8; font-size: 1.1rem; }
+    
+    /* TABS CORRIGIDAS */
+    .tabs { 
+        display: flex; 
+        justify-content: center; 
+        gap: 30px; 
+        margin-bottom: 40px; 
+        border-bottom: 1px solid #30363d; 
+        position: relative; /* Importante para o indicador absoluto */
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
     }
-    .recrutador-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+    .tab { 
+        background: none; 
+        border: none; 
+        color: #94a3b8; 
+        font-size: 1rem; 
+        padding: 15px 20px; 
+        cursor: pointer; 
+        position: relative; 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        transition: color 0.3s ease; 
+        white-space: nowrap; /* Impede que o texto quebre */
     }
-    .recrutador-header h1 {
-        font-size: 2.5rem;
-        margin: 0;
+    .tab:hover { color: #fff; }
+    .tab.active { color: #fff; font-weight: 700; }
+    
+    /* Indicador deslizante */
+    .tab-indicator { 
+        position: absolute; 
+        bottom: -1px; 
+        left: 0; 
+        height: 3px; 
+        background-color: #BEF264; 
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
+        z-index: 2; 
     }
-    .btn-criar {
-        background-color: #AFEB83;
-        color: #0D1B2A;
-        padding: 12px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-    }
-    .vaga-item {
-        background: #161B22;
-        border: 1px solid #30363d;
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-    }
-    .vaga-item h3 {
-        margin: 0 0 10px 0;
-        color: #fff;
-    }
-    .vaga-item p {
-        margin: 0 0 15px 0;
-        color: #8b949e;
-    }
-    .vaga-item .status-aberta {
-        color: #3fb950;
-        font-weight: bold;
-    }
-    .vaga-item .status-fechada {
-        color: #f85149;
-        font-weight: bold;
-    }
-    .vaga-item .links a {
-        color: #58a6ff;
-        margin-right: 15px;
-        text-decoration: none;
-        font-weight: bold;
-    }
+    
+    .dashboard-window { width: 100%; position: relative; overflow: hidden; min-height: 600px; }
+    .dashboard-slider { display: flex; width: 300%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    .panel { width: 33.33%; flex-shrink: 0; box-sizing: border-box; padding: 0 20px; }
+    .panel.inactive { opacity: 0.3; pointer-events: none; transition: opacity 0.3s; }
+    
+    .show-tab-0 { transform: translateX(0); }
+    .show-tab-1 { transform: translateX(-33.33%); }
+    .show-tab-2 { transform: translateX(-66.66%); }
 
     .btn-radar {
     background-color: #111111;
@@ -170,9 +176,209 @@
                 </div>
             </div>
         {% endfor %}
-    {% else %}
-        <p>Você ainda não criou nenhuma vaga.</p>
     {% endif %}
+</section>
 
+<div class="tabs">
+    <button class="tab active" onclick="goToTab(0)">Minhas Vagas</button>
+    <button class="tab" onclick="goToTab(1)">Radar & IA</button>
+    <button class="tab" onclick="goToTab(2)">Minha Empresa</button>
+    <div class="tab-indicator" id="tab-indicator"></div>
 </div>
+
+<div class="dashboard-window">
+    <div class="dashboard-slider show-tab-0" id="slider">
+        
+        <div class="panel">
+            <div class="container">
+                
+                <div class="create-job-area">
+                    <a href="{% url 'criar_vaga' %}" class="btn-create-big">
+                        <i class="fas fa-plus-circle"></i> Publicar Nova Vaga
+                    </a>
+                </div>
+
+                <div class="jobs-grid">
+                    {% for vaga in vagas %}
+                        <div class="job-card">
+                            {% if vaga.status %}
+                                <span class="status-badge status-open">ABERTA</span>
+                            {% else %}
+                                <span class="status-badge status-closed">FECHADA</span>
+                            {% endif %}
+
+                            <h3 class="job-title">{{ vaga.titulo }}</h3>
+                            
+                            <div class="job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> {{ vaga.localidade }}</span>
+                                <span><i class="fas fa-file-contract"></i> {{ vaga.tipo_contrato }}</span>
+                                <span><i class="fas fa-calendar-alt"></i> {{ vaga.data_publicacao|date:"d/m/Y" }}</span>
+                            </div>
+
+                            <div class="admin-actions">
+                                <a href="{% url 'ver_candidatos_vaga' vaga.id %}" class="btn-action btn-candidates">
+                                    <i class="fas fa-users"></i> Ver Candidatos
+                                </a>
+                                <a href="{% url 'editar_vaga' vaga.id %}" class="btn-action btn-edit">
+                                    <i class="fas fa-pen"></i> Editar
+                                </a>
+                                <a href="{% url 'deletar_vaga' vaga.id %}" class="btn-action btn-delete">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px; border: 2px dashed #30363d; border-radius: 12px;">
+                            <i class="fas fa-folder-open" style="font-size: 3rem; color: #30363d; margin-bottom: 20px;"></i>
+                            <p style="color: #8b949e;">Você ainda não publicou nenhuma vaga.</p>
+                            <a href="{% url 'criar_vaga' %}" style="color: #BEF264; font-weight: bold;">Criar a primeira agora</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="panel inactive">
+            <div class="container">
+                <div class="radar-highlight">
+                    <div class="radar-icon">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                    </div>
+                    <h2 style="color:#fff; font-size: 2rem; margin-bottom: 15px;">Radar de Talentos</h2>
+                    <p style="color: #c9d1d9; margin-bottom: 20px; line-height: 1.6;">
+                        Não espere os candidatos virem até você. Nossa IA analisa todo o banco de dados 
+                        e encontra profissionais compatíveis com suas vagas, mesmo que eles não tenham se candidatado.
+                    </p>
+                    <ul style="text-align: left; max-width: 400px; margin: 0 auto 30px; color: #8b949e;">
+                        <li><i class="fas fa-check" style="color:#BEF264"></i> Matching semântico de currículos</li>
+                        <li><i class="fas fa-check" style="color:#BEF264"></i> Análise de compatibilidade cultural</li>
+                        <li><i class="fas fa-check" style="color:#BEF264"></i> Busca ativa e proativa</li>
+                    </ul>
+                    <a href="{% url 'radar_de_talentos' %}" class="radar-btn">
+                        Acessar Radar agora
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel inactive">
+            <div class="container">
+                <div class="menu-grid">
+                    
+                    <a href="{% url 'ver_empresa' user.recrutador.empresa.id %}" class="menu-card">
+                        <i class="fas fa-eye"></i>
+                        <h3>Ver Página Pública</h3>
+                        <p>Visualize como os candidatos veem sua empresa.</p>
+                    </a>
+
+                    <a href="{% url 'perfil_empresa' %}" class="menu-card">
+                        <i class="fas fa-building"></i>
+                        <h3>Editar Dados da Empresa</h3>
+                        <p>Atualize logo, descrição, site e informações.</p>
+                    </a>
+
+                    <a href="{% url 'planos_empresa' %}" class="menu-card">
+                        <i class="fas fa-gem"></i>
+                        <h3>Planos e Assinatura</h3>
+                        <p>Gerencie seu plano Premium.</p>
+                    </a>
+
+                    <a href="#" onclick="confirmarExclusao()" class="menu-card danger" style="border-color: rgba(248, 81, 73, 0.3);">
+                        <i class="fas fa-trash-alt" style="color: #f85149;"></i>
+                        <h3 style="color: #f85149;">Apagar Minha Conta</h3>
+                        <p>Excluir permanentemente todos os dados e vagas.</p>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<form id="form-deletar-conta" action="{% url 'deletar_conta' %}" method="POST" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<script>
+    // --- LÓGICA DO SLIDER E TABS ---
+    const panelData = [
+        { title: 'Painel do <span>Recrutador</span>', subtitle: 'Gerencie suas vagas e encontre os melhores talentos.' },
+        { title: 'Inteligência <span>Artificial</span>', subtitle: 'Use nossa tecnologia para caçar talentos no mercado.' },
+        { title: 'Minha <span>Empresa</span>', subtitle: 'Gerencie sua marca empregadora e configurações.' }
+    ];
+
+    const slider = document.getElementById('slider');
+    const tabs = document.querySelectorAll('.tab');
+    const indicator = document.getElementById('tab-indicator');
+    const hero = document.getElementById('dynamic-hero');
+    const heroTitle = document.getElementById('hero-title');
+    const heroSubtitle = document.getElementById('hero-subtitle');
+    const panels = document.querySelectorAll('.panel');
+    let currentTab = 0;
+
+    function updateIndicator(tab) {
+        const rect = tab.getBoundingClientRect();
+        const containerRect = tab.parentElement.getBoundingClientRect();
+        indicator.style.width = rect.width + 'px';
+        indicator.style.left = (rect.left - containerRect.left) + 'px';
+    }
+
+    function updateHero(index) {
+        hero.classList.add('transitioning');
+        setTimeout(() => {
+            heroTitle.innerHTML = panelData[index].title;
+            heroSubtitle.textContent = panelData[index].subtitle;
+            hero.classList.remove('transitioning');
+        }, 300);
+    }
+
+    function goToTab(index) {
+        if (index === currentTab) return;
+        
+        tabs.forEach(tab => tab.classList.remove('active'));
+        tabs[index].classList.add('active');
+        
+        updateIndicator(tabs[index]);
+        
+        // Slider 300% width = -33.33% por slide
+        slider.style.transform = `translateX(-${index * 33.33}%)`;
+        
+        panels.forEach((panel, i) => {
+            if (i === index) panel.classList.remove('inactive');
+            else panel.classList.add('inactive');
+        });
+        
+        updateHero(index);
+        localStorage.setItem('recruiterTab', index);
+        currentTab = index;
+    }
+
+    function confirmarExclusao() {
+        if (confirm("ATENÇÃO: Tem certeza que deseja APAGAR SUA CONTA?\n\nTodas as suas vagas e dados da empresa serão removidos permanentemente.\nEssa ação não pode ser desfeita.")) {
+            // Chama o formulário de exclusão (precisa ser POST por segurança)
+            document.getElementById('form-deletar-conta').submit();
+        }
+    }
+
+    // Inicialização
+    window.addEventListener('load', () => {
+        const savedTab = localStorage.getItem('recruiterTab');
+        // Pequeno delay para garantir que o CSS carregou e o getBoundingClientRect funcione
+        setTimeout(() => {
+            if (savedTab) {
+                slider.style.transition = 'none'; // Tira animação inicial
+                goToTab(parseInt(savedTab));
+                setTimeout(() => slider.style.transition = '', 100); // Devolve animação
+            } else {
+                updateIndicator(tabs[0]);
+            }
+        }, 50);
+    });
+
+    window.addEventListener('resize', () => {
+        updateIndicator(tabs[currentTab]);
+    });
+</script>
+
 {% endblock %}
