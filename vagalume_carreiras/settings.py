@@ -133,9 +133,9 @@ EMAIL_TIMEOUT = 90
 # ============================================
 # CONFIGURAÇÃO DE SMS (TWILIO)
 # ============================================
-TWILIO_ACCOUNT_SID = 'AC23f29abf397e670e8eceedbf82fd8c9f'
-TWILIO_AUTH_TOKEN = '0aacda74e29d0d603ce62ca26b97653c'
-TWILIO_PHONE_NUMBER = '+18574205717' # Seu número Twilio
+TWILIO_ACCOUNT_SID = ''
+TWILIO_AUTH_TOKEN = ''
+TWILIO_PHONE_NUMBER = '' # Seu número Twilio
 
 
 AUTH_PASSWORD_VALIDATORS = [
