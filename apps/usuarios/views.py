@@ -753,6 +753,13 @@ def recuperar_senha_view(request):
 
     return render(request, 'usuarios/recuperar_senha.html')
 
+# apps/usuarios/views.py (Nova Senha View Corrigida)
+
+# apps/usuarios/views.py (função nova_senha_view CORRIGIDA)
+
+from django.db import transaction # Já deve estar no topo do arquivo
+
+@transaction.atomic # <--- ADIÇÃO CRÍTICA
 def nova_senha_view(request):
     """
     Permite ao usuário criar uma nova senha após a validação do código.
@@ -772,7 +779,7 @@ def nova_senha_view(request):
         if form.is_valid():
             new_password = form.cleaned_data['new_password']
             
-            # 1. Validação de Complexidade (Opcional, mas recomendado)
+            # 1. Validação de Complexidade
             try:
                 validate_password(new_password, user=usuario)
             except DjangoValidationError as e:
@@ -781,18 +788,25 @@ def nova_senha_view(request):
                     messages.error(request, error)
                 return render(request, 'usuarios/nova_senha.html', {'form': form})
             
-            # 2. Redefinir a Senha
-            usuario.set_password(new_password)
-            usuario.save()
+            # 2. Redefinir a Senha e Salvar (Agora dentro do bloco atômico)
+            try:
+                usuario.set_password(new_password)
+                usuario.save()
             
-            # 3. Limpar a sessão
-            del request.session['reset_user_id']
+                # 3. Limpar a sessão
+                del request.session['reset_user_id']
             
-            messages.success(request, 'Senha redefinida com sucesso! Faça login com sua nova senha.')
-            return redirect('login')
+                messages.success(request, 'Senha redefinida com sucesso! Faça login com sua nova senha.')
+                return redirect('login')
+            
+            except Exception as e:
+                # Se o save falhar por qualquer motivo no DB
+                messages.error(request, 'Erro crítico ao salvar a nova senha no banco de dados. Tente novamente o processo.')
+                print(f"ERRO CRÍTICO AO SALVAR SENHA: {e}") 
+                return render(request, 'usuarios/nova_senha.html', {'form': form})
         
     else:
-        form = NovaSenhaForm() # Exibe o formulário vazio
+        form = NovaSenhaForm()
         
     return render(request, 'usuarios/nova_senha.html', {'form': form})
 

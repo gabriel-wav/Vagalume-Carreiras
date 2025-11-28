@@ -15,6 +15,8 @@ class Usuario(AbstractUser):
         choices=TIPO_USUARIO_CHOICES,
         default='candidato'
     )
+    
+    email = models.EmailField(('email address'), unique=True, blank=False)
     telefone = models.CharField(max_length=15, blank=True, null=True)
     
     def __str__(self):
