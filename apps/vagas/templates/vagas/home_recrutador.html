@@ -15,24 +15,34 @@
 
 <style>
     /* =========================
-       1. LAYOUT E SLIDER
+       1. LAYOUT GERAL
        ========================= */
-    main.main-container { display: block; padding: 20px 0; width: 100%; max-width: 100%; overflow-x: hidden; }
+    /* Removemos o container antigo e usamos um wrapper principal se necessário */
+    main { width: 100%; max-width: 100%; overflow-x: hidden; padding-bottom: 50px; }
     
-    .hero { text-align: center; padding: 40px 20px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; transition: opacity 0.3s ease; }
+    /* Hero Section (Cabeçalho Dinâmico) */
+    .hero { 
+        text-align: center; 
+        padding: 40px 20px; 
+        min-height: 160px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        transition: opacity 0.3s ease; 
+    }
     .hero.transitioning { opacity: 0; }
     .hero h1 { font-size: clamp(2rem, 5vw, 2.5rem); margin-bottom: 10px; color: #fff; }
     .hero h1 span { color: #BEF264; }
     .hero p { color: #94a3b8; font-size: 1.1rem; }
     
-    /* TABS CORRIGIDAS */
+    /* TABS */
     .tabs { 
         display: flex; 
         justify-content: center; 
         gap: 30px; 
         margin-bottom: 40px; 
         border-bottom: 1px solid #30363d; 
-        position: relative; /* Importante para o indicador absoluto */
+        position: relative; 
         max-width: 1000px;
         margin-left: auto;
         margin-right: auto;
@@ -47,7 +57,7 @@
         position: relative; 
         font-family: 'Plus Jakarta Sans', sans-serif; 
         transition: color 0.3s ease; 
-        white-space: nowrap; /* Impede que o texto quebre */
+        white-space: nowrap; 
     }
     .tab:hover { color: #fff; }
     .tab.active { color: #fff; font-weight: 700; }
@@ -63,40 +73,117 @@
         z-index: 2; 
     }
     
+    /* SLIDER E PAINÉIS */
     .dashboard-window { width: 100%; position: relative; overflow: hidden; min-height: 600px; }
     .dashboard-slider { display: flex; width: 300%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
     .panel { width: 33.33%; flex-shrink: 0; box-sizing: border-box; padding: 0 20px; }
     .panel.inactive { opacity: 0.3; pointer-events: none; transition: opacity 0.3s; }
     
-    .show-tab-0 { transform: translateX(0); }
-    .show-tab-1 { transform: translateX(-33.33%); }
-    .show-tab-2 { transform: translateX(-66.66%); }
+    /* UTILITÁRIOS E BOTÕES */
+    .container { max-width: 1200px; margin: 0 auto; }
 
-    .btn-radar {
-    background-color: #111111;
-    color: #BEF264;
-    padding: 12px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    margin-left: 15px; /* Espaço do botão de criar */
-    border: 1px solid #30363d;
-}
-.btn-radar i { /* O ícone */
-    margin-right: 8px;
-}
-
-.btn-plano {
-        background-color: #1B263B; /* Ardósia */
-        color: #E2E8F0; /* Platina */
-        padding: 12px 20px;
+    .btn-create-big {
+        display: inline-block;
+        background-color: #AFEB83;
+        color: #0D1B2A;
+        padding: 15px 30px;
+        border-radius: 8px;
         text-decoration: none;
-        border-radius: 5px;
         font-weight: bold;
-        border: 1px solid #BEF264; /* Verde Vagalume */
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        transition: transform 0.2s;
     }
+    .btn-create-big:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(175, 235, 131, 0.3); }
 
-/* Estilo Base para o Bloco de Mensagens */
+    .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    
+    .job-card {
+        background: #161B22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        transition: border-color 0.3s;
+    }
+    .job-card:hover { border-color: #BEF264; }
+
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .status-open { background: rgba(63, 185, 80, 0.15); color: #3fb950; border: 1px solid rgba(63, 185, 80, 0.4); }
+    .status-closed { background: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.4); }
+
+    .job-title { color: #fff; margin-top: 10px; margin-bottom: 15px; font-size: 1.2rem; }
+
+    .job-meta { display: flex; flex-direction: column; gap: 8px; color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; }
+    .job-meta span i { width: 20px; text-align: center; margin-right: 5px; }
+
+    .admin-actions { display: flex; gap: 10px; border-top: 1px solid #30363d; padding-top: 15px; }
+    .btn-action { flex: 1; text-align: center; padding: 8px; border-radius: 6px; font-size: 0.85rem; text-decoration: none; font-weight: 600; transition: background 0.2s; }
+    
+    .btn-candidates { background: #238636; color: #fff; }
+    .btn-candidates:hover { background: #2ea043; }
+    
+    .btn-edit { background: #1f6feb; color: #fff; }
+    .btn-edit:hover { background: #388bfd; }
+    
+    .btn-delete { background: #21262d; color: #f85149; border: 1px solid #f85149; }
+    .btn-delete:hover { background: rgba(248, 81, 73, 0.1); }
+
+    /* RADAR AREA */
+    .radar-highlight {
+        background: linear-gradient(145deg, #0d1117, #161b22);
+        border: 1px solid #30363d;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        max-width: 600px;
+        margin: 40px auto;
+    }
+    .radar-icon { font-size: 3rem; color: #BEF264; margin-bottom: 20px; }
+    .radar-btn {
+        display: inline-block;
+        background: #BEF264;
+        color: #000;
+        padding: 12px 25px;
+        border-radius: 6px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: transform 0.2s;
+    }
+    .radar-btn:hover { transform: scale(1.05); }
+
+    /* MENU EMPRESA */
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+    .menu-card {
+        background: #161B22;
+        border: 1px solid #30363d;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 180px;
+    }
+    .menu-card:hover { border-color: #BEF264; transform: translateY(-5px); }
+    .menu-card i { font-size: 2rem; color: #BEF264; margin-bottom: 15px; }
+    .menu-card h3 { color: #fff; margin: 0 0 10px; font-size: 1.1rem; }
+    .menu-card p { color: #8b949e; font-size: 0.9rem; margin: 0; line-height: 1.4; }
+    
+    .menu-card.danger:hover { border-color: #f85149; background: rgba(248, 81, 73, 0.05); }
+
+    /* ALERTAS */
     .alerta {
         max-width: 900px;
         margin: 20px auto;
@@ -105,79 +192,17 @@
         border-radius: 4px;
         font-weight: bold;
         text-align: center;
-        /* Fundo em Ardósia para dar um contraste sutil (como os cards de vaga) */
         background-color: #1B263B; 
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Sombra para destacar do fundo */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     }
-
-    /* Estilo para a Mensagem de SUCESSO */
-    .alerta-success { 
-        /* Cor de texto e borda no padrão Verde Vagalume (#BEF264) */
-        color: #BEF264; 
-        border-color: #BEF264; 
-    }
-
-    /* Estilo para a Mensagem de ERRO (Opcional, mas útil) */
-    .alerta-error {
-        color: #F85149; /* Exemplo de cor de erro (vermelho do GitHub/vagas fechadas) */
-        border-color: #F85149; 
-    }
-
-/* NOVO ESTILO PARA O BOTÃO DO PLANO */
-    .btn-plano {
-        /* Cores base da paleta */
-        background-color: #1B263B; /* Ardósia (como os cards) */
-        color: #E2E8F0; /* Platina (texto principal) */
-        
-        padding: 12px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        margin-right: 15px; 
-        /* Borda de destaque para ser facilmente clicável e visível */
-        border: 1px solid #BEF264; /* Verde Vagalume */
-    }
-
+    .alerta-success { color: #BEF264; border-color: #BEF264; }
+    .alerta-error { color: #F85149; border-color: #F85149; }
 </style>
 
-<div class="recrutador-container">
-<div class="recrutador-header">
-    <h1>Painel do Recrutador</h1>
-    <div>
-        <a href="{% url 'planos_empresa' %}" class="btn-plano">
-            Plano Atual: {{ plano_atual_nome }} (Alterar) 
-        </a>
-        <a href="{% url 'criar_vaga' %}" class="btn-criar">Criar Nova Vaga</a>
-        <a href="{% url 'radar_de_talentos' %}" class="btn-radar">
-            <i class="fa-solid fa-satellite-dish"></i> Radar de Talentos
-        </a>
-    </div>
+<div id="dynamic-hero" class="hero">
+    <h1 id="hero-title">Painel do <span>Recrutador</span></h1>
+    <p id="hero-subtitle">Gerencie suas vagas e encontre os melhores talentos.</p>
 </div>
-    <p>Aqui estão as vagas que você publicou.</p>
-
-    <hr style="border-color: #30363d; margin: 20px 0;">
-
-    {% if vagas %}
-        {% for vaga in vagas %}
-            <div class="vaga-item">
-                <h3>{{ vaga.titulo }}</h3>
-                <p>Localidade: {{ vaga.localidade }} | Contrato: {{ vaga.tipo_contrato }}</p>
-                <p>Status: 
-                    {% if vaga.status %}
-                        <span class="status-aberta">Aberta</span>
-                    {% else %}
-                        <span class="status-fechada">Fechada</span>
-                    {% endif %}
-                </p>
-                <div class="links">
-                    <a href="{% url 'ver_candidatos_vaga' vaga.id %}">(Ver Candidatos)</a>
-                    <a href="{% url 'editar_vaga' vaga.id %}">(Editar)</a>
-                    <a href="{% url 'deletar_vaga' vaga.id %}">(Apagar)</a>
-                </div>
-            </div>
-        {% endfor %}
-    {% endif %}
-</section>
 
 <div class="tabs">
     <button class="tab active" onclick="goToTab(0)">Minhas Vagas</button>
@@ -192,7 +217,7 @@
         <div class="panel">
             <div class="container">
                 
-                <div class="create-job-area">
+                <div class="create-job-area" style="text-align: center;">
                     <a href="{% url 'criar_vaga' %}" class="btn-create-big">
                         <i class="fas fa-plus-circle"></i> Publicar Nova Vaga
                     </a>
@@ -231,7 +256,6 @@
                         <div style="grid-column: 1/-1; text-align: center; padding: 60px; border: 2px dashed #30363d; border-radius: 12px;">
                             <i class="fas fa-folder-open" style="font-size: 3rem; color: #30363d; margin-bottom: 20px;"></i>
                             <p style="color: #8b949e;">Você ainda não publicou nenhuma vaga.</p>
-                            <a href="{% url 'criar_vaga' %}" style="color: #BEF264; font-weight: bold;">Criar a primeira agora</a>
                         </div>
                     {% endfor %}
                 </div>
@@ -247,12 +271,12 @@
                     <h2 style="color:#fff; font-size: 2rem; margin-bottom: 15px;">Radar de Talentos</h2>
                     <p style="color: #c9d1d9; margin-bottom: 20px; line-height: 1.6;">
                         Não espere os candidatos virem até você. Nossa IA analisa todo o banco de dados 
-                        e encontra profissionais compatíveis com suas vagas, mesmo que eles não tenham se candidatado.
+                        e encontra profissionais compatíveis com suas vagas.
                     </p>
-                    <ul style="text-align: left; max-width: 400px; margin: 0 auto 30px; color: #8b949e;">
-                        <li><i class="fas fa-check" style="color:#BEF264"></i> Matching semântico de currículos</li>
-                        <li><i class="fas fa-check" style="color:#BEF264"></i> Análise de compatibilidade cultural</li>
-                        <li><i class="fas fa-check" style="color:#BEF264"></i> Busca ativa e proativa</li>
+                    <ul style="text-align: left; max-width: 400px; margin: 0 auto 30px; color: #8b949e; list-style: none;">
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color:#BEF264; margin-right: 10px;"></i> Matching semântico</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color:#BEF264; margin-right: 10px;"></i> Análise de compatibilidade</li>
+                        <li><i class="fas fa-check" style="color:#BEF264; margin-right: 10px;"></i> Busca ativa</li>
                     </ul>
                     <a href="{% url 'radar_de_talentos' %}" class="radar-btn">
                         Acessar Radar agora
@@ -274,19 +298,19 @@
                     <a href="{% url 'perfil_empresa' %}" class="menu-card">
                         <i class="fas fa-building"></i>
                         <h3>Editar Dados da Empresa</h3>
-                        <p>Atualize logo, descrição, site e informações.</p>
+                        <p>Atualize logo e informações.</p>
                     </a>
 
                     <a href="{% url 'planos_empresa' %}" class="menu-card">
                         <i class="fas fa-gem"></i>
                         <h3>Planos e Assinatura</h3>
-                        <p>Gerencie seu plano Premium.</p>
+                        <p>Gerencie seu {{ plano_atual_nome }}.</p>
                     </a>
 
                     <a href="#" onclick="confirmarExclusao()" class="menu-card danger" style="border-color: rgba(248, 81, 73, 0.3);">
                         <i class="fas fa-trash-alt" style="color: #f85149;"></i>
                         <h3 style="color: #f85149;">Apagar Minha Conta</h3>
-                        <p>Excluir permanentemente todos os dados e vagas.</p>
+                        <p>Excluir permanentemente todos os dados.</p>
                     </a>
 
                 </div>
@@ -301,7 +325,7 @@
 </form>
 
 <script>
-    // --- LÓGICA DO SLIDER E TABS ---
+    // --- LÓGICA DO SLIDER, TABS E HERO DINÂMICO ---
     const panelData = [
         { title: 'Painel do <span>Recrutador</span>', subtitle: 'Gerencie suas vagas e encontre os melhores talentos.' },
         { title: 'Inteligência <span>Artificial</span>', subtitle: 'Use nossa tecnologia para caçar talentos no mercado.' },
@@ -325,12 +349,14 @@
     }
 
     function updateHero(index) {
-        hero.classList.add('transitioning');
-        setTimeout(() => {
-            heroTitle.innerHTML = panelData[index].title;
-            heroSubtitle.textContent = panelData[index].subtitle;
-            hero.classList.remove('transitioning');
-        }, 300);
+        if (hero) {
+            hero.classList.add('transitioning');
+            setTimeout(() => {
+                heroTitle.innerHTML = panelData[index].title;
+                heroSubtitle.textContent = panelData[index].subtitle;
+                hero.classList.remove('transitioning');
+            }, 300);
+        }
     }
 
     function goToTab(index) {
@@ -340,8 +366,6 @@
         tabs[index].classList.add('active');
         
         updateIndicator(tabs[index]);
-        
-        // Slider 300% width = -33.33% por slide
         slider.style.transform = `translateX(-${index * 33.33}%)`;
         
         panels.forEach((panel, i) => {
@@ -356,23 +380,35 @@
 
     function confirmarExclusao() {
         if (confirm("ATENÇÃO: Tem certeza que deseja APAGAR SUA CONTA?\n\nTodas as suas vagas e dados da empresa serão removidos permanentemente.\nEssa ação não pode ser desfeita.")) {
-            // Chama o formulário de exclusão (precisa ser POST por segurança)
             document.getElementById('form-deletar-conta').submit();
         }
     }
 
-    // Inicialização
+    // Remover alertas automaticamente
+    function autoDismissAlerts() {
+        const alerts = document.querySelectorAll('.alerta');
+        if (alerts.length > 0) {
+            setTimeout(() => {
+                alerts.forEach(alert => {
+                    alert.style.transition = "opacity 0.5s ease";
+                    alert.style.opacity = "0";
+                    setTimeout(() => alert.remove(), 500); 
+                });
+            }, 3000); 
+        }
+    }
+
     window.addEventListener('load', () => {
         const savedTab = localStorage.getItem('recruiterTab');
-        // Pequeno delay para garantir que o CSS carregou e o getBoundingClientRect funcione
         setTimeout(() => {
             if (savedTab) {
-                slider.style.transition = 'none'; // Tira animação inicial
+                slider.style.transition = 'none';
                 goToTab(parseInt(savedTab));
-                setTimeout(() => slider.style.transition = '', 100); // Devolve animação
+                setTimeout(() => slider.style.transition = '', 100);
             } else {
                 updateIndicator(tabs[0]);
             }
+            autoDismissAlerts();
         }, 50);
     });
 

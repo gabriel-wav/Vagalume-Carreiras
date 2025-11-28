@@ -89,47 +89,47 @@ def deletar_comentario(request, comentario_id):
     
     return redirect('ver_empresa', empresa_id=empresa_dona.id)
 
-@login_required
+@login_required 
 def criar_vaga(request):
     """
     View para um Recrutador criar uma nova vaga.
+    INCLUI A REGRA DE NEGÓCIO: Plano Básico = Máx 1 Vaga.
     """
-    if request.user.tipo_usuario != "recrutador":
-        messages.error(
-            request, "Acesso negado. Esta página é apenas para recrutadores."
-        )
-        return redirect("home_candidato")
+    if request.user.tipo_usuario != 'recrutador':
+        messages.error(request, 'Acesso negado. Esta página é apenas para recrutadores.')
+        return redirect('home_candidato') 
 
+    # Obtém o recrutador e a empresa
     recrutador_logado = get_object_or_404(Recrutador, usuario=request.user)
     empresa = recrutador_logado.empresa
-    
-    # --- LÓGICA DE RESTRIÇÃO DE PLANO ---
-    plano_atual = empresa.plano_assinado
-    
-    # Contabiliza APENAS vagas ativas (status=True) publicadas por esta empresa
-    vagas_ativas_count = Vaga.objects.filter(recrutador__empresa=empresa, status=True).count()
 
-    # Verifica se é Plano Básico E se já atingiu o limite de 1 vaga ativa
-    if plano_atual == 'basico' and vagas_ativas_count >= 1:
-        messages.error(
+    # --- REGRA DE BLOQUEIO DE PLANO ---
+    # Conta quantas vagas 'Abertas' (status=True) essa empresa já tem
+    vagas_ativas = Vaga.objects.filter(empresa=empresa, status=True).count()
+    
+    # Se for Plano Básico e já tiver 1 ou mais vagas ativas...
+    if empresa.plano_assinado == 'basico' and vagas_ativas >= 1:
+        messages.warning(
             request, 
-            'Seu **Plano Básico** permite apenas **1 vaga ativa**. Para publicar mais, altere para o Plano Intermediário ou Premium.'
+            '🛑 Limite do Plano Básico atingido! Você já tem 1 vaga ativa. '
+            'Para publicar mais vagas, faça um upgrade para o Plano Intermediário ou Premium.'
         )
-        return redirect('planos_empresa') # Redireciona para a página de planos
-    # --- FIM LÓGICA DE RESTRIÇÃO DE PLANO ---
+        # Redireciona OBRIGATORIAMENTE para a escolha de planos
+        return redirect('planos_empresa') 
+    # ----------------------------------
 
-    if request.method == "POST":
-        form = VagaForm(request.POST, empresa=recrutador_logado.empresa)
-
+    if request.method == 'POST':
+        form = VagaForm(request.POST, empresa=empresa)
+        
         if form.is_valid():
             vaga = form.save(commit=False, recrutador=recrutador_logado)
             vaga.save()
-            messages.success(request, "Vaga criada com sucesso!")
-            return redirect("home_recrutador")
+            messages.success(request, 'Vaga criada com sucesso!')
+            return redirect('home_recrutador')
     else:
-        form = VagaForm(empresa=recrutador_logado.empresa)
+        form = VagaForm(empresa=empresa)
 
-    return render(request, "vagas/criar_vaga.html", {"form": form})
+    return render(request, 'vagas/criar_vaga.html', {'form': form})
 
 
 @login_required
@@ -576,8 +576,14 @@ def ver_empresa(request, empresa_id):
 
 # Arquivo: apps/vagas/views.py (substituir a função existente)
 
+# Arquivo: apps/vagas/views.py
+
 @login_required
 def confirmar_plano(request):
+    """
+    Processa a escolha do plano pelo Recrutador.
+    INCLUI VALIDAÇÃO DE DOWNGRADE: Impede voltar para o Básico se tiver > 1 vaga.
+    """
     if request.user.tipo_usuario != 'recrutador':
         messages.error(request, "Apenas recrutadores podem escolher planos.")
         return redirect('home_candidato')
@@ -585,30 +591,44 @@ def confirmar_plano(request):
     # Renomeando a variável para clareza
     plano_selecionado = request.POST.get("plano") 
 
-    # Dicionário para traduzir o valor técnico para o nome completo (NOVO)
+    # Dicionário para traduzir o valor técnico para o nome completo
     planos_nomes = {
         "basico": "Plano Básico",
         "intermediario": "Plano Intermediário",
         "premium": "Plano Premium"
     }
     
-    # 1. Validação aprimorada (Substitui o bloco antigo)
+    # 1. Validação básica de existência do plano
     if plano_selecionado not in planos_nomes:
-        messages.error(request, "Selecione um plano antes de confirmar.")
+        messages.error(request, "Selecione um plano válido antes de confirmar.")
         return redirect("planos_empresa")
     
-    # Obtém o nome amigável para a mensagem
-    nome_plano = planos_nomes[plano_selecionado]
-
     recrutador = request.user.recrutador
     empresa = recrutador.empresa
 
-    # 2. Salva o plano escolhido no modelo Empresa
+    # --- 2. NOVA REGRA DE BLOQUEIO (DOWNGRADE) ---
+    # Se a empresa tentar mudar para o Básico...
+    if plano_selecionado == 'basico':
+        # Contamos quantas vagas abertas ela tem hoje
+        vagas_ativas = Vaga.objects.filter(empresa=empresa, status=True).count()
+        
+        # Se tiver mais de 1 vaga, impedimos a troca!
+        if vagas_ativas > 1:
+            messages.error(
+                request, 
+                f"🚫 Não é possível mudar para o Plano Básico pois você tem {vagas_ativas} vagas abertas. "
+                "O limite é de 1 vaga. Encerre as vagas excedentes primeiro."
+            )
+            return redirect("planos_empresa")
+    # ---------------------------------------------
+
+    # 3. Se passou pela validação, salva o novo plano
     empresa.plano_assinado = plano_selecionado  
     empresa.save()
 
-    # 3. Adiciona a mensagem de sucesso usando o nome amigável
+    nome_plano = planos_nomes[plano_selecionado]
     messages.success(request, f"🎉 Parabéns! Sua empresa agora está utilizando o **{nome_plano}**.")
 
-    # 4. Redireciona para o painel do recrutador
     return redirect("home_recrutador")
+
+
