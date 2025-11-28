@@ -83,31 +83,53 @@ def cadastrar_candidato(request):
 
 def login_view(request):
     """
-    Processa a página de login para Candidatos e Recrutadores (UC03).
+    Processa a página de login para Candidatos e Recrutadores.
     """
     if request.method == 'POST':
         login_identifier = request.POST.get('username')
         password = request.POST.get('password')
 
+        # --- DEBUG INÍCIO ---
+        print("\n" + "="*30)
+        print(f"TENTATIVA DE LOGIN:")
+        print(f"Identificador digitado: '{login_identifier}'")
+        print(f"Tamanho da senha: {len(password) if password else 0}")
+        # --- DEBUG FIM ---
+
         user = authenticate(request, username=login_identifier, password=password)
 
         if user is not None:
+            print(f"SUCESSO: Usuário {user.email} (ID: {user.id}) autenticado.")
+            print("="*30 + "\n")
+            
             is_first_login = (user.last_login is None)
             login(request, user)
 
             if user.tipo_usuario == 'candidato':
-                # O diff do seu colega removeu a lógica do 'is_first_login' aqui
-                # Vamos manter a sua lógica original do 'main'
                 if is_first_login:
                     messages.info(request, 'Bem-vindo!', extra_tags='FIRST_LOGIN')
-                
-                return redirect('home_candidato') # Lógica do 'main' mantida
+                return redirect('home_candidato')
             
             elif user.tipo_usuario == 'recrutador':
                 return redirect('home_recrutador')
             
             return redirect('home_candidato')
         else:
+            # --- DEBUG DETALHADO DE FALHA ---
+            print(f"FALHA: authenticate retornou None.")
+            try:
+                # Tenta buscar o usuário manualmente para ver se existe
+                debug_user = Usuario.objects.get(email__iexact=login_identifier)
+                print(f"DIAGNÓSTICO: O usuário EXISTE no banco. ID: {debug_user.id}")
+                print(f"DIAGNÓSTICO: Ativo? {debug_user.is_active}")
+                print(f"DIAGNÓSTICO: A senha confere? {debug_user.check_password(password)}")
+            except Usuario.DoesNotExist:
+                print("DIAGNÓSTICO: Usuário NÃO encontrado com este e-mail.")
+            except Exception as e:
+                print(f"DIAGNÓSTICO: Erro ao buscar usuário: {e}")
+            print("="*30 + "\n")
+            # --- FIM DEBUG ---
+
             messages.error(request, 'Credenciais inválidas. Por favor, tente novamente.')
             
     return render(request, 'usuarios/login.html')
