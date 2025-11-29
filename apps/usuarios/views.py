@@ -866,5 +866,250 @@ def deletar_conta(request):
     # Se tentar acessar via GET (pela barra de endereço), chuta de volta
     if request.user.tipo_usuario == 'recrutador':
         return redirect('home_recrutador')
-    return redirect('home_candidato')
+    return redirect('home_candidato')# Cole este código no FINAL do arquivo apps/usuarios/views.py
+# Substitua as funções de recuperação que já existem
+
+import random
+import string
+from django.utils import timezone
+from datetime import timedelta
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+
+# ===== FUNÇÕES AUXILIARES =====
+
+def enviar_codigo_email(usuario, codigo):
+    """
+    Envia o código de recuperação por e-mail
+    """
+    assunto = 'Código de Recuperação - Vagalume Carreiras'
+    mensagem = f'''
+Olá {usuario.first_name},
+
+Seu código de recuperação de senha é: {codigo}
+
+Este código expira em 10 minutos.
+
+Se você não solicitou esta recuperação, ignore este e-mail.
+
+Atenciosamente,
+Equipe Vagalume Carreiras
+    '''
+    
+    try:
+        send_mail(
+            assunto,
+            mensagem,
+            settings.EMAIL_HOST_USER,
+            [usuario.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f"Erro ao enviar email: {e}")
+        return False
+
+def enviar_codigo_sms(usuario, codigo):
+    """
+    Placeholder para envio de SMS
+    Em produção, integrar com Twilio, Zenvia, etc.
+    """
+    print(f"[SIMULAÇÃO SMS] Enviando para {usuario.telefone}: Código {codigo}")
+    # TODO: Implementar integração real com serviço de SMS
+    return True
+
+# ===== VIEWS =====
+
+def recuperar_senha_view(request):
+    """
+    Gerencia o fluxo completo de recuperação de senha:
+    1. Solicitar código (GET ou POST inicial)
+    2. Validar código (POST com código digitado)
+    """
+    
+    if request.method == 'POST':
+        
+        # ===== ETAPA 1: Solicitar envio do código =====
+        if 'email_ou_telefone' in request.POST:
+            identificador = request.POST.get('email_ou_telefone', '').strip()
+            
+            if not identificador:
+                messages.error(request, 'Por favor, informe seu e-mail ou telefone.')
+                return render(request, 'usuarios/recuperar_senha.html')
+            
+            # Tentar encontrar usuário por e-mail
+            usuario = None
+            metodo = 'email'
+            
+            try:
+                usuario = Usuario.objects.get(email__iexact=identificador)
+                destino = usuario.email
+                metodo = 'email'
+            except Usuario.DoesNotExist:
+                # Se não achou por email, tenta por telefone
+                try:
+                    usuario = Usuario.objects.get(telefone=identificador)
+                    destino = usuario.telefone
+                    metodo = 'sms'
+                except Usuario.DoesNotExist:
+                    # Não encontrou por nenhum método
+                    messages.error(request, 'Usuário não encontrado com este e-mail ou telefone.')
+                    return render(request, 'usuarios/recuperar_senha.html')
+            
+            # Gerar código de 6 dígitos
+            codigo = ''.join(random.choices(string.digits, k=6))
+            
+            # Invalidar códigos antigos não usados deste usuário
+            RecuperacaoSenha.objects.filter(user=usuario, usado=False).delete()
+            
+            # Criar novo registro de recuperação
+            recuperacao = RecuperacaoSenha.objects.create(
+                user=usuario,
+                codigo=codigo,
+                metodo=metodo,
+                expira_em=timezone.now() + timedelta(minutes=10),
+                usado=False
+            )
+            
+            # Enviar código
+            if metodo == 'email':
+                sucesso = enviar_codigo_email(usuario, codigo)
+            else:
+                sucesso = enviar_codigo_sms(usuario, codigo)
+            
+            if not sucesso:
+                messages.error(request, f'Erro ao enviar código por {metodo}. Tente novamente.')
+                recuperacao.delete()  # Remove o registro se falhou
+                return render(request, 'usuarios/recuperar_senha.html')
+            
+            # Salvar na sessão para próxima etapa
+            request.session['recuperacao_id'] = recuperacao.id
+            request.session['destino'] = destino
+            request.session['metodo'] = metodo
+            
+            messages.success(request, f'Código enviado para {destino}')
+            
+            # Redirecionar para evitar reenvio ao recarregar
+            return redirect('recuperar_senha')
+        
+        # ===== ETAPA 2: Validar código digitado =====
+        elif 'codigo_1' in request.POST:
+            recuperacao_id = request.session.get('recuperacao_id')
+            
+            if not recuperacao_id:
+                messages.error(request, 'Sessão expirada. Por favor, solicite um novo código.')
+                return redirect('recuperar_senha')
+            
+            # Reconstroi o código dos 6 inputs
+            codigo_digitado = ''.join([
+                request.POST.get(f'codigo_{i}', '') for i in range(1, 7)
+            ])
+            
+            if len(codigo_digitado) != 6:
+                messages.error(request, 'Por favor, digite o código completo de 6 dígitos.')
+                return render(request, 'usuarios/recuperar_senha.html', {
+                    'codigo_enviado': True,
+                    'destino': request.session.get('destino'),
+                })
+            
+            try:
+                recuperacao = RecuperacaoSenha.objects.get(id=recuperacao_id)
+            except RecuperacaoSenha.DoesNotExist:
+                messages.error(request, 'Código inválido ou sessão expirada.')
+                del request.session['recuperacao_id']
+                return redirect('recuperar_senha')
+            
+            # Validar código
+            if recuperacao.codigo != codigo_digitado:
+                messages.error(request, 'Código incorreto. Tente novamente.')
+                return render(request, 'usuarios/recuperar_senha.html', {
+                    'codigo_enviado': True,
+                    'destino': request.session.get('destino'),
+                })
+            
+            # Verificar expiração
+            if timezone.now() > recuperacao.expira_em:
+                messages.error(request, 'Código expirado. Solicite um novo código.')
+                del request.session['recuperacao_id']
+                if 'destino' in request.session: del request.session['destino']
+                if 'metodo' in request.session: del request.session['metodo']
+                return redirect('recuperar_senha')
+            
+            # Verificar se já foi usado
+            if recuperacao.usado:
+                messages.error(request, 'Este código já foi utilizado.')
+                return redirect('recuperar_senha')
+            
+            # Marcar como usado
+            recuperacao.usado = True
+            recuperacao.save()
+            
+            # Salvar user_id na sessão para a próxima tela
+            request.session['reset_user_id'] = recuperacao.user.id
+            
+            # Limpar dados de recuperação
+            if 'recuperacao_id' in request.session: del request.session['recuperacao_id']
+            if 'destino' in request.session: del request.session['destino']
+            if 'metodo' in request.session: del request.session['metodo']
+            
+            # Ir para tela de nova senha
+            return redirect('nova_senha')
+    
+    # ===== GET: Mostrar formulário =====
+    # Verificar se está no meio do processo (tem recuperacao_id na sessão)
+    recuperacao_id = request.session.get('recuperacao_id')
+    
+    if recuperacao_id:
+        # Mostrar tela de digitação do código
+        return render(request, 'usuarios/recuperar_senha.html', {
+            'codigo_enviado': True,
+            'destino': request.session.get('destino', 'seu contato'),
+        })
+    
+    # Mostrar tela inicial (solicitar e-mail/telefone)
+    return render(request, 'usuarios/recuperar_senha.html')
+
+
+def nova_senha_view(request):
+    """
+    Permite definir nova senha após validação do código
+    """
+    # Verificar se tem permissão (veio da etapa anterior)
+    user_id = request.session.get('reset_user_id')
+    
+    if not user_id:
+        messages.error(request, 'Acesso negado. Complete o processo de recuperação primeiro.')
+        return redirect('recuperar_senha')
+    
+    usuario = get_object_or_404(Usuario, id=user_id)
+    
+    if request.method == 'POST':
+        form = NovaSenhaForm(request.POST)
+        
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            
+            # Validar complexidade da senha
+            try:
+                validate_password(new_password, user=usuario)
+            except DjangoValidationError as e:
+                for error in e.messages:
+                    messages.error(request, error)
+                return render(request, 'usuarios/nova_senha.html', {'form': form})
+            
+            # Redefinir senha
+            usuario.set_password(new_password)
+            usuario.save()
+            
+            # Limpar sessão
+            del request.session['reset_user_id']
+            
+            messages.success(request, 'Senha redefinida com sucesso! Faça login com sua nova senha.')
+            return redirect('login')
+    else:
+        form = NovaSenhaForm()
+    
+    return render(request, 'usuarios/nova_senha.html', {'form': form})
 
