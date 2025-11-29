@@ -16,8 +16,12 @@ urlpatterns = [
     path('perfil_empresa/', views.perfil_empresa, name='perfil_empresa'),
     path("planos_empresa/", views.planos_empresa, name="planos_empresa"),
     path('painel-admin/', views.painel_admin, name='painel_admin'),
+
+    path('planos/confirmar/', views.confirmar_plano, name='confirmar_plano'),
+
     path('politica-de-privacidade/', views.politica_privacidade, name='politica_de_privacidade'),
     path('explorar/', views.explorar_vagas, name='explorar_vagas'),
     path('empresa/<int:empresa_id>/', views.ver_empresa, name='ver_empresa'),
     path('comentario/deletar/<int:comentario_id>/', views.deletar_comentario, name='deletar_comentario'),
+
 ]
