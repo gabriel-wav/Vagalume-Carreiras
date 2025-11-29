@@ -941,20 +941,45 @@
     <div class="navbar-mobile-menu" id="navbarMobileMenu">
         <div class="navbar-mobile-links">
             <a href="{% url 'landing_page' %}">Home</a>
-            <a href="#">Sobre Nós</a>
-            <a href="#">Conteúdo</a>
+            <a href="{% url 'explorar_vagas' %}">Explorar Vagas</a>
+            <a href="{% url 'politica_de_privacidade' %}">Política de Privacidade</a>
+
+            {% if user.is_authenticated and user.tipo_usuario == 'candidato' %}
+                <hr style="border-color: #30363d; margin: 10px 0;">
+                <span style="color: #8b949e; font-size: 0.85rem; padding-left: 0;">Área do Candidato</span>
+                <a href="{% url 'home_candidato' %}">Meu Painel (Dashboard)</a>
+                <a href="{% url 'financas_candidato' %}">Finanças Pessoais</a>
+                <a href="{% url 'perfil_publico' user.username %}">Ver Meu Perfil Público</a>
+            {% endif %}
+
+            {% if user.is_authenticated and user.tipo_usuario == 'recrutador' %}
+                <hr style="border-color: #30363d; margin: 10px 0;">
+                <span style="color: #8b949e; font-size: 0.85rem; padding-left: 0;">Área da Empresa</span>
+                <a href="{% url 'home_recrutador' %}">Painel da Empresa</a>
+                <a href="{% url 'criar_vaga' %}">Publicar Nova Vaga</a>
+                <a href="{% url 'radar_de_talentos' %}">Radar de Talentos (IA)</a>
+                <a href="{% url 'planos_empresa' %}">Planos e Preços</a>
+                <a href="{% url 'perfil_empresa' %}">Editar Dados da Empresa</a>
+                {% if user.recrutador.empresa %}
+                    <a href="{% url 'ver_empresa' user.recrutador.empresa.id %}">Ver Página da Empresa</a>
+                {% endif %}
+            {% endif %}
+
+            {% if user.is_staff or user.is_superuser %}
+                <hr style="border-color: #30363d; margin: 10px 0;">
+                <a href="{% url 'painel_admin' %}" style="color: #BEF264;">Painel Administrativo</a>
+            {% endif %}
         </div>
+
         <div class="navbar-mobile-auth">
             {% if user.is_authenticated %}
-                {% if user.tipo_usuario == 'candidato' %}
-                    <a href="{% url 'home_candidato' %}" class="btn-login-gradient">Meu Painel</a>
-                {% elif user.tipo_usuario == 'recrutador' %}
-                     <a href="{% url 'home_recrutador' %}" class="btn-login-gradient">Painel Empresa</a>
-                {% endif %}
                 <a href="{% url 'logout' %}" class="btn-cadastro-outline">Sair</a>
             {% else %}
                 <a href="{% url 'login' %}" class="btn-login-gradient">Login</a>
-                <a href="{% url 'cadastro_candidato' %}" class="btn-cadastro-outline">Cadastre-se</a>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <a href="{% url 'cadastro_candidato' %}" class="btn-cadastro-outline" style="flex:1; font-size: 0.8rem;">Sou Candidato</a>
+                    <a href="{% url 'cadastro_recrutador' %}" class="btn-cadastro-outline" style="flex:1; font-size: 0.8rem;">Sou Empresa</a>
+                </div>
             {% endif %}
         </div>
     </div>
@@ -1008,16 +1033,18 @@
         </div>
     </div>
 
-    <div class="footer-sitemap">
+   <div class="footer-sitemap">
         <div class="sitemap-column">
-            <h4>Navegação</h4>
+            <h4>Institucional</h4>
             <ul>
                 <li><a href="{% url 'landing_page' %}">Home</a></li>
-                <li><a href="#">Sobre Nós</a></li>
-                <li><a href="#">Conteúdo</a></li>
+                <li><a href="{% url 'explorar_vagas' %}">Explorar Vagas</a></li>
+                <li><a href="{% url 'politica_de_privacidade' %}">Política de Privacidade</a></li>
                 {% if user.is_staff %}
-                    <li><a href="{% url 'admin:index' %}">Admin Django</a></li>
-                    <li><a href="{% url 'painel_admin' %}">Painel Admin</a></li>
+                    <li style="margin-top: 10px;">
+                        <a href="{% url 'painel_admin' %}" style="color: #BEF264;">Painel Admin</a>
+                    </li>
+                    <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -1027,10 +1054,13 @@
             <ul>
                 {% if user.is_authenticated and user.tipo_usuario == 'candidato' %}
                     <li><a href="{% url 'home_candidato' %}">Meu Painel</a></li>
+                    <li><a href="{% url 'financas_candidato' %}">Ferramentas Financeiras</a></li>
+                    <li><a href="{% url 'perfil_publico' user.username %}">Meu Currículo Web</a></li>
                     <li><a href="{% url 'logout' %}">Sair</a></li>
                 {% else %}
-                    <li><a href="{% url 'cadastro_candidato' %}">Criar Conta</a></li>
                     <li><a href="{% url 'login' %}">Fazer Login</a></li>
+                    <li><a href="{% url 'cadastro_candidato' %}">Cadastrar Currículo</a></li>
+                    <li><a href="{% url 'recuperar_senha' %}">Recuperar Senha</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -1039,15 +1069,15 @@
             <h4>Para Empresas</h4>
             <ul>
                 {% if user.is_authenticated and user.tipo_usuario == 'recrutador' %}
-                    <li><a href="{% url 'home_recrutador' %}">Meu Painel</a></li>
+                    <li><a href="{% url 'home_recrutador' %}">Gestão de Vagas</a></li>
                     <li><a href="{% url 'criar_vaga' %}">Anunciar Vaga</a></li>
                     <li><a href="{% url 'radar_de_talentos' %}">Radar de Talentos</a></li>
-                    <li><a href="{% url 'planos_empresa' %}">Ver Planos</a></li>
-                    <li><a href="{% url 'perfil_empresa' %}">Perfil da Empresa</a></li>
-                    <li><a href="{% url 'logout' %}">Sair</a></li>
+                    <li><a href="{% url 'planos_empresa' %}">Planos Premium</a></li>
+                    <li><a href="{% url 'perfil_empresa' %}">Configurações</a></li>
                 {% else %}
+                    <li><a href="{% url 'login' %}">Área do Recrutador</a></li>
                     <li><a href="{% url 'cadastro_recrutador' %}">Cadastrar Empresa</a></li>
-                    <li><a href="{% url 'login' %}">Fazer Login</a></li>
+                    <li><a href="{% url 'planos_empresa' %}">Conhecer Planos</a></li>
                 {% endif %}
             </ul>
         </div>
