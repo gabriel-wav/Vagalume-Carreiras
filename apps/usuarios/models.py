@@ -1,10 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Usuario(AbstractUser):
-    
     TIPO_USUARIO_CHOICES = (
         ('candidato', 'Candidato'),
         ('recrutador', 'Recrutador'),
@@ -15,14 +14,14 @@ class Usuario(AbstractUser):
         choices=TIPO_USUARIO_CHOICES,
         default='candidato'
     )
+    email = models.EmailField('email address', unique=True)
     telefone = models.CharField(max_length=15, blank=True, null=True)
     
     def __str__(self):
         return self.email
 
 # -------------------------------------------------------------------
-# "Empresa" (não é um usuario)
-# A Empresa não loga. O Recrutador loga EM NOME dela.
+# MODELO EMPRESA (COM OS CAMPOS DE PLANO)
 # -------------------------------------------------------------------
 class Empresa(models.Model):
     nome = models.CharField(max_length=100)
@@ -30,23 +29,43 @@ class Empresa(models.Model):
     cnpj = models.CharField(max_length=14, unique=True)
     setor = models.CharField(max_length=100)
 
+    # --- NOVOS CAMPOS DE PLANO ---
+    # Usa string 'vagas.Plano' para evitar erro de importação circular
+    plano_fk = models.ForeignKey(
+        'vagas.Plano', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        verbose_name='Plano (Chave Estrangeira)'
+    )
+
+    OPCOES_PLANO = [
+        ('basico', 'Plano Básico'),
+        ('intermediario', 'Plano Intermediário'),
+        ('premium', 'Plano Premium'),
+    ]
+    
+    plano_assinado = models.CharField(
+        max_length=20,
+        choices=OPCOES_PLANO,
+        default='basico',
+        verbose_name='Plano Assinado (Regra de Negócio)'
+    )
+    # -----------------------------
+
     def __str__(self):
         return self.nome
     
 # -------------------------------------------------------------------
-# Estes models se conectam ao model "Usuario"
-# para guardar os dados específicos de cada um.
+# Outros Modelos
 # -------------------------------------------------------------------
 
 class Candidato(models.Model):
-    # Conecta o Perfil Candidato ao sistema de Login
     usuario = models.OneToOneField(
-        settings.AUTH_USER_MODEL, # Aponta para o nosso model "Usuario"
-        on_delete=models.CASCADE,   # Se o login for apagado, o perfil também é
-        primary_key=True          # O ID do Candidato será o mesmo ID do Usuario
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        primary_key=True
     )
-    
-    # CAMPOS ESPECÍFICOS (Removemos nome, email, senha, etc., pois estão no Usuario)
     cpf = models.CharField(max_length=11, unique=True)
     headline = models.CharField(max_length=255, blank=True, null=True)
     curriculo_pdf = models.FileField(upload_to='curriculos_pdf/', blank=True, null=True)
@@ -57,38 +76,25 @@ class Candidato(models.Model):
         ('O', 'Outro'),
         ('P', 'Prefiro não informar'),
     )
-    genero = models.CharField(
-        max_length=1, 
-        choices=GENERO_CHOICES, 
-        blank=True, 
-        null=True
-    )
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES, blank=True, null=True)
     bairro = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return self.usuario.email # Puxa o email do sistema de login
+        return self.usuario.email
 
 class Recrutador(models.Model):
-    # Conecta o Perfil Recrutador ao sistema de Login
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         primary_key=True
     )
-    
-    # Conecta o Recrutador à Empresa que ele representa
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.usuario.email} ({self.empresa.nome})"
 
-# NOTA: O 'Administrador' foi removido. O próprio 'Usuario' 
-# com 'is_staff=True' e 'is_superuser=True' já é o administrador.
-
-# Todos estes se conectam ao 'Candidato' com uma chave estrangeira
-
 class Resumo_Profissional(models.Model):
-    candidato = models.OneToOneField(Candidato, on_delete=models.CASCADE) # Um candidato só tem um resumo
+    candidato = models.OneToOneField(Candidato, on_delete=models.CASCADE)
     texto = models.TextField(max_length=500)
 
 class Idiomas(models.Model):
@@ -98,16 +104,13 @@ class Idiomas(models.Model):
 
 class Redes_Sociais(models.Model):
     candidato = models.ForeignKey(Candidato, related_name='redes_sociais', on_delete=models.CASCADE)
-    tipo_rede = models.CharField(max_length=50) # Ex: 'LinkedIn', 'GitHub'
+    tipo_rede = models.CharField(max_length=50)
     link = models.URLField(max_length=200)
 
 class Skill(models.Model):
     candidato = models.ForeignKey(Candidato, related_name='skills', on_delete=models.CASCADE)
-    TIPO_SKILL_CHOICES = (
-        ('hard', 'Hard Skill'),
-        ('soft', 'Soft Skill'),
-    )
-    nome = models.CharField(max_length=100) # Nome da skill (ex: 'Python', 'Comunicação')
+    TIPO_SKILL_CHOICES = (('hard', 'Hard Skill'), ('soft', 'Soft Skill'))
+    nome = models.CharField(max_length=100)
     tipo = models.CharField(max_length=10, choices=TIPO_SKILL_CHOICES)
 
 class Experiencia(models.Model):
@@ -139,21 +142,13 @@ class AvaliacaoEmpresa(models.Model):
     data = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('empresa', 'candidato') # Um candidato só avalia a empresa uma vez
+        unique_together = ('empresa', 'candidato')
 
     def __str__(self):
         return f"{self.empresa.nome} - {self.nota} estrelas"
-    
-# -------------------------------------------------------------------
-# MODELO PARA RECUPERAÇÃO DE SENHA
-# -------------------------------------------------------------------
 
 class RecuperacaoSenha(models.Model):
-    METODO_CHOICES = [
-        ('email', 'E-mail'),
-        ('sms', 'SMS'),
-    ]
-
+    METODO_CHOICES = [('email', 'E-mail'), ('sms', 'SMS')]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     codigo = models.CharField(max_length=6)
     metodo = models.CharField(max_length=5, choices=METODO_CHOICES)

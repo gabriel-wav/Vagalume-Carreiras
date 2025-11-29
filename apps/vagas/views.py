@@ -89,32 +89,47 @@ def deletar_comentario(request, comentario_id):
     
     return redirect('ver_empresa', empresa_id=empresa_dona.id)
 
+# Em apps/vagas/views.py
+
 @login_required
 def criar_vaga(request):
     """
     View para um Recrutador criar uma nova vaga.
+    AGORA COM BLOQUEIO DE PLANO FUNCIONAL.
     """
-    if request.user.tipo_usuario != "recrutador":
-        messages.error(
-            request, "Acesso negado. Esta página é apenas para recrutadores."
-        )
-        return redirect("home_candidato")
+    # 1. Verifica se é recrutador
+    if request.user.tipo_usuario != 'recrutador':
+        messages.error(request, 'Acesso negado. Esta página é apenas para recrutadores.')
+        return redirect('home_candidato')
 
+    # 2. Pega os dados da empresa
     recrutador_logado = get_object_or_404(Recrutador, usuario=request.user)
+    empresa = recrutador_logado.empresa
 
-    if request.method == "POST":
-        form = VagaForm(request.POST, empresa=recrutador_logado.empresa)
+    # --- TRAVA DE SEGURANÇA DO PLANO ---
+    # Conta quantas vagas ABERTAS (status=True) essa empresa já tem
+    vagas_ativas = Vaga.objects.filter(empresa=empresa, status=True).count()
 
+    # Se o plano for 'basico' e já tiver 1 ou mais vagas... BLOQUEIA.
+    if empresa.plano_assinado == 'basico' and vagas_ativas >= 1:
+        messages.warning(
+            request, 
+            f'🚫 Limite do Plano Básico atingido! Você já tem {vagas_ativas} vaga ativa. '
+            'Faça um upgrade para o Plano Intermediário ou Premium para continuar contratando.'
+        )
+        return redirect('planos_empresa') 
+    if request.method == 'POST':
+        form = VagaForm(request.POST, empresa=empresa)
+        
         if form.is_valid():
             vaga = form.save(commit=False, recrutador=recrutador_logado)
             vaga.save()
-            messages.success(request, "Vaga criada com sucesso!")
-            return redirect("home_recrutador")
+            messages.success(request, 'Vaga criada com sucesso!')
+            return redirect('home_recrutador')
     else:
-        form = VagaForm(empresa=recrutador_logado.empresa)
+        form = VagaForm(empresa=empresa)
 
-    return render(request, "vagas/criar_vaga.html", {"form": form})
-
+    return render(request, 'vagas/criar_vaga.html', {'form': form})
 
 @login_required
 def home_candidato(request):
@@ -181,7 +196,8 @@ def home_candidato(request):
 @login_required
 def home_recrutador(request):
     """
-    Painel do Recrutador, lista as vagas criadas por ele. (R do CRUD)
+    Painel do Recrutador.
+    Agora busca o plano atual da empresa para mostrar na Badge.
     """
     if request.user.tipo_usuario != "recrutador":
         messages.error(request, "Acesso negado.")
@@ -189,15 +205,35 @@ def home_recrutador(request):
 
     try:
         recrutador = request.user.recrutador
+        empresa = recrutador.empresa # Pega a empresa
+        
+        # --- LÓGICA DO PLANO ---
+        # Dicionário para traduzir 'premium' -> 'Plano Premium'
+        planos_nomes = {
+            "basico": "Plano Básico",
+            "intermediario": "Plano Intermediário",
+            "premium": "Plano Premium"
+        }
+        
+        # Pega o código do banco (ex: 'premium')
+        slug = getattr(empresa, 'plano_assinado', 'basico')
+        
+        # Traduz para o nome bonito
+        plano_atual_nome = planos_nomes.get(slug, "Plano Básico")
+        # -----------------------
+
     except Recrutador.DoesNotExist:
-        messages.error(request, "Você não possui um perfil de recrutador associado.")
+        messages.error(request, "Você não possui um perfil de recrutador.")
         return redirect("home_candidato")
 
     minhas_vagas = Vaga.objects.filter(recrutador=recrutador)
 
-    contexto = {"vagas": minhas_vagas}
+    contexto = {
+        "vagas": minhas_vagas,
+        "plano_atual_nome": plano_atual_nome, # <--- ENVIANDO PARA O HTML
+    }
+    
     return render(request, "vagas/home_recrutador.html", contexto)
-
 
 @login_required
 def editar_vaga(request, vaga_id):
@@ -527,23 +563,69 @@ def ver_empresa(request, empresa_id):
         try:
             minha_avaliacao = avaliacoes.filter(candidato=request.user.candidato).first()
         except:
-            pass # Se der erro de perfil, ignora
+            pass 
 
     contexto = {
         'empresa': empresa,
         'vagas_abertas': Vaga.objects.filter(empresa=empresa, status=True),
         'avaliacoes': avaliacoes,
         'media_nota': round(media, 1) if media else "N/A",
-        'minha_avaliacao': minha_avaliacao,
-        'is_dono': False # Flag para mostrar botões de edição no futuro
+        'minha_avaliacao': minha_avaliacao
     }
-    
-    # Verifica se o usuário é o DONO da empresa
-    if request.user.tipo_usuario == 'recrutador':
-        try:
-            if request.user.recrutador.empresa == empresa:
-                contexto['is_dono'] = True
-        except:
-            pass
-
+    # CORREÇÃO: Estava renderizando painel_admin.html errado aqui
     return render(request, 'vagas/ver_empresa.html', contexto)
+
+
+@login_required
+def confirmar_plano(request):
+    """
+    Processa a escolha do plano com LOGS DE DEPURAÇÃO.
+    """
+    print("\n--- INÍCIO CHECKOUT PLANO ---") # Log
+
+    if request.user.tipo_usuario != 'recrutador':
+        messages.error(request, "Acesso negado.")
+        return redirect('home_candidato')
+
+    if request.method == 'POST':
+        plano_selecionado = request.POST.get("plano") 
+        print(f"1. Plano recebido do formulário: '{plano_selecionado}'") # Log
+        
+        planos_nomes = {
+            "basico": "Plano Básico",
+            "intermediario": "Plano Intermediário",
+            "premium": "Plano Premium"
+        }
+        
+        if not plano_selecionado or plano_selecionado not in planos_nomes:
+            print("ERRO: Plano inválido ou vazio.") # Log
+            messages.error(request, "Selecione um plano válido clicando em um dos cards.")
+            return redirect("planos_empresa")
+        
+        recrutador = request.user.recrutador
+        empresa = recrutador.empresa
+        print(f"2. Empresa: {empresa.nome} | Plano Atual: {empresa.plano_assinado}") # Log
+
+        # Regra de Downgrade
+        if plano_selecionado == 'basico':
+            vagas_ativas = Vaga.objects.filter(empresa=empresa, status=True).count()
+            print(f"3. Verificando Downgrade. Vagas Ativas: {vagas_ativas}") # Log
+            
+            if vagas_ativas > 1:
+                print("ERRO: Bloqueado por excesso de vagas.") # Log
+                messages.error(
+                    request, 
+                    f"🚫 Não é possível mudar para o Básico: você tem {vagas_ativas} vagas abertas (limite 1). Encerre vagas antes."
+                )
+                return redirect("planos_empresa")
+
+        # Salvar
+        empresa.plano_assinado = plano_selecionado  
+        empresa.save()
+        print(f"4. SUCESSO! Plano alterado para {plano_selecionado}") # Log
+
+        nome_plano = planos_nomes[plano_selecionado]
+        messages.success(request, f"🎉 Plano alterado para **{nome_plano}**!")
+        return redirect("home_recrutador")
+
+    return redirect("planos_empresa")

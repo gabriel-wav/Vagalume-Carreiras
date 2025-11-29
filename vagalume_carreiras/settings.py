@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vagalume_db',
         'USER': 'postgres',
-        'PASSWORD': 'senai103@',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
         # Força o psycopg2 a usar UTF-8 e evita o erro de 'byte 0xe7'

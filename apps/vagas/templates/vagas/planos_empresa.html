@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planos e Preços{% endblock %}
+
+{% block content %}
+<style>
+    /* =========================
+       CSS "GLOW" RESTAURADO
+       ========================= */
+    .planos-wrapper {
+        background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%);
+        min-height: calc(100vh - 86px);
+        padding: 60px 20px;
+        color: #fff;
+    }
+
+    .planos-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+    .header-section { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease; }
+    .titulo-planos { 
+        font-size: 3rem; 
+        margin-bottom: 10px; 
+        background: linear-gradient(135deg, #BEF264, #4A7856);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+    }
+    .subtitulo { color: #94A3B8; font-size: 1.2rem; }
+
+    /* Botão Voltar */
+    .back-link {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: #8b949e; text-decoration: none; font-weight: 700;
+        margin-bottom: 20px; transition: color 0.2s;
+    }
+    .back-link:hover { color: #BEF264; }
+
+    /* GRID LADO A LADO */
+    .planos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    /* CARD COM BRILHO E EFEITO */
+    .plano-card {
+        background: rgba(27, 38, 59, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px 30px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid rgba(190, 242, 100, 0.1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Linha brilhante no topo */
+    .plano-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, #4A7856, #BEF264);
+        transform: scaleX(0); transition: transform 0.4s ease;
+    }
+
+    .plano-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(190, 242, 100, 0.4);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(190, 242, 100, 0.1);
+    }
+    .plano-card:hover::before { transform: scaleX(1); }
+
+    /* Estado Selecionado */
+    .plano-card.selecionado {
+        background: rgba(27, 38, 59, 0.9);
+        border-color: #BEF264;
+        box-shadow: 0 0 40px rgba(190, 242, 100, 0.2), inset 0 0 20px rgba(190, 242, 100, 0.05);
+    }
+    .plano-card.selecionado::before { transform: scaleX(1); }
+
+    /* Conteúdo */
+    .plano-card h2 { color: #E2E8F0; font-size: 1.8rem; margin-bottom: 10px; font-weight: 700; }
+    .preco { font-size: 2.5rem; font-weight: 800; color: #BEF264; margin: 15px 0; }
+    .preco small { font-size: 1rem; color: #94A3B8; font-weight: 400; }
+
+    .lista-funcionalidades {
+        list-style: none; padding: 0; margin: 20px 0 0 0; text-align: left; width: 100%;
+    }
+    .lista-funcionalidades li {
+        padding: 12px 0; border-bottom: 1px solid rgba(190, 242, 100, 0.1);
+        color: #CBD5E1; font-size: 1rem; display: flex; align-items: center; gap: 10px;
+    }
+    .lista-funcionalidades li::before { content: '✓'; color: #BEF264; font-weight: bold; font-size: 1.2rem; }
+
+    /* Destaque Premium */
+    .plano-card.destaque {
+        background: linear-gradient(135deg, rgba(27, 38, 59, 0.9) 0%, rgba(74, 120, 86, 0.2) 100%);
+        border-color: rgba(190, 242, 100, 0.4);
+    }
+    .icone-destaque { font-size: 3rem; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    /* Check Indicator */
+    .check-indicator {
+        position: absolute; top: 20px; right: 20px; width: 30px; height: 30px;
+        border-radius: 50%; border: 2px solid #4A7856;
+        display: flex; align-items: center; justify-content: center;
+        transition: 0.3s; opacity: 0.5;
+    }
+    .plano-card.selecionado .check-indicator {
+        background: #BEF264; border-color: #BEF264; opacity: 1;
+        box-shadow: 0 0 15px #BEF264;
+    }
+    .check-indicator::after { content: '✓'; color: #0D1B2A; font-weight: bold; display: none; }
+    .plano-card.selecionado .check-indicator::after { display: block; }
+
+    /* Botão Confirmar */
+    .botoes-container { text-align: center; margin-top: 40px; animation: fadeIn 1s ease; }
+    .confirmar-btn {
+        padding: 18px 60px; font-size: 1.2rem;
+        background: linear-gradient(135deg, #BEF264, #4A7856);
+        color: #0D1B2A; border: none; border-radius: 50px;
+        cursor: pointer; font-weight: 800; transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(190, 242, 100, 0.3);
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+    .confirmar-btn:hover:not(:disabled) {
+        transform: translateY(-3px); box-shadow: 0 15px 50px rgba(190, 242, 100, 0.5);
+    }
+    .confirmar-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+    /* Mensagens */
+    .messages-container { margin-bottom: 30px; }
+    .alert { padding: 15px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-weight: bold; }
+    .alert-error { background: rgba(248, 81, 73, 0.2); color: #ff7b72; border: 1px solid #ff7b72; }
+    .alert-success { background: rgba(63, 185, 80, 0.2); color: #3fb950; border: 1px solid #3fb950; }
+    
+    /* Animações */
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+
+<main class="planos-wrapper">
+  <div class="planos-container">
+    
+    <a href="{% url 'home_recrutador' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Voltar para o Painel
+    </a>
+
+    <div class="header-section">
+      <h1 class="titulo-planos">Escolha o plano ideal</h1>
+      <p class="subtitulo">Escale seu time com as melhores ferramentas do mercado.</p>
+    </div>
+
+    {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="planos-grid">
+      
+      <div class="plano-card" data-plano="basico" onclick="selecionarPlano('basico', this)">
+        <div class="check-indicator"></div>
+        <h2>Básico</h2>
+        <p class="preco">Grátis</p>
+        <ul class="lista-funcionalidades">
+          <li>1 Vaga Simultânea</li>
+          <li>Painel de Gestão</li>
+          <li>Suporte da Comunidade</li>
+        </ul>
+      </div>
+
+      <div class="plano-card" data-plano="intermediario" onclick="selecionarPlano('intermediario', this)">
+        <div class="check-indicator"></div>
+        <h2>Intermediário</h2>
+        <p class="preco">R$ 150<small>/mês</small></p>
+        <ul class="lista-funcionalidades">
+          <li>10 Vagas Simultâneas</li>
+          <li>Perfil Verificado</li>
+          <li>Selo "Destaque" na Busca</li>
+        </ul>
+      </div>
+
+      <div class="plano-card destaque" data-plano="premium" onclick="selecionarPlano('premium', this)">
+        <div class="check-indicator"></div>
+        <div class="icone-destaque">👑</div>
+        <h2>Premium</h2>
+        <p class="preco">R$ 400<small>/mês</small></p>
+        <ul class="lista-funcionalidades">
+          <li>Vagas Ilimitadas</li>
+          <li><strong>Radar de Talentos (IA)</strong></li>
+          <li>Topo da Página Inicial</li>
+          <li>Suporte Prioritário 24h</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="botoes-container">
+      <p id="texto-selecao" style="color: #94A3B8; margin-bottom: 20px; min-height: 24px;">Nenhum plano selecionado</p>
+      
+      <form action="{% url 'confirmar_plano' %}" method="POST" id="formPlano">
+        {% csrf_token %}
+        <input type="hidden" name="plano" id="inputPlano" value="">
+        <button type="submit" class="confirmar-btn" id="btnConfirmar" disabled>
+            Confirmar Assinatura
+        </button>
+      </form>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function selecionarPlano(valor, card) {
+    // 1. Atualiza o input hidden
+    document.getElementById('inputPlano').value = valor;
+    
+    // 2. Atualiza visual dos cards
+    document.querySelectorAll('.plano-card').forEach(c => c.classList.remove('selecionado'));
+    card.classList.add('selecionado');
+    
+    // 3. Feedback de texto e botão
+    const nome = card.querySelector('h2').innerText;
+    const txt = document.getElementById('texto-selecao');
+    txt.innerText = "Você escolheu: " + nome;
+    txt.style.color = "#BEF264";
+    
+    // 4. Habilita botão
+    const btn = document.getElementById('btnConfirmar');
+    btn.disabled = false;
+    btn.style.cursor = "pointer";
+    btn.style.opacity = "1";
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre Nós - Vagalume Carreiras{% endblock %}
+
+{% block content %}
+<style>
+    /* =========================
+       SOBRE NÓS - DARK THEME
+       ========================= */
+    .about-wrapper {
+        background-color: #0D1B2A;
+        min-height: calc(100vh - 100px);
+        padding: 60px 20px;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-container {
+        max-width: 1100px;
+        width: 100%;
+    }
+
+    /* CABEÇALHO */
+    .about-header {
+        text-align: center;
+        margin-bottom: 80px;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .about-header h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .about-header span {
+        color: #BEF264;
+        -webkit-text-fill-color: #BEF264;
+    }
+
+    .about-text {
+        max-width: 700px;
+        margin: 0 auto;
+        font-size: 1.2rem;
+        color: #8b949e;
+        line-height: 1.8;
+    }
+
+    /* GRID DE DEVS */
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+
+    /* CARD DO MEMBRO */
+    .member-card {
+        background: #161B22;
+        border: 1px solid #30363d;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .member-card:hover {
+        transform: translateY(-10px);
+        border-color: #BEF264;
+        box-shadow: 0 10px 40px rgba(190, 242, 100, 0.1);
+    }
+
+    /* Avatar com borda neon */
+    .member-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        padding: 3px;
+        background: linear-gradient(135deg, #BEF264, #4A7856);
+        position: relative;
+    }
+
+    .member-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid #161B22; /* Borda interna para separar */
+        object-fit: cover;
+        background-color: #0D1B2A;
+    }
+
+    .member-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 5px;
+    }
+
+    .member-role {
+        color: #BEF264;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    /* Links Sociais */
+    .member-social {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #0D1B2A;
+        border: 1px solid #30363d;
+        color: #8b949e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .social-btn:hover {
+        background: #BEF264;
+        color: #0D1B2A;
+        border-color: #BEF264;
+        transform: scale(1.1);
+    }
+
+    /* SEÇÃO DO PROJETO */
+    .project-section {
+        background: #161B22;
+        border-radius: 24px;
+        padding: 60px;
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        border: 1px solid #30363d;
+    }
+
+    .project-info h2 {
+        font-size: 2.5rem;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+
+    .project-info p {
+        color: #8b949e;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 30px;
+    }
+
+    .repo-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #21262d;
+        color: #fff;
+        padding: 15px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        border: 1px solid #30363d;
+        transition: all 0.3s;
+    }
+
+    .repo-btn:hover {
+        border-color: #BEF264;
+        background-color: #30363d;
+    }
+
+    /* Animações */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsividade */
+    @media (max-width: 900px) {
+        .project-section { flex-direction: column; text-align: center; padding: 40px 20px; }
+        .about-header h1 { font-size: 2.5rem; }
+    }
+</style>
+
+<div class="about-wrapper">
+    <div class="about-container">
+        
+        <div class="about-header">
+            <h1>Quem faz o <span>Vagalume</span> brilhar?</h1>
+            <p class="about-text">
+                Somos um grupo de estudantes apaixonados por tecnologia, dedicados a transformar 
+                a forma como o recrutamento é feito através da inteligência e inovação.
+            </p>
+        </div>
+
+        <div class="team-grid">
+            
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Pedro+Henrique&background=0D1B2A&color=BEF264&bold=true" alt="Pedro">
+                </div>
+                <h3 class="member-name">Pedro Henrique</h3>
+                <span class="member-role">Full Stack Developer</span>
+                <div class="member-social">
+                    <a href="https://github.com/pedroH901" target="_blank" class="social-btn" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-btn" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Danilo&background=0D1B2A&color=BEF264&bold=true" alt="Danilo">
+                </div>
+                <h3 class="member-name">Danilo</h3>
+                <span class="member-role">Backend Developer</span>
+                <div class="member-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Gabriel&background=0D1B2A&color=BEF264&bold=true" alt="Gabriel">
+                </div>
+                <h3 class="member-name">Gabriel</h3>
+                <span class="member-role">Frontend Developer</span>
+                <div class="member-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Antonio&background=0D1B2A&color=BEF264&bold=true" alt="Antonio">
+                </div>
+                <h3 class="member-name">Antonio</h3>
+                <span class="member-role">Database Specialist</span>
+                <div class="member-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="project-section">
+            <div class="project-icon">
+                <i class="fab fa-github" style="font-size: 8rem; color: #21262d;"></i>
+            </div>
+            <div class="project-info">
+                <h2>Sobre o Projeto</h2>
+                <p>
+                    O <strong>Vagalume Carreiras</strong> nasceu como um Trabalho de Conclusão de Curso (TCC) 
+                    com o objetivo de aplicar algoritmos de matching e inteligência artificial 
+                    para conectar candidatos e empresas de forma mais assertiva.
+                </p>
+                <a href="https://github.com/pedroH901/Vagalume-Carreiras" target="_blank" class="repo-btn">
+                    <i class="fab fa-github"></i> Acessar Repositório Oficial
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
