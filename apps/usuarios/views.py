@@ -40,6 +40,9 @@ from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
+# SMS (Twilio)
+from twilio.rest import Client 
+from twilio.base.exceptions import TwilioRestException
 
 @transaction.atomic
 def cadastrar_candidato(request):
@@ -83,31 +86,53 @@ def cadastrar_candidato(request):
 
 def login_view(request):
     """
-    Processa a página de login para Candidatos e Recrutadores (UC03).
+    Processa a página de login para Candidatos e Recrutadores.
     """
     if request.method == 'POST':
         login_identifier = request.POST.get('username')
         password = request.POST.get('password')
 
+        # --- DEBUG INÍCIO ---
+        print("\n" + "="*30)
+        print(f"TENTATIVA DE LOGIN:")
+        print(f"Identificador digitado: '{login_identifier}'")
+        print(f"Tamanho da senha: {len(password) if password else 0}")
+        # --- DEBUG FIM ---
+
         user = authenticate(request, username=login_identifier, password=password)
 
         if user is not None:
+            print(f"SUCESSO: Usuário {user.email} (ID: {user.id}) autenticado.")
+            print("="*30 + "\n")
+            
             is_first_login = (user.last_login is None)
             login(request, user)
 
             if user.tipo_usuario == 'candidato':
-                # O diff do seu colega removeu a lógica do 'is_first_login' aqui
-                # Vamos manter a sua lógica original do 'main'
                 if is_first_login:
                     messages.info(request, 'Bem-vindo!', extra_tags='FIRST_LOGIN')
-                
-                return redirect('home_candidato') # Lógica do 'main' mantida
+                return redirect('home_candidato')
             
             elif user.tipo_usuario == 'recrutador':
                 return redirect('home_recrutador')
             
             return redirect('home_candidato')
         else:
+            # --- DEBUG DETALHADO DE FALHA ---
+            print(f"FALHA: authenticate retornou None.")
+            try:
+                # Tenta buscar o usuário manualmente para ver se existe
+                debug_user = Usuario.objects.get(email__iexact=login_identifier)
+                print(f"DIAGNÓSTICO: O usuário EXISTE no banco. ID: {debug_user.id}")
+                print(f"DIAGNÓSTICO: Ativo? {debug_user.is_active}")
+                print(f"DIAGNÓSTICO: A senha confere? {debug_user.check_password(password)}")
+            except Usuario.DoesNotExist:
+                print("DIAGNÓSTICO: Usuário NÃO encontrado com este e-mail.")
+            except Exception as e:
+                print(f"DIAGNÓSTICO: Erro ao buscar usuário: {e}")
+            print("="*30 + "\n")
+            # --- FIM DEBUG ---
+
             messages.error(request, 'Credenciais inválidas. Por favor, tente novamente.')
             
     return render(request, 'usuarios/login.html')
@@ -753,6 +778,13 @@ def recuperar_senha_view(request):
 
     return render(request, 'usuarios/recuperar_senha.html')
 
+# apps/usuarios/views.py (Nova Senha View Corrigida)
+
+# apps/usuarios/views.py (função nova_senha_view CORRIGIDA)
+
+from django.db import transaction # Já deve estar no topo do arquivo
+
+@transaction.atomic # <--- ADIÇÃO CRÍTICA
 def nova_senha_view(request):
     """
     Permite ao usuário criar uma nova senha após a validação do código.
@@ -772,7 +804,7 @@ def nova_senha_view(request):
         if form.is_valid():
             new_password = form.cleaned_data['new_password']
             
-            # 1. Validação de Complexidade (Opcional, mas recomendado)
+            # 1. Validação de Complexidade
             try:
                 validate_password(new_password, user=usuario)
             except DjangoValidationError as e:
@@ -781,18 +813,25 @@ def nova_senha_view(request):
                     messages.error(request, error)
                 return render(request, 'usuarios/nova_senha.html', {'form': form})
             
-            # 2. Redefinir a Senha
-            usuario.set_password(new_password)
-            usuario.save()
+            # 2. Redefinir a Senha e Salvar (Agora dentro do bloco atômico)
+            try:
+                usuario.set_password(new_password)
+                usuario.save()
             
-            # 3. Limpar a sessão
-            del request.session['reset_user_id']
+                # 3. Limpar a sessão
+                del request.session['reset_user_id']
             
-            messages.success(request, 'Senha redefinida com sucesso! Faça login com sua nova senha.')
-            return redirect('login')
+                messages.success(request, 'Senha redefinida com sucesso! Faça login com sua nova senha.')
+                return redirect('login')
+            
+            except Exception as e:
+                # Se o save falhar por qualquer motivo no DB
+                messages.error(request, 'Erro crítico ao salvar a nova senha no banco de dados. Tente novamente o processo.')
+                print(f"ERRO CRÍTICO AO SALVAR SENHA: {e}") 
+                return render(request, 'usuarios/nova_senha.html', {'form': form})
         
     else:
-        form = NovaSenhaForm() # Exibe o formulário vazio
+        form = NovaSenhaForm()
         
     return render(request, 'usuarios/nova_senha.html', {'form': form})
 
@@ -826,15 +865,6 @@ def enviar_codigo_email(usuario, codigo):
     except Exception as e:
         print(f"Erro ao enviar email: {e}")
         return False
-
-def enviar_codigo_sms(usuario, codigo):
-    """
-    Função Placeholder para Envio de SMS (Requer Twilio, Zenvia, etc.)
-    Apenas simula o envio e retorna True.
-    """
-    # Lógica de integração com serviços de SMS aqui
-    print(f"SIMULANDO ENVIO SMS para {usuario.telefone}: Código {codigo}")
-    return True
 
 @login_required
 def deletar_conta(request):
@@ -913,12 +943,46 @@ Equipe Vagalume Carreiras
 
 def enviar_codigo_sms(usuario, codigo):
     """
-    Placeholder para envio de SMS
-    Em produção, integrar com Twilio, Zenvia, etc.
+    Envia o código de recuperação via Twilio SMS.
     """
-    print(f"[SIMULAÇÃO SMS] Enviando para {usuario.telefone}: Código {codigo}")
-    # TODO: Implementar integração real com serviço de SMS
-    return True
+    account_sid = getattr(settings, 'TWILIO_ACCOUNT_SID', None)
+    auth_token = getattr(settings, 'TWILIO_AUTH_TOKEN', None)
+    remetente = getattr(settings, 'TWILIO_PHONE_NUMBER', None)
+
+    if not all([account_sid, auth_token, remetente]):
+        print("ERRO: Credenciais do Twilio não configuradas no settings.py")
+        return False
+
+    try:
+        client = Client(account_sid, auth_token)
+        
+        # Formatação básica do número para E.164 (Ex: +5511999999999)
+        # Assumindo que o usuário cadastrou apenas números (ex: 11999999999)
+        numero_destino = usuario.telefone
+        
+        # Se não tiver o código do país (+55), adicionamos (ajuste conforme seu público)
+        if not numero_destino.startswith('+'):
+            # Remove caracteres não numéricos para garantir
+            nums = ''.join(filter(str.isdigit, numero_destino))
+            numero_destino = f"+55{nums}" 
+
+        mensagem = f"Vagalume Carreiras: Seu codigo de recuperacao e {codigo}. Valido por 10 minutos."
+
+        message = client.messages.create(
+            body=mensagem,
+            from_=remetente,
+            to=numero_destino
+        )
+        
+        print(f"SMS enviado com sucesso! SID: {message.sid}")
+        return True
+
+    except TwilioRestException as e:
+        print(f"Erro ao enviar SMS (Twilio): {e}")
+        return False
+    except Exception as e:
+        print(f"Erro genérico no envio de SMS: {e}")
+        return False
 
 # ===== VIEWS =====
 

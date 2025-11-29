@@ -32,6 +32,7 @@ class Candidatura(models.Model):
         # Garante que um candidato não possa se aplicar 2x na mesma vaga
         unique_together = ('candidato', 'vaga')
 
+        # NOVO MODELO: Plano
 class Plano(models.Model):
     NOME_PLANOS = [
         ('basico', 'Básico (Grátis)'),
