@@ -6,7 +6,7 @@
 {% block content %}
 <style>
     /* =========================
-       CSS "GLOW" RESTAURADO
+       CSS "GLOW" - PLANOS
        ========================= */
     .planos-wrapper {
         background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%);
@@ -40,7 +40,7 @@
     }
     .back-link:hover { color: #BEF264; }
 
-    /* GRID LADO A LADO */
+    /* GRID */
     .planos-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -48,21 +48,21 @@
         margin-bottom: 50px;
     }
 
-    /* CARD COM BRILHO E EFEITO */
+    /* CARD */
     .plano-card {
-        background: rgba(27, 38, 59, 0.6);
-        backdrop-filter: blur(10px);
+        background: #161B22; /* Fundo sólido escuro para não ficar transparente */
         border-radius: 20px;
         padding: 40px 30px;
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid rgba(190, 242, 100, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid #30363d;
         position: relative;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     /* Linha brilhante no topo */
@@ -74,16 +74,16 @@
 
     .plano-card:hover {
         transform: translateY(-10px);
-        border-color: rgba(190, 242, 100, 0.4);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(190, 242, 100, 0.1);
+        border-color: #BEF264;
+        box-shadow: 0 20px 50px rgba(190, 242, 100, 0.15);
     }
     .plano-card:hover::before { transform: scaleX(1); }
 
-    /* Estado Selecionado */
+    /* Selecionado */
     .plano-card.selecionado {
-        background: rgba(27, 38, 59, 0.9);
+        background: #0D1B2A;
         border-color: #BEF264;
-        box-shadow: 0 0 40px rgba(190, 242, 100, 0.2), inset 0 0 20px rgba(190, 242, 100, 0.05);
+        box-shadow: 0 0 40px rgba(190, 242, 100, 0.2);
     }
     .plano-card.selecionado::before { transform: scaleX(1); }
 
@@ -96,25 +96,24 @@
         list-style: none; padding: 0; margin: 20px 0 0 0; text-align: left; width: 100%;
     }
     .lista-funcionalidades li {
-        padding: 12px 0; border-bottom: 1px solid rgba(190, 242, 100, 0.1);
-        color: #CBD5E1; font-size: 1rem; display: flex; align-items: center; gap: 10px;
+        padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        color: #c9d1d9; font-size: 1rem; display: flex; align-items: center; gap: 10px;
     }
     .lista-funcionalidades li::before { content: '✓'; color: #BEF264; font-weight: bold; font-size: 1.2rem; }
 
     /* Destaque Premium */
     .plano-card.destaque {
-        background: linear-gradient(135deg, rgba(27, 38, 59, 0.9) 0%, rgba(74, 120, 86, 0.2) 100%);
-        border-color: rgba(190, 242, 100, 0.4);
+        border: 2px solid rgba(190, 242, 100, 0.3);
+        background: linear-gradient(180deg, #161B22 0%, #0f2e18 100%);
     }
-    .icone-destaque { font-size: 3rem; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .icone-destaque { font-size: 3rem; margin-bottom: 15px; }
 
     /* Check Indicator */
     .check-indicator {
         position: absolute; top: 20px; right: 20px; width: 30px; height: 30px;
-        border-radius: 50%; border: 2px solid #4A7856;
+        border-radius: 50%; border: 2px solid #30363d;
         display: flex; align-items: center; justify-content: center;
-        transition: 0.3s; opacity: 0.5;
+        transition: 0.3s; opacity: 0.3;
     }
     .plano-card.selecionado .check-indicator {
         background: #BEF264; border-color: #BEF264; opacity: 1;
@@ -143,6 +142,7 @@
     .alert { padding: 15px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-weight: bold; }
     .alert-error { background: rgba(248, 81, 73, 0.2); color: #ff7b72; border: 1px solid #ff7b72; }
     .alert-success { background: rgba(63, 185, 80, 0.2); color: #3fb950; border: 1px solid #3fb950; }
+    .alert-warning { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #d29922; }
     
     /* Animações */
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
@@ -246,70 +246,5 @@
     btn.style.cursor = "pointer";
     btn.style.opacity = "1";
   }
-</script>
-{% endblock %}
-{% block content %}
-<link rel="stylesheet" href="{% static 'css/planos_empresa.css' %}">
-
-<main class="planos-container">
-  <h1 class="titulo-planos">Escolha o plano ideal para sua empresa</h1>
-
-  <div class="planos-grid">
-    <div class="plano-card" data-plano="basico">
-      <h2>Plano Básico</h2>
-      <p class="preco">1 vaga grátis por mês</p>
-      <h3>Funcionalidades:</h3>
-      <ul class="lista-funcionalidades">
-        <li>Publicação de 1 vaga por mês</li>
-        <li>Painel para gerenciar candidatos</li>
-        <li>Sem destaque especial</li>
-      </ul>
-    </div>
-
-    <div class="plano-card" data-plano="intermediario">
-      <h2>Plano Intermediário</h2>
-      <p class="preco">R$ 150/mês</p>
-      <h3>Funcionalidades:</h3>
-      <ul class="lista-funcionalidades">
-        <li>Publicação de até 10 vagas por mês</li>
-        <li>Perfil da empresa com logo e descrição</li>
-        <li>Vagas aparecem com um selo "Destaque" na busca</li>
-      </ul>
-    </div>
-
-    <div class="plano-card destaque" data-plano="premium">
-      <div class="icone-destaque">👑</div>
-      <h2>Plano Premium</h2>
-      <p class="preco">R$ 400/mês</p>
-      <h3>Funcionalidades:</h3>
-      <ul class="lista-funcionalidades">
-        <li>Publicação de vagas ilimitadas</li>
-        <li>Tudo do Intermediário +</li>
-        <li>Vagas no topo das buscas e na página inicial</li>
-        <li>Acesso ao banco de currículos para buscar candidatos ativamente</li>
-        <li>Relatórios e estatísticas</li>
-      </ul>
-    </div>
-  </div>
-  
-
-<form action="{% url 'confirmar_plano' %}" method="POST" id="formPlano">
-  {% csrf_token %}
-  <input type="hidden" name="plano" id="planoSelecionado">
-  <button type="submit" class="confirmar-btn">Confirmar Plano</button>
-</form>
-
-
-<script>
-  const planos = document.querySelectorAll('.plano-card');
-  const inputPlano = document.getElementById('planoSelecionado');
-
-  planos.forEach(plano => {
-    plano.addEventListener('click', () => {
-      planos.forEach(p => p.classList.remove('selecionado'));
-      plano.classList.add('selecionado');
-      inputPlano.value = plano.getAttribute('data-plano');
-    });
-  });
 </script>
 {% endblock %}
