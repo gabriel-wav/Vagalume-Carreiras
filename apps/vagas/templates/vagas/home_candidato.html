@@ -196,6 +196,36 @@
         .finance-grid { grid-template-columns: 1fr; }
         .panel { padding: 0 10px; }
     }
+
+    #ia-content ul {
+    list-style: none; /* Remove as bolinhas padrão */
+    padding: 0;
+    margin: 0;
+}
+
+#ia-content li {
+    background-color: rgba(255, 255, 255, 0.05); /* Fundo sutil */
+    border-left: 4px solid #BEF264; /* Linha verde neon na esquerda */
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 0 8px 8px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #c9d1d9;
+    transition: transform 0.2s ease;
+}
+
+#ia-content li:hover {
+    background-color: rgba(190, 242, 100, 0.1);
+    transform: translateX(5px);
+}
+
+#ia-content li strong {
+    color: #BEF264; /* Título em verde neon */
+    display: block; /* Força o título a ficar em uma linha separada (opcional) */
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
 </style>
 
 <div id="progress-bar-fixed-wrapper" style="display: none;">

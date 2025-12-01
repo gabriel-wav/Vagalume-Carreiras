@@ -21,11 +21,11 @@ def gerar_dicas_perfil(perfil_texto):
     if not configurar_ia():
         return "<ul><li>Erro de conexão com a IA. Verifique a API Key.</li></ul>"
 
-    # Lista de modelos baseada na SUA lista disponível (do melhor para o mais leve)
+
     modelos_para_tentar = [
-        'gemini-2.0-flash',          # 1. Tentativa Principal (Rápido e Inteligente)
-        'gemini-2.0-flash-lite',     # 2. Fallback Leve (Ótimo para economizar cota)
-        'gemini-2.0-pro-exp-02-05',  # 3. Fallback Potente (Se os Flash falharem)
+        'gemini-2.0-flash',          
+        'gemini-2.0-flash-lite',     
+        'gemini-2.0-pro-exp-02-05', 
     ]
 
     prompt = f"""
@@ -38,8 +38,10 @@ def gerar_dicas_perfil(perfil_texto):
     Perfil do Candidato:
     "{perfil_texto}"
     
-    IMPORTANTE: Sua resposta deve ser APENAS uma lista HTML (<ul> com <li>), sem tags <html>, <head> ou markdown ```html.
-    Seja amigável mas profissional.
+    IMPORTANTE:
+    1. Sua resposta deve ser APENAS uma lista HTML (<ul> com <li>).
+    2. Não use tags <html>, <head> ou blocos de código markdown.
+    3. Em cada dica, coloque o título da ação em negrito usando a tag <strong>. Exemplo: <li><strong>Melhore o Resumo:</strong> texto da dica...</li>
     """
 
     for nome_modelo in modelos_para_tentar:
@@ -47,7 +49,6 @@ def gerar_dicas_perfil(perfil_texto):
             print(f"Tentando usar modelo: {nome_modelo}...") 
             model = genai.GenerativeModel(nome_modelo)
             
-            # Configuração para resposta mais criativa e direta
             response = model.generate_content(
                 prompt,
                 generation_config=genai.types.GenerationConfig(
@@ -60,15 +61,12 @@ def gerar_dicas_perfil(perfil_texto):
             
         except exceptions.ResourceExhausted:
             print(f"Cota excedida para {nome_modelo}. Tentando próximo...")
-            continue # Pula para o próximo modelo da lista
+            continue
             
         except Exception as e:
             print(f"Erro no modelo {nome_modelo}: {e}")
-            # Se o erro for "not found" (caso o Google mude o nome), tenta o próximo
             if "404" in str(e) or "not found" in str(e).lower():
                 continue
-            # Se for outro erro grave, para por aqui
             continue
-
-    # Se todos os modelos falharem
+        
     return "<ul><li>O Vagalume AI está temporariamente sobrecarregado. Por favor, tente novamente em alguns instantes.</li></ul>"
