@@ -31,10 +31,36 @@
         transition: opacity 0.3s ease; 
     }
     .hero.transitioning { opacity: 0; }
-    .hero h1 { font-size: clamp(2rem, 5vw, 2.5rem); margin-bottom: 10px; color: #fff; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 2.5rem); margin-bottom: 5px; color: #fff; }
     .hero h1 span { color: #BEF264; }
-    .hero p { color: #94a3b8; font-size: 1.1rem; }
+    .hero p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 15px; }
     
+    /* --- BADGE DO PLANO --- */
+    .plan-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(190, 242, 100, 0.1);
+        color: #BEF264;
+        border: 1px solid #BEF264;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        margin: 0 auto 20px; /* Centralizado */
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        box-shadow: 0 0 15px rgba(190, 242, 100, 0.15);
+        width: fit-content;
+    }
+    .plan-badge i { font-size: 1rem; }
+
+    /* NOTIFICAÇÕES FLUTUANTES */
+    .popup-info { 
+        color: #0D1B2A; background: #AFEB83; 
+        font-weight: 700; padding: 10px 20px; 
+        border-radius: 50px; margin-top: 15px; 
+        display: inline-block;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        animation: slideDownFade 0.5s ease forwards;
     /* TABS */
     .tabs { 
         display: flex; 
@@ -59,26 +85,69 @@
         transition: color 0.3s ease; 
         white-space: nowrap; 
     }
+    @keyframes slideDownFade { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+
+    /* TABS */
+    .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; border-bottom: 1px solid #30363d; position: relative; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .tab { flex: 1; background: none; border: none; color: #94a3b8; font-size: 1rem; padding: 15px 0; cursor: pointer; position: relative; font-family: 'Plus Jakarta Sans', sans-serif; transition: color 0.3s ease; text-align: center; }
     .tab:hover { color: #fff; }
     .tab.active { color: #fff; font-weight: 700; }
     
-    /* Indicador deslizante */
-    .tab-indicator { 
-        position: absolute; 
-        bottom: -1px; 
-        left: 0; 
-        height: 3px; 
-        background-color: #BEF264; 
-        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
-        z-index: 2; 
-    }
+    .tab-indicator { position: absolute; bottom: -1px; left: 0; height: 3px; background-color: #BEF264; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); width: 33.33%; }
     
     /* SLIDER E PAINÉIS */
     .dashboard-window { width: 100%; position: relative; overflow: hidden; min-height: 600px; }
-    .dashboard-slider { display: flex; width: 300%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-    .panel { width: 33.33%; flex-shrink: 0; box-sizing: border-box; padding: 0 20px; }
-    .panel.inactive { opacity: 0.3; pointer-events: none; transition: opacity 0.3s; }
+    .dashboard-slider { display: flex; width: 300%; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
+    .no-transition { transition: none !important; }
     
+    .panel { width: 33.33%; flex-shrink: 0; box-sizing: border-box; padding: 0 20px; opacity: 0.3; transition: opacity 0.4s; }
+    .panel.active-panel { opacity: 1; pointer-events: all; }
+
+    /* --- CARDS DE VAGAS --- */
+    .container { max-width: 1200px; margin: 0 auto; }
+    .create-job-area { text-align: center; margin-bottom: 30px; }
+    .btn-create-big { background: linear-gradient(135deg, #BEF264 0%, #4A7856 100%); color: #0D1B2A; padding: 15px 40px; border-radius: 50px; font-weight: 800; text-decoration: none; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(190, 242, 100, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; }
+    .btn-create-big:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(190, 242, 100, 0.4); }
+
+    .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+    .job-card { background: #161B22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; position: relative; transition: transform 0.2s; display: flex; flex-direction: column; }
+    .job-card:hover { border-color: #BEF264; transform: translateY(-3px); }
+
+    .status-badge { position: absolute; top: 20px; right: 20px; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
+    .status-open { background: rgba(63, 185, 80, 0.15); color: #3fb950; border: 1px solid #3fb950; }
+    .status-closed { background: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid #f85149; }
+
+    .job-title { color: #fff; font-size: 1.4rem; margin-bottom: 5px; font-weight: 700; padding-right: 80px; }
+    .job-meta { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; display: flex; gap: 15px; }
+    .job-meta i { color: #BEF264; }
+
+    .admin-actions { margin-top: auto; padding-top: 20px; border-top: 1px solid #30363d; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .btn-action { padding: 8px; border-radius: 6px; text-align: center; font-size: 0.9rem; text-decoration: none; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; }
+    .btn-candidates { background: #21262d; color: #fff; grid-column: span 3; margin-bottom: 5px; border: 1px solid #30363d; }
+    .btn-candidates:hover { background: #30363d; border-color: #BEF264; }
+    .btn-edit { background: transparent; color: #58a6ff; border: 1px solid #30363d; }
+    .btn-edit:hover { background: rgba(88, 166, 255, 0.1); border-color: #58a6ff; }
+    .btn-delete { background: transparent; color: #f85149; border: 1px solid #30363d; }
+    .btn-delete:hover { background: rgba(248, 81, 73, 0.1); border-color: #f85149; }
+
+    /* RADAR & MENU */
+    .radar-highlight { background: linear-gradient(135deg, #161B22 0%, #0D1117 100%); border: 2px solid #30363d; border-radius: 20px; padding: 40px; text-align: center; max-width: 600px; margin: 20px auto; }
+    .radar-btn { display: inline-block; background: #BEF264; color: #0D1B2A; padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: 800; margin-top: 20px; transition: transform 0.2s; }
+    .radar-btn:hover { transform: scale(1.05); }
+
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+    .menu-card { background: #161B22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; text-align: center; text-decoration: none; transition: all 0.3s; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .menu-card:hover { border-color: #BEF264; transform: translateY(-5px); background: #1c222b; }
+    .menu-card i { font-size: 2.5rem; color: #64748b; margin-bottom: 15px; }
+    .menu-card:hover i { color: #BEF264; }
+    
+    /* MODAL DE DELETAR */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 27, 42, 0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: #161B22; padding: 40px; border-radius: 16px; border: 1px solid #f85149; width: 95%; max-width: 500px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .btn-confirm-delete { background: #f85149; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 10px; }
+    .btn-cancel-delete { background: transparent; border: 1px solid #30363d; color: #c9d1d9; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; }
     /* UTILITÁRIOS E BOTÕES */
     .container { max-width: 1200px; margin: 0 auto; }
 
@@ -202,6 +271,17 @@
 <div id="dynamic-hero" class="hero">
     <h1 id="hero-title">Painel do <span>Recrutador</span></h1>
     <p id="hero-subtitle">Gerencie suas vagas e encontre os melhores talentos.</p>
+    
+<div class="plan-badge">
+        <i class="fas fa-crown"></i> {{ plano_atual_nome }}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="popup-info">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</section>
 </div>
 
 <div class="tabs">
@@ -214,8 +294,10 @@
 <div class="dashboard-window">
     <div class="dashboard-slider show-tab-0" id="slider">
         
-        <div class="panel">
+        <div class="panel active-panel">
             <div class="container">
+                <div class="create-job-area">
+                    <a href="{% url 'criar_vaga' %}" class="btn-create-big"><i class="fas fa-plus-circle"></i> Publicar Nova Vaga</a>
                 
                 <div class="create-job-area" style="text-align: center;">
                     <a href="{% url 'criar_vaga' %}" class="btn-create-big">
@@ -226,33 +308,26 @@
                 <div class="jobs-grid">
                     {% for vaga in vagas %}
                         <div class="job-card">
-                            {% if vaga.status %}
-                                <span class="status-badge status-open">ABERTA</span>
-                            {% else %}
-                                <span class="status-badge status-closed">FECHADA</span>
-                            {% endif %}
-
+                            <span class="status-badge {% if vaga.status %}status-open{% else %}status-closed{% endif %}">
+                                {% if vaga.status %}ABERTA{% else %}FECHADA{% endif %}
+                            </span>
                             <h3 class="job-title">{{ vaga.titulo }}</h3>
-                            
                             <div class="job-meta">
                                 <span><i class="fas fa-map-marker-alt"></i> {{ vaga.localidade }}</span>
                                 <span><i class="fas fa-file-contract"></i> {{ vaga.tipo_contrato }}</span>
-                                <span><i class="fas fa-calendar-alt"></i> {{ vaga.data_publicacao|date:"d/m/Y" }}</span>
                             </div>
-
                             <div class="admin-actions">
-                                <a href="{% url 'ver_candidatos_vaga' vaga.id %}" class="btn-action btn-candidates">
-                                    <i class="fas fa-users"></i> Ver Candidatos
-                                </a>
-                                <a href="{% url 'editar_vaga' vaga.id %}" class="btn-action btn-edit">
-                                    <i class="fas fa-pen"></i> Editar
-                                </a>
-                                <a href="{% url 'deletar_vaga' vaga.id %}" class="btn-action btn-delete">
+                                <a href="{% url 'ver_candidatos_vaga' vaga.id %}" class="btn-action btn-candidates"><i class="fas fa-users"></i> Ver Candidatos</a>
+                                <a href="{% url 'editar_vaga' vaga.id %}" class="btn-action btn-edit"><i class="fas fa-pen"></i> Editar</a>
+                                <button type="button" class="btn-action btn-delete" onclick="confirmarExclusaoVaga('{{ vaga.titulo }}', '{% url 'deletar_vaga' vaga.id %}')">
                                     <i class="fas fa-trash"></i> Excluir
-                                </a>
+                                </button>
                             </div>
                         </div>
                     {% empty %}
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px; border: 2px dashed #30363d; border-radius: 12px; color: #8b949e;">
+                            <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                            <p>Você ainda não publicou nenhuma vaga.</p>
                         <div style="grid-column: 1/-1; text-align: center; padding: 60px; border: 2px dashed #30363d; border-radius: 12px;">
                             <i class="fas fa-folder-open" style="font-size: 3rem; color: #30363d; margin-bottom: 20px;"></i>
                             <p style="color: #8b949e;">Você ainda não publicou nenhuma vaga.</p>
@@ -262,13 +337,13 @@
             </div>
         </div>
 
-        <div class="panel inactive">
+        <div class="panel">
             <div class="container">
                 <div class="radar-highlight">
-                    <div class="radar-icon">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                    </div>
+                    <i class="fa-solid fa-satellite-dish radar-icon"></i>
                     <h2 style="color:#fff; font-size: 2rem; margin-bottom: 15px;">Radar de Talentos</h2>
+                    <p style="color: #c9d1d9;">Nossa IA analisa todo o banco de dados e encontra profissionais compatíveis.</p>
+                    <a href="{% url 'radar_de_talentos' %}" class="radar-btn">Acessar Radar agora</a>
                     <p style="color: #c9d1d9; margin-bottom: 20px; line-height: 1.6;">
                         Não espere os candidatos virem até você. Nossa IA analisa todo o banco de dados 
                         e encontra profissionais compatíveis com suas vagas.
@@ -285,23 +360,23 @@
             </div>
         </div>
 
-        <div class="panel inactive">
+        <div class="panel">
             <div class="container">
                 <div class="menu-grid">
-                    
                     <a href="{% url 'ver_empresa' user.recrutador.empresa.id %}" class="menu-card">
-                        <i class="fas fa-eye"></i>
-                        <h3>Ver Página Pública</h3>
-                        <p>Visualize como os candidatos veem sua empresa.</p>
+                        <i class="fas fa-eye"></i><h3>Ver Página Pública</h3><p>Como os candidatos veem sua empresa.</p>
                     </a>
-
                     <a href="{% url 'perfil_empresa' %}" class="menu-card">
+                        <i class="fas fa-building"></i><h3>Editar Dados</h3><p>Atualize logo e descrição.</p>
                         <i class="fas fa-building"></i>
                         <h3>Editar Dados da Empresa</h3>
                         <p>Atualize logo e informações.</p>
                     </a>
-
                     <a href="{% url 'planos_empresa' %}" class="menu-card">
+                        <i class="fas fa-gem"></i><h3>Planos</h3><p>Gerencie sua assinatura.</p>
+                    </a>
+                    <a href="#" onclick="confirmarExclusaoConta()" class="menu-card" style="border-color: rgba(248, 81, 73, 0.3);">
+                        <i class="fas fa-trash-alt" style="color: #f85149;"></i><h3 style="color: #f85149;">Apagar Conta</h3>
                         <i class="fas fa-gem"></i>
                         <h3>Planos e Assinatura</h3>
                         <p>Gerencie seu {{ plano_atual_nome }}.</p>
@@ -312,42 +387,79 @@
                         <h3 style="color: #f85149;">Apagar Minha Conta</h3>
                         <p>Excluir permanentemente todos os dados.</p>
                     </a>
-
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
-<form id="form-deletar-conta" action="{% url 'deletar_conta' %}" method="POST" style="display: none;">
-    {% csrf_token %}
-</form>
+<div id="modal-delete-vaga" class="modal-overlay">
+    <div class="modal-box">
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f85149; margin-bottom: 20px;"></i>
+        <h3 style="color: white; margin-bottom: 15px;">Tem certeza?</h3>
+        <p style="color: #c9d1d9; margin-bottom: 30px;">Você vai excluir a vaga <strong id="delete-vaga-titulo" style="color: #fff;"></strong>. Essa ação é irreversível.</p>
+        
+        <form id="form-delete-vaga" method="POST" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn-confirm-delete">Sim, Excluir</button>
+            <button type="button" class="btn-cancel-delete" onclick="fecharModalDelete()">Cancelar</button>
+        </form>
+    </div>
+</div>
+
+<form id="form-deletar-conta" action="{% url 'deletar_conta' %}" method="POST" style="display: none;">{% csrf_token %}</form>
 
 <script>
+    // LÓGICA DO SLIDER
     // --- LÓGICA DO SLIDER, TABS E HERO DINÂMICO ---
     const panelData = [
-        { title: 'Painel do <span>Recrutador</span>', subtitle: 'Gerencie suas vagas e encontre os melhores talentos.' },
-        { title: 'Inteligência <span>Artificial</span>', subtitle: 'Use nossa tecnologia para caçar talentos no mercado.' },
-        { title: 'Minha <span>Empresa</span>', subtitle: 'Gerencie sua marca empregadora e configurações.' }
+        {title: 'Painel do <span>Recrutador</span>', subtitle: 'Gerencie suas vagas e encontre os melhores talentos.'},
+        {title: 'Inteligência <span>Artificial</span>', subtitle: 'Use nossa tecnologia para caçar talentos.'},
+        {title: 'Minha <span>Empresa</span>', subtitle: 'Gerencie sua marca empregadora.'}
     ];
+    const slider=document.getElementById('slider'),tabs=document.querySelectorAll('.tab'),indicator=document.getElementById('tab-indicator'),heroTitle=document.getElementById('hero-title'),heroSubtitle=document.getElementById('hero-subtitle'),panels=document.querySelectorAll('.panel');
+    let currentTab=0;
 
-    const slider = document.getElementById('slider');
-    const tabs = document.querySelectorAll('.tab');
-    const indicator = document.getElementById('tab-indicator');
-    const hero = document.getElementById('dynamic-hero');
-    const heroTitle = document.getElementById('hero-title');
-    const heroSubtitle = document.getElementById('hero-subtitle');
-    const panels = document.querySelectorAll('.panel');
-    let currentTab = 0;
-
-    function updateIndicator(tab) {
-        const rect = tab.getBoundingClientRect();
-        const containerRect = tab.parentElement.getBoundingClientRect();
-        indicator.style.width = rect.width + 'px';
-        indicator.style.left = (rect.left - containerRect.left) + 'px';
+    function updateIndicator(tab){
+        const rect=tab.getBoundingClientRect();
+        const containerRect=tab.parentElement.getBoundingClientRect();
+        indicator.style.width=rect.width+'px';
+        indicator.style.left=(rect.left-containerRect.left)+'px';
     }
 
+    function goToTab(index){
+        if(index===currentTab)return;
+        tabs.forEach(t=>t.classList.remove('active')); tabs[index].classList.add('active');
+        updateIndicator(tabs[index]);
+        slider.style.transform=`translateX(-${index*33.33}%)`;
+        panels.forEach((p,i)=>{if(i===index)p.classList.add('active-panel');else p.classList.remove('active-panel')});
+        heroTitle.innerHTML=panelData[index].title; heroSubtitle.textContent=panelData[index].subtitle;
+        localStorage.setItem('recruiterTab', index); currentTab=index;
+    }
+
+    tabs.forEach((tab,i)=>tab.addEventListener('click',()=>goToTab(i)));
+
+    window.addEventListener('load',()=>{
+        const saved=localStorage.getItem('recruiterTab');
+        slider.classList.add('no-transition');
+        if(saved && parseInt(saved)<3){ goToTab(parseInt(saved)); } else { updateIndicator(tabs[0]); }
+        setTimeout(()=>slider.classList.remove('no-transition'),100);
+    });
+    window.addEventListener('resize',()=>updateIndicator(tabs[currentTab]));
+
+    // LÓGICA DO MODAL DE DELETAR VAGA
+    function confirmarExclusaoVaga(titulo, actionUrl) {
+        document.getElementById('delete-vaga-titulo').innerText = titulo;
+        document.getElementById('form-delete-vaga').action = actionUrl;
+        document.getElementById('modal-delete-vaga').style.display = 'flex';
+    }
+    function fecharModalDelete() {
+        document.getElementById('modal-delete-vaga').style.display = 'none';
+    }
+    
+    // LÓGICA DO DELETAR CONTA
+    function confirmarExclusaoConta() {
+        if(confirm("ATENÇÃO: Isso apagará sua empresa e todas as vagas!")) {
     function updateHero(index) {
         if (hero) {
             hero.classList.add('transitioning');
@@ -384,6 +496,9 @@
         }
     }
 
+    // SCRIPT PARA REMOVER NOTIFICAÇÕES AUTOMATICAMENTE
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.popup-info');
     // Remover alertas automaticamente
     function autoDismissAlerts() {
         const alerts = document.querySelectorAll('.alerta');
@@ -394,6 +509,8 @@
                     alert.style.opacity = "0";
                     setTimeout(() => alert.remove(), 500); 
                 });
+            }, 4000); // Some após 4 segundos
+        }
             }, 3000); 
         }
     }
@@ -416,5 +533,4 @@
         updateIndicator(tabs[currentTab]);
     });
 </script>
-
 {% endblock %}
