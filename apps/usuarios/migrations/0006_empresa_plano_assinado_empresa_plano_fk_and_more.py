@@ -22,9 +22,9 @@ class Migration(migrations.Migration):
             name='plano_fk',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='vagas.plano', verbose_name='Plano (Chave Estrangeira)'),
         ),
-        migrations.AlterField(
-            model_name='usuario',
-            name='email',
-            field=models.EmailField(max_length=254, unique=True, verbose_name='email address'),
-        ),
+        # migrations.AlterField(
+        #     model_name='usuario',
+        #     name='email',
+        #     field=models.EmailField(max_length=254, unique=True, verbose_name='email address'),
+        # ),
     ]

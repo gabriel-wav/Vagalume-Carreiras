@@ -628,10 +628,35 @@ def politica_privacidade(request):
 @login_required
 def explorar_vagas(request):
     """
-    Lista TODAS as vagas abertas no sistema.
+    Lista vagas com filtros de busca e categoria.
     """
+    # 1. Base: Apenas vagas abertas, ordenadas por data
     vagas = Vaga.objects.filter(status=True).order_by('-data_publicacao')
-    return render(request, 'vagas/explorar_vagas.html', {'vagas': vagas})
+
+    # 2. Lógica da Barra de Pesquisa (parametro 'q')
+    query = request.GET.get('q')
+    if query:
+        vagas = vagas.filter(
+            Q(titulo__icontains=query) |          # Busca no título
+            Q(descricao__icontains=query) |       # Busca na descrição
+            Q(empresa__nome__icontains=query)     # Busca pelo nome da empresa
+        )
+
+    # 3. Lógica das Categorias (parametro 'categoria')
+    categoria = request.GET.get('categoria')
+    if categoria and categoria != 'Recente':
+        # Filtra pelo setor da empresa ou palavra-chave no título
+        vagas = vagas.filter(
+            Q(empresa__setor__icontains=categoria) |
+            Q(titulo__icontains=categoria)
+        )
+
+    context = {
+        'vagas': vagas,
+        'query_atual': query,         # Para manter o texto na barra
+        'categoria_atual': categoria  # Para marcar a aba ativa
+    }
+    return render(request, 'vagas/explorar_vagas.html', context)
 
 @login_required
 def ver_empresa(request, empresa_id):
