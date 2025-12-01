@@ -248,3 +248,21 @@ main.container {
         font-size: 1rem;
     }
 }
+
+.form-terms label {
+    /* Usa 'block' ou 'inline-block' para desativar o 'display: none' */
+    display: block !important; 
+    
+    /* Remove a margem extra da regra geral, se houver */
+    margin-bottom: 0; 
+    
+    /* Garante que o texto dentro da label também use a cor do .form-terms */
+    color: inherit; 
+    font-weight: 400; /* Garante que o texto não fique negrito desnecessariamente */
+}
+
+/* Garante que a tag 'a' dentro do label tenha a cor do link */
+.form-terms label a {
+    color: #58a6ff; 
+    text-decoration: underline;
+}
