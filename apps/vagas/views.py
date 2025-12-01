@@ -26,10 +26,42 @@ from apps.usuarios.models import (
     Experiencia,
     Formacao_Academica,
     Redes_Sociais,
+    Usuario,
 )
 from django.db.models import Avg
 from apps.usuarios.models import AvaliacaoEmpresa
 from django.db.models import Count
+from django.http import JsonResponse
+from .ai_advisor import gerar_dicas_perfil
+from django.db.models import Q
+
+
+def get_texto_candidato(candidato):
+    """
+    Extrai todo o texto relevante do perfil do candidato:
+    Resumo profissional + Experiências + Skills.
+    """
+    textos = []
+    
+    # Resumo Profissional
+    resumo = getattr(candidato, 'resumo_profissional', None)
+    if resumo and resumo.texto:
+        textos.append(resumo.texto)
+    
+    # Experiências
+    experiencias = Experiencia.objects.filter(candidato=candidato)
+    for exp in experiencias:
+        textos.append(f"{exp.cargo} em {exp.empresa}")
+        if exp.descricao:
+            textos.append(exp.descricao)
+    
+    # Skills
+    skills = Skill.objects.filter(candidato=candidato)
+    skill_names = [skill.nome for skill in skills]
+    if skill_names:
+        textos.append(", ".join(skill_names))
+    
+    return " ".join(textos)
 
 
 def landing_page(request):
@@ -509,55 +541,74 @@ def planos_empresa(request):
 @login_required
 def painel_admin(request):
     """
-    View para o novo painel de administrador customizado.
-    Valida se o usuário é um 'superuser' ou 'staff'.
+    Painel administrativo com BUSCA e ESTATÍSTICAS reais.
     """
-
     if not request.user.is_superuser and not request.user.is_staff:
-        messages.error(request, "Acesso negado. Esta página é restrita.")
-        if request.user.tipo_usuario == "candidato":
-            return redirect("home_candidato")
-        elif request.user.tipo_usuario == "recrutador":
-            return redirect("home_recrutador")
-        else:
-            return redirect("landing_page")  # Fallback
+        messages.error(request, "Acesso negado.")
+        return redirect('landing_page')
 
+    # --- LÓGICA DE BUSCA ---
+    query = request.GET.get('q') # Pega o termo da barra de pesquisa
+    
+    candidatos = Candidato.objects.all().order_by('-usuario__date_joined')
+    empresas = Empresa.objects.all().order_by('-id')
+
+    if query:
+        # Filtra Candidatos (Nome ou Email)
+        candidatos = candidatos.filter(
+            Q(usuario__first_name__icontains=query) | 
+            Q(usuario__email__icontains=query)
+        )
+        # Filtra Empresas (Nome ou CNPJ)
+        empresas = empresas.filter(
+            Q(nome__icontains=query) | 
+            Q(cnpj__icontains=query)
+        )
+    # -----------------------
+
+    # Estatísticas (Mantidas)
     um_mes_atras = timezone.now() - datetime.timedelta(days=30)
-
-    novos_candidatos = Candidato.objects.filter(
-        usuario__date_joined__gte=um_mes_atras
-    ).count()
-    novas_empresas = Empresa.objects.filter(
-        id__in=Recrutador.objects.filter(
-            usuario__date_joined__gte=um_mes_atras
-        ).values_list("empresa_id", flat=True)
-    ).count()
-    vagas_ativas = Vaga.objects.filter(status=True).count()
-    novas_candidaturas = Candidatura.objects.filter(
-        data_candidatura__gte=um_mes_atras
-    ).count()
-
-    ultimos_candidatos = Candidato.objects.all().order_by("-usuario__date_joined")[:10]
-    ultimas_empresas = Empresa.objects.all().order_by("-id")[:10]
-
-    candidatos_recentes = Candidato.objects.all().order_by("-usuario__date_joined")[:5]
-    empresas_recentes = Empresa.objects.all().order_by("-id")[:5]
-    vagas_recentes = Vaga.objects.all().order_by("-data_publicacao")[:5]
-
     contexto = {
-        "nome_admin": request.user.first_name or request.user.username,
-        "stat_novos_candidatos": novos_candidatos,
-        "stat_novas_empresas": novas_empresas,
-        "stat_vagas_ativas": vagas_ativas,
-        "stat_novas_candidaturas": novas_candidaturas,
-        "lista_candidatos": ultimos_candidatos,
-        "lista_empresas": ultimas_empresas,
-        "atividades_candidatos": candidatos_recentes,
-        "atividades_empresas": empresas_recentes,
-        "atividades_vagas": vagas_recentes,
+        'nome_admin': request.user.first_name or request.user.username,
+        'stat_novos_candidatos': Candidato.objects.filter(usuario__date_joined__gte=um_mes_atras).count(),
+        'stat_novas_empresas': Empresa.objects.filter(id__in=Recrutador.objects.filter(usuario__date_joined__gte=um_mes_atras).values_list('empresa_id', flat=True)).count(),
+        'stat_vagas_ativas': Vaga.objects.filter(status=True).count(),
+        'stat_novas_candidaturas': Candidatura.objects.filter(data_candidatura__gte=um_mes_atras).count(),
+        
+        # Listas (agora filtráveis)
+        'lista_candidatos': candidatos[:20], # Limita a 20 pra não travar
+        'lista_empresas': empresas[:20],
+        
+        # Termo de busca (para manter no input)
+        'busca_atual': query or ''
     }
 
     return render(request, "vagas/painel_admin.html", contexto)
+
+@login_required
+def toggle_status_usuario(request, user_id):
+    """
+    Ativa ou Desativa (Bane) um usuário.
+    """
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Sem permissão.")
+        return redirect('painel_admin')
+        
+    usuario = get_object_or_404(Usuario, id=user_id)
+    
+    # Não permitir que o admin se auto-bane
+    if usuario == request.user:
+        messages.error(request, "Você não pode desativar sua própria conta.")
+        return redirect('painel_admin')
+
+    # Inverte o status (Se tá ativo, desativa. Se tá inativo, ativa)
+    usuario.is_active = not usuario.is_active
+    usuario.save()
+    
+    status_msg = "ativado" if usuario.is_active else "desativado"
+    messages.success(request, f"Usuário {usuario.email} foi {status_msg} com sucesso.")
+    
+    return redirect('painel_admin')
 
 
 def politica_privacidade(request):
@@ -737,4 +788,31 @@ def confirmar_plano(request):
 
     return redirect("home_recrutador")
 
+@login_required
+def ajax_analise_ia_perfil(request):
+    """
+    Endpoint que recebe o pedido do Candidato e chama o Gemini.
+    """
+    if request.method == "POST":
+        try:
+            candidato = request.user.candidato
+            
+            # 1. Pega todo o texto do perfil (Resumo + XP + Skills)
+            texto_completo = get_texto_candidato(candidato)
+            
+            # 2. Validação simples para não gastar IA à toa
+            if len(texto_completo) < 50:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Seu perfil está muito vazio! Preencha Resumo e Experiências antes de pedir ajuda à IA.'
+                })
 
+            # 3. Chama o Gemini
+            dicas_html = gerar_dicas_perfil(texto_completo)
+            
+            return JsonResponse({'status': 'success', 'dicas': dicas_html})
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+            
+    return JsonResponse({'status': 'error', 'message': 'Método inválido'})

@@ -14,16 +14,16 @@ class Usuario(AbstractUser):
         choices=TIPO_USUARIO_CHOICES,
         default='candidato'
     )
-    email = models.EmailField('email address', unique=True)
     
-    email = models.EmailField(('email address'), unique=True, blank=False)
+    # Email é o campo principal de login e deve ser único
+    email = models.EmailField('email address', unique=True, blank=False)
     telefone = models.CharField(max_length=15, blank=True, null=True)
     
     def __str__(self):
         return self.email
 
 # -------------------------------------------------------------------
-# MODELO EMPRESA (COM OS CAMPOS DE PLANO)
+# MODELO EMPRESA
 # -------------------------------------------------------------------
 class Empresa(models.Model):
     nome = models.CharField(max_length=100)
@@ -41,16 +41,6 @@ class Empresa(models.Model):
         verbose_name='Plano (Chave Estrangeira)'
     )
 
-    plano_fk = models.ForeignKey(
-        'vagas.Plano', 
-        on_delete=models.SET_NULL, # Se o plano for apagado, o campo fica nulo.
-        null=True, 
-        blank=True,
-        # default=1 # Sugere-se '1' se o Plano Básico/Grátis for o ID 1
-        verbose_name='Plano (Chave Estrangeira)' # Adicionei verbose_name para clareza
-    )
-
-    # NOVO CAMPO: Usado para a lógica de negócio do Plano Básico/Intermediário
     OPCOES_PLANO = [
         ('basico', 'Plano Básico'),
         ('intermediario', 'Plano Intermediário'),
@@ -64,9 +54,6 @@ class Empresa(models.Model):
         verbose_name='Plano Assinado (Regra de Negócio)'
     )
     # -----------------------------
-        default='basico',  # Define 'basico' como o padrão
-        verbose_name='Plano Assinado (Regra de Negócio)'
-    )
 
     def __str__(self):
         return self.nome
