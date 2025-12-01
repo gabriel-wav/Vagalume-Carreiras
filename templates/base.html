@@ -911,7 +911,7 @@
                 <div class="navbar-main-links">
                     <a href="{% url 'landing_page' %}">Home</a>
                     <a href="{% url 'explorar_vagas' %}">Explorar Vagas</a>
-                    <a href="#">Sobre Nós</a>
+                    <a href="{% url 'sobre_nos' %}">Sobre Nós</a>
                 </div>
             </div>
 
@@ -941,6 +941,8 @@
     <div class="navbar-mobile-menu" id="navbarMobileMenu">
         <div class="navbar-mobile-links">
             <a href="{% url 'landing_page' %}">Home</a>
+            <a href="{% url 'sobre_nos' %}">Sobre Nós</a>
+            <a href="#">Conteúdo</a>
             <a href="{% url 'explorar_vagas' %}">Explorar Vagas</a>
             <a href="{% url 'politica_de_privacidade' %}">Política de Privacidade</a>
 
@@ -1038,6 +1040,8 @@
             <h4>Institucional</h4>
             <ul>
                 <li><a href="{% url 'landing_page' %}">Home</a></li>
+                <li><a href="{% url 'sobre_nos' %}">Sobre Nós</a></li>
+                <li><a href="#">Conteúdo</a></li>
                 <li><a href="{% url 'explorar_vagas' %}">Explorar Vagas</a></li>
                 <li><a href="{% url 'politica_de_privacidade' %}">Política de Privacidade</a></li>
                 {% if user.is_staff %}

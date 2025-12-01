@@ -31,3 +31,25 @@ class Candidatura(models.Model):
     class Meta:
         # Garante que um candidato não possa se aplicar 2x na mesma vaga
         unique_together = ('candidato', 'vaga')
+
+        # NOVO MODELO: Plano
+class Plano(models.Model):
+    NOME_PLANOS = [
+        ('basico', 'Básico (Grátis)'),
+        ('intermediario', 'Intermediário'),
+        ('premium', 'Premium'),
+    ]
+
+    # nome_chave para ser usado na lógica interna (ex: checagem de permissões)
+    nome_chave = models.CharField(max_length=20, choices=NOME_PLANOS, unique=True)
+    nome_exibicao = models.CharField(max_length=100)
+    preco = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+    limite_vagas = models.IntegerField(default=1)
+    descricao_curta = models.CharField(max_length=255, blank=True, null=True)
+    
+    def __str__(self):
+        return self.nome_exibicao
+        
+    class Meta:
+        verbose_name = "Plano de Assinatura"
+        verbose_name_plural = "Planos de Assinatura"
