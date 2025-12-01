@@ -6,7 +6,7 @@ from django.conf import settings
 # --- CONFIGURAÇÃO DA CHAVE ---
 # Você pode colocar a chave direto aqui para testar (não recomendado para produção)
 # Ou usar: os.environ.get("GOOGLE_API_KEY")
-API_KEY = "SUA_API_KEY_DO_GOOGLE_AQUI" 
+API_KEY = "AIzaSyDRCM04_8yh5VcTTqTt3-wopvgkYiUyA-Q" 
 
 def configurar_ia():
     try:
