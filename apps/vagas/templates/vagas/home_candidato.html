@@ -57,7 +57,7 @@
     .dashboard-slider { display: flex; width: 300%; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
     .no-transition { transition: none !important; }
     
-    /* Correção da Opacidade (Igual ao Recrutador) */
+    /* Correção da Opacidade */
     .panel { 
         width: 33.33%; flex-shrink: 0; box-sizing: border-box; padding: 0 20px; 
         opacity: 0.3; transition: opacity 0.4s; pointer-events: none; 
@@ -71,7 +71,7 @@
     
     /* Cards de Vagas */
     .jobs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-    .job-card { background: #161B22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; transition: transform 0.2s; position: relative; background-image: url("{% static 'vagas/img/vagalume_icon.png' %}"); background-repeat: no-repeat; background-position: right -10px bottom -10px; background-size: 150px; }
+    .job-card { background: #111111; border: 1px solid #1e293b; border-radius: 12px; padding: 25px; transition: transform 0.2s; position: relative; background-image: url("{% static 'vagas/img/vagalume_icon.png' %}"); background-repeat: no-repeat; background-position: right -10px bottom -10px; background-size: 150px; }
     .job-card:hover { transform: translateY(-5px); border-color: #2d3f52; }
     .tags { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
     .tag { padding: 4px 12px; background-color: rgba(255, 255, 255, 0.05); border: 1px solid #2d3f52; border-radius: 20px; font-size: 0.8rem; color: #94a3b8; }
@@ -292,7 +292,7 @@
                         <h3 class="job-title">{{ vaga.titulo }}</h3>
                         <span class="company">{{ vaga.empresa.nome }}</span>
                         <div class="job-footer">
-                            <div class="candidates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>+12</div>
+                            <div class="candidates"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>+12</div>
                             <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin:0;">{% csrf_token %}<button class="apply-btn">Candidatar</button></form>
                         </div>
                     </div>
@@ -366,7 +366,7 @@
                         <div id="experiencias-container">
                             {% for exp in experiencias %}
                                 <div class="xp-item" id="xp-{{ exp.id }}">
-                                    <div class="item-actions"><button class="action-btn delete" onclick="deleteItem('experiencia', {{ exp.id }})">Excluir</button></div>
+                                    <div style="float:right;"><button class="action-btn delete" onclick="deleteItem('experiencia', {{ exp.id }})">Excluir</button></div>
                                     <strong>{{ exp.cargo }}</strong>
                                     <span>{{ exp.empresa }} | {{ exp.data_inicio|date:"Y" }}</span>
                                     <p>{{ exp.descricao|default:"" }}</p>
@@ -381,7 +381,7 @@
                         <div id="formacoes-container">
                             {% for edu in formacoes %}
                                 <div class="edu-item" id="edu-{{ edu.id }}">
-                                    <div class="item-actions"><button class="action-btn delete" onclick="deleteItem('formacao', {{ edu.id }})">Excluir</button></div>
+                                    <div style="float:right;"><button class="action-btn delete" onclick="deleteItem('formacao', {{ edu.id }})">Excluir</button></div>
                                     <strong>{{ edu.nome_formacao }}</strong>
                                     <span>{{ edu.nome_instituicao }} ({{ edu.nivel }})</span>
                                 </div>
@@ -469,14 +469,31 @@
 </div>
 
 <script>
-    // --- SLIDER E TABS ---
-    const panelData=[{title:'Olá, <span class="username">{{ user.first_name|default:user.username }}</span>',subtitle:'Confira as vagas recomendadas para você.'},{title:'Meu Perfil',subtitle:'Gerencie seus dados e visualização do currículo.'},{title:'Finanças do candidato',subtitle:'Organize seu dinheiro e tome decisões melhores.'}];
+    // --- LÓGICA DO SLIDER (IGUAL RECRUTADOR) ---
+    const panelData = [
+        {title: 'Olá, <span class="username">{{ user.first_name|default:user.username }}</span>', subtitle: 'Confira as vagas recomendadas para você.'},
+        {title: 'Meu Perfil', subtitle: 'Gerencie seus dados e visualização do currículo.'},
+        {title: 'Finanças do candidato', subtitle: 'Organize seu dinheiro e tome decisões melhores.'}
+    ];
     const slider=document.getElementById('slider'),tabs=document.querySelectorAll('.tab'),indicator=document.getElementById('tab-indicator'),heroTitle=document.getElementById('hero-title'),heroSubtitle=document.getElementById('hero-subtitle'),panels=document.querySelectorAll('.panel');
     let currentTab=0;
 
-    function updateIndicator(tab){const rect=tab.getBoundingClientRect(),containerRect=tab.parentElement.getBoundingClientRect();indicator.style.width=rect.width+'px';indicator.style.left=(rect.left-containerRect.left)+'px'}
-    function updateHero(index){const h=document.getElementById('dynamic-hero');h.classList.add('transitioning');setTimeout(()=>{heroTitle.innerHTML=panelData[index].title;heroSubtitle.textContent=panelData[index].subtitle;h.classList.remove('transitioning')},300)}
-    function goToTab(index){if(index===currentTab)return;tabs.forEach(t=>t.classList.remove('active'));tabs[index].classList.add('active');updateIndicator(tabs[index]);slider.style.transform=`translateX(-${index*33.33}%)`;panels.forEach((p,i)=>{if(i===index)p.classList.add('active-panel');else p.classList.remove('active-panel')});updateHero(index);localStorage.setItem('candidateTab', index);currentTab=index;window.scrollTo({top:0,behavior:'smooth'});}
+    function updateIndicator(tab){
+        const rect=tab.getBoundingClientRect();
+        const containerRect=tab.parentElement.getBoundingClientRect();
+        indicator.style.width=rect.width+'px';
+        indicator.style.left=(rect.left-containerRect.left)+'px';
+    }
+
+    function goToTab(index){
+        if(index===currentTab)return;
+        tabs.forEach(t=>t.classList.remove('active')); tabs[index].classList.add('active');
+        updateIndicator(tabs[index]);
+        slider.style.transform=`translateX(-${index*33.33}%)`;
+        panels.forEach((p,i)=>{if(i===index)p.classList.add('active-panel');else p.classList.remove('active-panel')});
+        heroTitle.innerHTML=panelData[index].title; heroSubtitle.textContent=panelData[index].subtitle;
+        localStorage.setItem('candidateTab', index); currentTab=index;
+    }
 
     tabs.forEach((tab,i)=>tab.addEventListener('click',()=>goToTab(i)));
 
@@ -514,11 +531,51 @@
         }
     }
 
+    // --- AJAX PARA MODAIS (XP/EDU) - O BLOCO QUE FALTAVA ---
+    // Este bloco intercepta o submit dos formulários e envia via AJAX para não ir para a página JSON.
+    document.querySelectorAll('.dashboard-ajax-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Salvando..."; 
+            btn.disabled = true;
+            
+            // Pega o token CSRF do próprio form ou do cookie
+            let token = formData.get('csrfmiddlewaretoken');
+            if (!token) token = getCookie('csrftoken');
+
+            try {
+                const response = await fetch(this.action, { 
+                    method: 'POST', 
+                    body: formData, 
+                    headers: {'X-CSRFToken': token} 
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else { 
+                    alert('Erro: ' + JSON.stringify(data.errors)); 
+                    btn.innerText = originalText; 
+                    btn.disabled = false; 
+                }
+            } catch (e) { 
+                console.error(e);
+                alert("Erro de conexão.");
+                btn.innerText = originalText; 
+                btn.disabled = false; 
+            }
+        });
+    });
+
     // --- GERAIS ---
-    function abrirModal(id){ const m=document.getElementById(id); m.style.display='flex'; setTimeout(()=>m.classList.add('active'),10); }
-    function fecharModal(id){ const m=document.getElementById(id); m.classList.remove('active'); setTimeout(()=>m.style.display='none',300); }
+    function abrirModal(id) { const m=document.getElementById(id); m.style.display='flex'; setTimeout(()=>m.classList.add('active'),10); }
+    function fecharModal(id) { const m=document.getElementById(id); m.classList.remove('active'); setTimeout(()=>m.style.display='none',300); }
     window.onclick=function(e){ if(e.target.classList.contains('modal-overlay')) fecharModal(e.target.id); }
-    
+
+    // Enter key para skills
     document.addEventListener('DOMContentLoaded', function() {
         const hardInput = document.getElementById('hard-skill-name');
         if(hardInput) hardInput.addEventListener('keypress', function(e) { if(e.key==='Enter'){ e.preventDefault(); addSkill('hard'); }});
@@ -526,8 +583,10 @@
         if(softInput) softInput.addEventListener('keypress', function(e) { if(e.key==='Enter'){ e.preventDefault(); addSkill('soft'); }});
     });
 
-    // --- AJAX EDITORES ---
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    // Scripts de Edição (Resumo, Skills, Delete)
+    function getCookie(name){let cookieValue=null;if(document.cookie&&document.cookie!==''){const cookies=document.cookie.split(';');for(let i=0;i<cookies.length;i++){const cookie=cookies[i].trim();if(cookie.substring(0,name.length+1)===(name+'=')){cookieValue=decodeURIComponent(cookie.substring(name.length+1));break}}}return cookieValue}
+    const csrftoken=getCookie('csrftoken');
+
     function makeEditable(f){const c=document.getElementById(f+'-content'),a=document.getElementById(f+'-actions');if(c.style.display==='none')return;const t=document.createElement('textarea');t.id=f+'-textarea';t.className='editable-textarea';t.value=c.innerText.trim();c.style.display='none';c.parentNode.insertBefore(t,c.nextSibling);a.style.display='flex';t.focus()}
     function cancelEdit(f){const t=document.getElementById(f+'-textarea'),c=document.getElementById(f+'-content'),a=document.getElementById(f+'-actions');if(t)t.remove();c.style.display='block';a.style.display='none'}
     async function saveResumo(){const val=document.getElementById('resumo-textarea').value;const fd=new FormData();fd.append('resumo',val);try{const r=await fetch("{% url 'ajax_salvar_resumo' %}",{method:'POST',headers:{'X-CSRFToken':csrftoken},body:fd});const d=await r.json();if(d.status==='success'){document.getElementById('resumo-content').innerText=val;cancelEdit('resumo')}}catch(e){console.error(e)}}
@@ -538,8 +597,14 @@
     async function removeSkill(id){if(!confirm("Remover?"))return;try{await fetch(`/contas/ajax/deletar-skill/${id}/`,{method:'DELETE',headers:{'X-CSRFToken':csrftoken}});document.getElementById('skill-'+id).remove()}catch(e){console.error(e)}}
     async function deleteItem(type,id){if(!confirm("Excluir?"))return;const url=type==='experiencia'?`/contas/ajax/deletar-experiencia/${id}/`:`/contas/ajax/deletar-formacao/${id}/`;try{const r=await fetch(url,{method:'DELETE',headers:{'X-CSRFToken':csrftoken}});if(r.ok)document.getElementById((type==='experiencia'?'xp-':'edu-')+id).remove()}catch(e){console.error(e)}}
 
-    // --- FINANÇAS ---
-    const infoData={'Orçamento':'<p>Regra 50-30-20: 50% Essencial, 30% Desejos, 20% Poupança.</p>','Benefícios':'<p>VT, VR/VA, Plano de Saúde.</p>','Primeiro Salário':'<p>Pague dívidas e crie reserva.</p>','Emergência':'<p>3 a 6 meses de custo de vida.</p>','Contracheque':'<p>INSS, IRRF.</p>','FGTS':'<p>8% salário.</p>'};
+    // Info Finanças
+    const infoData = {
+        'Orçamento': '<p>Regra 50-30-20: 50% Essencial, 30% Desejos, 20% Poupança.</p>',
+        'Primeiro Salário': '<p>Priorize pagar dívidas e criar reserva de emergência.</p>',
+        'Emergência': '<p>3 a 6 meses de custo de vida.</p>',
+        'Contracheque': '<p>Descontos comuns: INSS, IRRF, Vale Transporte.</p>',
+        'FGTS': '<p>8% do salário depositado pela empresa. Saque em demissão sem justa causa.</p>'
+    };
     function abrirModalInfo(k){document.getElementById('info-title').textContent=k;document.getElementById('info-content').innerHTML=infoData[k]||"Indisponível.";abrirModal('modal-info-financa');}
     function calcularSalario(){const b=parseFloat(document.getElementById('calc-bruto').value),d=parseInt(document.getElementById('calc-dep').value)||0;if(!b)return;let i=0;if(b<=1412)i=b*0.075;else if(b<=2666)i=b*0.09-21.18;else if(b<=4000)i=b*0.12-101.18;else if(b<=7786)i=b*0.14-181.18;else i=908.85;let bi=b-i-(d*189.59),ir=0;if(bi>2259){if(bi<=2826)ir=bi*0.075-169.44;else if(bi<=3751)ir=bi*0.15-381.44;else if(bi<=4664)ir=bi*0.225-662.77;else ir=bi*0.275-896.00}if(ir<0)ir=0;document.getElementById('valor-liquido').innerText=(b-i-ir).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});document.getElementById('calc-resultado').style.display='block';}
     
