@@ -466,6 +466,7 @@ def ver_candidatos_vaga(request, vaga_id):
 def radar_de_talentos(request):
     """
     A nova tela de "Radar de Talentos" com a "Engine de IA".
+    AGORA RESTRITA AO PLANO PREMIUM.
     """
     if request.user.tipo_usuario != "recrutador":
         messages.error(request, "Acesso negado.")
@@ -473,9 +474,21 @@ def radar_de_talentos(request):
 
     try:
         recrutador = request.user.recrutador
+        empresa = recrutador.empresa
     except Recrutador.DoesNotExist:
         messages.error(request, "Você não possui um perfil de recrutador associado.")
         return redirect("home_candidato")
+
+    # --- TRAVA DE PLANO (NOVO) ---
+    # Se o plano NÃO for Premium, bloqueia e manda para a tela de upgrade
+    if empresa.plano_assinado != 'premium':
+        messages.warning(
+            request, 
+            "🔒 O Radar de Talentos com IA é exclusivo do Plano Premium. "
+            "Faça o upgrade para desbloquear essa funcionalidade poderosa!"
+        )
+        return redirect('planos_empresa')
+    # -----------------------------
 
     minhas_vagas = Vaga.objects.filter(recrutador=recrutador, status=True)
     candidatos_ordenados = []
@@ -489,8 +502,7 @@ def radar_de_talentos(request):
                 Vaga, id=vaga_selecionada_id, recrutador=recrutador
             )
 
-            # --- CORREÇÃO BUG 0% ---
-            # Adicionando de volta a otimização de performance
+            # Otimização de performance
             todos_os_candidatos = (
                 Candidato.objects.all()
                 .select_related("usuario", "resumo_profissional")
