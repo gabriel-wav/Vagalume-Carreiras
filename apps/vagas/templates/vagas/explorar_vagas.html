@@ -6,7 +6,8 @@
 <style>
     /* --- CONTAINER GERAL --- */
     .explore-wrapper {
-        background-color: #0D1117; /* Fundo base escuro */
+        background-color: #0D1117;
+        /* Fundo base escuro */
         min-height: 100vh;
         padding: 60px 20px;
         position: relative;
@@ -21,10 +22,12 @@
         right: -50px;
         width: 500px;
         height: 500px;
-        background-image: url("{% static 'img/vagalume_logo.png' %}"); /* Ajuste se o nome for outro */
+        background-image: url("{% static 'img/vagalume_logo.png' %}");
+        /* Ajuste se o nome for outro */
         background-size: contain;
         background-repeat: no-repeat;
-        opacity: 0.05; /* Bem sutil */
+        opacity: 0.05;
+        /* Bem sutil */
         pointer-events: none;
         z-index: 0;
     }
@@ -49,7 +52,9 @@
         margin-bottom: 15px;
     }
 
-    .header-section h1 span { color: #BEF264; }
+    .header-section h1 span {
+        color: #BEF264;
+    }
 
     .header-section p {
         color: #8b949e;
@@ -74,7 +79,7 @@
         font-size: 1.1rem;
         font-family: 'Plus Jakarta Sans', sans-serif;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .search-input:focus {
@@ -111,8 +116,10 @@
         border: 1px solid transparent;
     }
 
-    .filter-link:hover { color: #fff; }
-    
+    .filter-link:hover {
+        color: #fff;
+    }
+
     .filter-link.active {
         color: #BEF264;
         background-color: rgba(190, 242, 100, 0.1);
@@ -127,7 +134,8 @@
     }
 
     .job-card {
-        background: #161B22; /* Fundo do card */
+        background: #161B22;
+        /* Fundo do card */
         border: 1px solid #30363d;
         border-radius: 16px;
         padding: 25px;
@@ -141,7 +149,7 @@
     .job-card:hover {
         transform: translateY(-5px);
         border-color: #BEF264;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
     }
 
     /* Tags no topo do card */
@@ -156,7 +164,8 @@
         color: #c9d1d9;
         border: 1px solid #30363d;
         padding: 4px 12px;
-        border-radius: 4px; /* Retangular arredondado */
+        border-radius: 4px;
+        /* Retangular arredondado */
         background: transparent;
         font-weight: 600;
     }
@@ -184,8 +193,10 @@
     }
 
     .btn-apply {
-        background-color: #BEF264; /* Verde Neon */
-        color: #0D1B2A; /* Texto Escuro */
+        background-color: #BEF264;
+        /* Verde Neon */
+        color: #0D1B2A;
+        /* Texto Escuro */
         border: none;
         padding: 10px 24px;
         border-radius: 6px;
@@ -209,19 +220,26 @@
         font-size: 0.9rem;
         font-weight: 500;
     }
-    
-    .candidates-count i { color: #64748b; }
+
+    .candidates-count i {
+        color: #64748b;
+    }
 
     /* Responsividade */
     @media (max-width: 768px) {
-        .header-section h1 { font-size: 2rem; }
-        .jobs-grid { grid-template-columns: 1fr; }
+        .header-section h1 {
+            font-size: 2rem;
+        }
+
+        .jobs-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <div class="explore-wrapper">
     <div class="explore-container">
-        
+
         <div class="header-section">
             <h1>Novas <span>Vagas</span> Para Você</h1>
             <p>Consiga aplicar o mais rápido possível para diversas vagas</p>
@@ -230,55 +248,79 @@
         <div class="search-bar-container">
             <form method="GET" action="{% url 'explorar_vagas' %}">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" class="search-input" placeholder="Pesquisar Vagas..." value="{{ request.GET.q }}">
+                <input type="text" name="q" class="search-input" placeholder="Pesquisar Vagas..."
+                    value="{{ request.GET.q }}">
             </form>
         </div>
 
         <div class="filters-nav">
-            <a href="#" class="filter-link active">Recente</a>
-            <a href="#" class="filter-link">Finança</a>
-            <a href="#" class="filter-link">Desenvolvimento</a>
-            <a href="#" class="filter-link">Marketing</a>
-            <a href="#" class="filter-link">Especialista</a>
-            <a href="#" class="filter-link">Mais...</a>
+            <a href="{% url 'explorar_vagas' %}?categoria=Recente"
+                class="filter-link {% if not categoria_atual or categoria_atual == 'Recente' %}active{% endif %}">
+                Recente
+            </a>
+
+            <a href="{% url 'explorar_vagas' %}?categoria=Financeiro"
+                class="filter-link {% if categoria_atual == 'Financeiro' %}active{% endif %}">
+                Finança
+            </a>
+
+            <a href="{% url 'explorar_vagas' %}?categoria=Tecnologia"
+                class="filter-link {% if categoria_atual == 'Tecnologia' %}active{% endif %}">
+                Desenvolvimento
+            </a>
+
+            <a href="{% url 'explorar_vagas' %}?categoria=Marketing"
+                class="filter-link {% if categoria_atual == 'Marketing' %}active{% endif %}">
+                Marketing
+            </a>
+
+            <a href="{% url 'explorar_vagas' %}?categoria=Saude"
+                class="filter-link {% if categoria_atual == 'Saude' %}active{% endif %}">
+                Saúde
+            </a>
+
+            <a href="{% url 'explorar_vagas' %}" class="filter-link">
+                Limpar Filtros
+            </a>
         </div>
 
         <div class="jobs-grid">
             {% for vaga in vagas %}
-                <div class="job-card">
-                    <div class="card-tags">
-                        <span class="tag">{{ vaga.tipo_contrato }}</span>
-                        <span class="tag">{{ vaga.localidade }}</span>
-                        {% if vaga.faixa_salarial %}
-                            <span class="tag">{{ vaga.faixa_salarial }}</span>
-                        {% endif %}
-                    </div>
+            <div class="job-card">
+                <div class="card-tags">
+                    <span class="tag">{{ vaga.tipo_contrato }}</span>
+                    <span class="tag">{{ vaga.localidade }}</span>
+                    {% if vaga.faixa_salarial %}
+                    <span class="tag">{{ vaga.faixa_salarial }}</span>
+                    {% endif %}
+                </div>
 
-                    <h3 class="job-title">{{ vaga.titulo }}</h3>
-                    <div class="company-name">{{ vaga.empresa.nome }}</div>
+                <h3 class="job-title">{{ vaga.titulo }}</h3>
+                <div class="company-name">{{ vaga.empresa.nome }}</div>
 
-                    <div class="card-footer">
-                        {% if user.is_authenticated and user.tipo_usuario == 'candidato' %}
-                            <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin:0;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-apply">Candidatar-Se</button>
-                            </form>
-                        {% elif user.is_authenticated and user.tipo_usuario == 'recrutador' %}
-                            <span style="color:#8b949e; font-size:0.8rem;">(Visão de Recrutador)</span>
-                        {% else %}
-                            <a href="{% url 'login' %}" class="btn-apply">Login</a>
-                        {% endif %}
+                <div class="card-footer">
+                    {% if user.is_authenticated and user.tipo_usuario == 'candidato' %}
+                    <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-apply">Candidatar-Se</button>
+                    </form>
+                    {% elif user.is_authenticated and user.tipo_usuario == 'recrutador' %}
+                    <span style="color:#8b949e; font-size:0.8rem;">(Visão de Recrutador)</span>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn-apply">Login</a>
+                    {% endif %}
 
-                        <div class="candidates-count">
-                            <i class="fas fa-users"></i>
-                            <span>24 Candidatos</span> </div>
+                    <div class="candidates-count">
+                        <i class="fas fa-users"></i>
+                        <span>24 Candidatos</span>
                     </div>
                 </div>
+            </div>
             {% empty %}
-                <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
-                    <i class="fas fa-search" style="font-size: 3rem; color: #30363d; margin-bottom: 20px;"></i>
-                    <p style="color: #8b949e; font-size: 1.2rem;">Nenhuma vaga encontrada com esse termo.</p>
-                </div>
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
+                <i class="fas fa-search" style="font-size: 3rem; color: #30363d; margin-bottom: 20px;"></i>
+                <p style="color: #8b949e; font-size: 1.2rem;">Nenhuma vaga encontrada com esse termo.</p>
+            </div>
             {% endfor %}
         </div>
 
