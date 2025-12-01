@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vagalume_db',
         'USER': 'postgres',
-        'PASSWORD': 'senai103@',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
         # Força o psycopg2 a usar UTF-8 e evita o erro de 'byte 0xe7'
@@ -110,8 +110,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Servidor SMTP do Gmail
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
 
 # IMPORTANTE: Use uma "Senha de App" do Google, não sua senha normal
 # Como criar: https://myaccount.google.com/apppasswords
@@ -123,9 +125,17 @@ DEFAULT_FROM_EMAIL = 'Vagalume Carreiras <vagalumecarreirasteste2@gmail.com>'
 SERVER_EMAIL = EMAIL_HOST_USER
 
 # Timeout para envio
-EMAIL_TIMEOUT = 30
+EMAIL_TIMEOUT = 90
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+
+# ============================================
+# CONFIGURAÇÃO DE SMS (TWILIO)
+# ============================================
+TWILIO_ACCOUNT_SID = ''
+TWILIO_AUTH_TOKEN = ''
+TWILIO_PHONE_NUMBER = '' # Seu número Twilio
 
 
 AUTH_PASSWORD_VALIDATORS = [

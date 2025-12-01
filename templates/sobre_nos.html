@@ -1,0 +1,665 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre Nós - Vagalume Carreiras{% endblock %}
+
+{% block content %}
+<style>
+    /* =========================
+       SOBRE NÓS - DARK THEME
+       ========================= */
+    .about-wrapper {
+        background-color: #0D1B2A;
+        min-height: calc(100vh - 100px);
+        padding: 60px 20px;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-container {
+        max-width: 1100px;
+        width: 100%;
+    }
+
+    /* CABEÇALHO */
+    .about-header {
+        text-align: center;
+        margin-bottom: 80px;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .about-header h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .about-header span {
+        color: #BEF264;
+        -webkit-text-fill-color: #BEF264;
+    }
+
+    .about-text {
+        max-width: 700px;
+        margin: 0 auto;
+        font-size: 1.2rem;
+        color: #8b949e;
+        line-height: 1.8;
+    }
+
+    /* GRID DE DEVS */
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+
+    /* CARD DO MEMBRO */
+    .member-card {
+        background: #161B22;
+        border: 1px solid #30363d;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .member-card:hover {
+        transform: translateY(-10px);
+        border-color: #BEF264;
+        box-shadow: 0 10px 40px rgba(190, 242, 100, 0.1);
+    }
+
+    /* Avatar com borda neon */
+    .member-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        padding: 3px;
+        background: linear-gradient(135deg, #BEF264, #4A7856);
+        position: relative;
+    }
+
+    .member-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid #161B22; /* Borda interna para separar */
+        object-fit: cover;
+        background-color: #0D1B2A;
+    }
+
+    .member-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 5px;
+    }
+
+    .member-role {
+        color: #BEF264;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    /* Links Sociais */
+    .member-social {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #0D1B2A;
+        border: 1px solid #30363d;
+        color: #8b949e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .social-btn:hover {
+        background: #BEF264;
+        color: #0D1B2A;
+        border-color: #BEF264;
+        transform: scale(1.1);
+    }
+
+    /* SEÇÃO DO PROJETO */
+    .project-section {
+        background: #161B22;
+        border-radius: 24px;
+        padding: 60px;
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        border: 1px solid #30363d;
+    }
+
+    .project-info h2 {
+        font-size: 2.5rem;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+
+    .project-info p {
+        color: #8b949e;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 30px;
+    }
+
+    .repo-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #21262d;
+        color: #fff;
+        padding: 15px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        border: 1px solid #30363d;
+        transition: all 0.3s;
+    }
+
+    .repo-btn:hover {
+        border-color: #BEF264;
+        background-color: #30363d;
+    }
+
+    /* Animações */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsividade */
+    @media (max-width: 900px) {
+        .project-section { flex-direction: column; text-align: center; padding: 40px 20px; }
+        .about-header h1 { font-size: 2.5rem; }
+    }
+</style>
+
+<div class="about-wrapper">
+    <div class="about-container">
+        
+        <div class="about-header">
+            <h1>Quem faz o <span>Vagalume</span> brilhar?</h1>
+            <p class="about-text">
+                Somos um grupo de estudantes apaixonados por tecnologia, dedicados a transformar 
+                a forma como o recrutamento é feito através da inteligência e inovação.
+            </p>
+        </div>
+
+        <div class="team-grid">
+            
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Pedro+Henrique&background=0D1B2A&color=BEF264&bold=true" alt="Pedro">
+                </div>
+                <h3 class="member-name">Pedro Henrique</h3>
+                <span class="member-role">Full Stack Developer</span>
+                <div class="member-social">
+                    <a href="https://github.com/pedroH901" target="_blank" class="social-btn" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-btn" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Danilo&background=0D1B2A&color=BEF264&bold=true" alt="Danilo">
+                </div>
+                <h3 class="member-name">Danilo</h3>
+                <span class="member-role">Backend Developer</span>
+                <div class="member-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Gabriel&background=0D1B2A&color=BEF264&bold=true" alt="Gabriel">
+                </div>
+                <h3 class="member-name">Gabriel</h3>
+                <span class="member-role">Frontend Developer</span>
+                <div class="member-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <div class="member-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Antonio&background=0D1B2A&color=BEF264&bold=true" alt="Antonio">
+                </div>
+                <h3 class="member-name">Antonio</h3>
+                <span class="member-role">Database Specialist</span>
+                <div class="member-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="project-section">
+            <div class="project-icon">
+                <i class="fab fa-github" style="font-size: 8rem; color: #21262d;"></i>
+            </div>
+            <div class="project-info">
+                <h2>Sobre o Projeto</h2>
+                <p>
+                    O <strong>Vagalume Carreiras</strong> nasceu como um Trabalho de Conclusão de Curso (TCC) 
+                    com o objetivo de aplicar algoritmos de matching e inteligência artificial 
+                    para conectar candidatos e empresas de forma mais assertiva.
+                </p>
+                <a href="https://github.com/pedroH901/Vagalume-Carreiras" target="_blank" class="repo-btn">
+                    <i class="fab fa-github"></i> Acessar Repositório Oficial
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    /* Reset e configurações gerais */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    section {
+        display: block;
+        width: 100%;
+        clear: both;
+        flex-shrink: 0;
+    }
+
+    /* ========== SEÇÃO 1: HERO BRANCA ========== */
+    .hero-section {
+        background-color: #ffffff;
+        padding: 3rem 0 2rem 0;
+        position: relative;
+        width: 100%;
+    }
+
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2.5rem;
+        display: flex;
+        gap: 3rem;
+        align-items: flex-start;
+    }
+
+    /* Lado Esquerdo */
+    .hero-left {
+        flex: 1;
+        padding-bottom: 1rem;
+    }
+
+    .main-title {
+        font-size: 3.2rem;
+        font-weight: 400;
+        line-height: 1.15;
+        margin-bottom: 2.5rem;
+        color: #0f1c2e;
+    }
+
+    .main-title strong {
+        font-weight: 800;
+    }
+
+    /* Grid 2x2 dos Desenvolvedores */
+    .developers-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        max-width: 600px;
+    }
+
+    .dev-item {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .dev-item:hover {
+        transform: translateX(5px);
+    }
+
+    .dev-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        z-index: 2;
+        margin-right: -15px;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dev-badge {
+        flex: 1;
+        background: white;
+        border: 2.5px solid #0f1c2e;
+        border-radius: 50px;
+        height: 54px;
+        padding: 0 20px 0 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .dev-item:hover .dev-badge {
+        border-color: #c8e6c9;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .dev-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f1c2e;
+        text-transform: lowercase;
+    }
+
+    .github-icon {
+        font-size: 1.6rem;
+        color: #0f1c2e;
+        transition: transform 0.3s ease;
+    }
+
+    .dev-item:hover .github-icon {
+        transform: scale(1.1);
+    }
+
+    /* Lado Direito - Social Card */
+    .hero-right {
+        padding-top: 0;
+    }
+
+    .social-card {
+        background: #e8eef3;
+        border-radius: 16px;
+        padding: 24px 28px;
+        width: 260px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .social-card h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f1c2e;
+        margin-bottom: 0.3rem;
+    }
+
+    .social-card p {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 1.2rem;
+    }
+
+    .social-icons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .social-icons i {
+        font-size: 1.1rem;
+        color: #0f1c2e;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .social-icons i:hover {
+        transform: translateY(-3px);
+        background: #0f1c2e;
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ========== SEÇÃO 2: CÍRCULO GITHUB ========== */
+    .circle-section {
+        background: #0f1c2e;
+        padding: 2.5rem 0;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .github-circle {
+        width: 240px;
+        height: 240px;
+        background: #162838;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: -40px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .github-circle svg {
+        width: 150px;
+        height: 150px;
+        opacity: 0.85;
+    }
+
+    /* ========== SEÇÃO 3: SOBRE NÓS ========== */
+    .about-section {
+        background: #ffffff;
+        padding: 3rem 0 4rem 0;
+        width: 100%;
+    }
+
+    .about-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2.5rem;
+        padding-left: 4rem;
+    }
+
+    .about-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        color: #0f1c2e;
+    }
+
+    .about-text {
+        max-width: 750px;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        font-style: italic;
+        color: #2c3e50;
+    }
+
+    .about-text p {
+        margin-bottom: 1.3rem;
+    }
+
+    /* ========== RESPONSIVIDADE ========== */
+    @media (max-width: 992px) {
+        .hero-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-left {
+            padding-bottom: 2rem;
+            text-align: center;
+        }
+
+        .developers-grid {
+            max-width: 100%;
+        }
+
+        .social-card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .github-circle {
+            margin-left: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-container,
+        .about-container {
+            padding: 0 2rem;
+        }
+
+        .developers-grid {
+            grid-template-columns: 1fr;
+            max-width: 400px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-container,
+        .about-container {
+            padding: 0 1.5rem;
+        }
+
+        .main-title {
+            font-size: 2rem;
+        }
+
+        .github-circle {
+            width: 180px;
+            height: 180px;
+        }
+    }
+</style>
+
+<!-- SEÇÃO 1: HERO BRANCA -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-left">
+            <h1 class="main-title">
+                Veja mais dos nossos<br>
+                projetos no nosso<br>
+                <strong>github!</strong>
+            </h1>
+
+            <div class="developers-grid">
+                <div class="dev-item">
+                    <img src="https://ui-avatars.com/api/?name=DA&background=f4a261&color=fff&size=200&bold=true" class="dev-avatar">
+                    <div class="dev-badge">
+                        <span class="dev-name">danilo</span>
+                        <i class="bi bi-github github-icon"></i>
+                    </div>
+                </div>
+
+                <div class="dev-item">
+                    <img src="https://ui-avatars.com/api/?name=PE&background=b388eb&color=fff&size=200&bold=true" class="dev-avatar">
+                    <div class="dev-badge">
+                        <span class="dev-name">pedro</span>
+                        <i class="bi bi-github github-icon"></i>
+                    </div>
+                </div>
+
+                <div class="dev-item">
+                    <img src="https://ui-avatars.com/api/?name=GA&background=c8d5b9&color=333&size=200&bold=true" class="dev-avatar">
+                    <div class="dev-badge">
+                        <span class="dev-name">gabriel</span>
+                        <i class="bi bi-github github-icon"></i>
+                    </div>
+                </div>
+
+                <div class="dev-item">
+                    <img src="https://ui-avatars.com/api/?name=AN&background=8d99ae&color=fff&size=200&bold=true" class="dev-avatar">
+                    <div class="dev-badge">
+                        <span class="dev-name">antonio</span>
+                        <i class="bi bi-github github-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="social-card">
+                <h3>Follow us</h3>
+                <p>on social media</p>
+                <div class="social-icons">
+                    <i class="bi bi-facebook"></i>
+                    <i class="bi bi-twitter-x"></i>
+                    <i class="bi bi-instagram"></i>
+                    <i class="bi bi-linkedin"></i>
+                    <i class="bi bi-dribbble"></i>
+                    <i class="bi bi-pinterest"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 2: CÍRCULO GITHUB -->
+<section class="circle-section">
+    <div class="github-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" fill="#2d4556" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+    </div>
+</section>
+
+<!-- SEÇÃO 3: SOBRE NÓS -->
+<section class="about-section">
+    <div class="about-container">
+        <h2 class="about-title">Sobre Nós</h2>
+        <div class="about-text">
+            <p>
+                Somos Danilo, Gabriel, Pedro Henrique e Antonio, quatro estudantes 
+                que uniram ideias e dedicação para criar este projeto como parte do 
+                nosso TCC.
+            </p>
+            <p>
+                Nosso objetivo é oferecer uma plataforma simples e eficiente que 
+                conecte candidatos e empresas, tornando a busca por emprego 
+                mais fácil e acessível para todos.
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
