@@ -7,7 +7,29 @@ class Vaga(models.Model):
     # Conecta a Vaga ao Recrutador que a criou
     recrutador = models.ForeignKey(Recrutador, on_delete=models.CASCADE)
 
+    # --- NOVO CAMPO: ÁREA DE ATUAÇÃO ---
+    AREAS_CHOICES = [
+        ('tecnologia', 'Tecnologia e Programação'),
+        ('design', 'Design e UX/UI'),
+        ('marketing', 'Marketing e Vendas'),
+        ('financeiro', 'Financeiro e Contabilidade'),
+        ('rh', 'Recursos Humanos'),
+        ('engenharia', 'Engenharia'),
+        ('saude', 'Saúde'),
+        ('educacao', 'Educação'),
+        ('operacional', 'Operacional e Logística'),
+        ('outros', 'Outros'),
+    ]
+    
     titulo = models.CharField(max_length=100)
+    
+    area_atuacao = models.CharField(
+        max_length=50, 
+        choices=AREAS_CHOICES, 
+        default='outros',
+        verbose_name="Área de Atuação"
+    )
+
     descricao = models.TextField()
     requisitos = models.TextField()
     tipo_contrato = models.CharField(max_length=50)
@@ -26,13 +48,12 @@ class Candidatura(models.Model):
     vaga = models.ForeignKey(Vaga, on_delete=models.CASCADE)
 
     data_candidatura = models.DateField(auto_now_add=True)
-    status = models.CharField(max_length=50, default='Enviada') # Ex: 'Enviada', 'Em análise', etc.
+    status = models.CharField(max_length=50, default='Enviada') 
     
     class Meta:
         # Garante que um candidato não possa se aplicar 2x na mesma vaga
         unique_together = ('candidato', 'vaga')
 
-        # NOVO MODELO: Plano
 class Plano(models.Model):
     NOME_PLANOS = [
         ('basico', 'Básico (Grátis)'),
@@ -40,7 +61,6 @@ class Plano(models.Model):
         ('premium', 'Premium'),
     ]
 
-    # nome_chave para ser usado na lógica interna (ex: checagem de permissões)
     nome_chave = models.CharField(max_length=20, choices=NOME_PLANOS, unique=True)
     nome_exibicao = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
