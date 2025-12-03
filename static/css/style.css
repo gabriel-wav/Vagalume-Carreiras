@@ -132,3 +132,66 @@ a:hover {
     font-size: 0.85rem;
     margin-top: 20px;
 }
+
+/* =========================
+   MELHORIAS DE UX (FORMS)
+   ========================= */
+
+/* Estilo para Radio Buttons (Sim/Não) */
+.radio-custom {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+    color: #c9d1d9;
+}
+
+/* Remove a bolinha padrão e cria botões */
+.radio-custom label {
+    cursor: pointer;
+    padding: 8px 16px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background: #161B22;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+/* Quando o radio está marcado (requer estrutura específica, 
+   mas como o Django renderiza lista, vamos focar no hover por simplicidade 
+   ou usar acento visual no input nativo) */
+.radio-custom input[type="radio"] {
+    accent-color: #BEF264; /* Cor verde do Vagalume na bolinha */
+    transform: scale(1.2);
+    margin-right: 8px;
+}
+
+/* Nuvem de Tags (Skills) */
+.tag-cloud {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-cloud span {
+    background-color: rgba(48, 54, 61, 0.5);
+    border: 1px solid #30363d;
+    color: #8b949e;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.tag-cloud span:hover {
+    background-color: rgba(190, 242, 100, 0.1);
+    color: #BEF264;
+    border-color: #BEF264;
+    transform: translateY(-2px);
+}
+
+.tag-cloud span:active {
+    transform: scale(0.95);
+}

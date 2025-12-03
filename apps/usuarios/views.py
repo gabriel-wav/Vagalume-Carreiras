@@ -317,18 +317,37 @@ def ajax_salvar_skill(request):
     if request.method == 'POST':
         form = SkillForm(request.POST)
         if form.is_valid():
+            nome_skill = form.cleaned_data['nome']
+            candidato = request.user.candidato
+            
+            # --- CORREÇÃO: VERIFICAR DUPLICIDADE ---
+            # Verifica se já existe essa skill para esse candidato (ignorando maiúsculas/minúsculas)
+            skill_existente = Skill.objects.filter(
+                candidato=candidato, 
+                nome__iexact=nome_skill
+            ).first()
+
+            if skill_existente:
+                # Se já existe, retornamos erro ou sucesso falso para o front não duplicar
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'A skill "{nome_skill}" já foi adicionada.'
+                })
+            # ---------------------------------------
+
             skill = form.save(commit=False)
-            skill.candidato = request.user.candidato
+            skill.candidato = candidato
             skill.save()
 
             if 'continuar' in request.POST:
                 return JsonResponse({'status': 'success', 'action': 'next_step'})
-            else: # "Salvar e Adicionar Outro"
+            else: 
                 return JsonResponse({
                     'status': 'success',
                     'action': 'add_another',
-                    'list_id': 'lista-skills',
-                    'saved_item_html': f'<p><strong>{skill.nome}</strong> ({skill.get_tipo_display()})</p>'
+                    'skill_id': skill.id, # Importante para poder deletar depois
+                    'skill_nome': skill.nome,
+                    'skill_tipo': skill.tipo
                 })
         else:
             return JsonResponse({'status': 'error', 'errors': form.errors.as_json()})

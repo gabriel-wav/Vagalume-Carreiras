@@ -73,7 +73,11 @@ class ExperienciaForm(forms.ModelForm):
         widgets = {
             'data_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'data_fim': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'descricao': forms.Textarea(attrs={'rows': 3}),
+            'descricao': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'trabalha_atualmente': forms.RadioSelect(
+                choices=[(True, 'Sim, trabalho aqui atualmente'), (False, 'Não, já saí')],
+                attrs={'class': 'radio-custom'}
+            ),
         }
 
 class FormacaoForm(forms.ModelForm):
@@ -89,6 +93,10 @@ class FormacaoForm(forms.ModelForm):
         widgets = {
             'data_inicio': forms.DateInput(attrs={'type': 'date'}),
             'data_fim': forms.DateInput(attrs={'type': 'date'}),
+            'cursando_atualmente': forms.RadioSelect(
+                choices=[(True, 'Sim, estou cursando'), (False, 'Não, já concluí (ou tranquei)')],
+                attrs={'class': 'radio-custom'}
+            ),
         }
 
 class SkillForm(forms.ModelForm):

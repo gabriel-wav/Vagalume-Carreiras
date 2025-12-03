@@ -337,16 +337,182 @@
         <div id="lista-formacoes" style="text-align: left; margin-top: 20px;"></div>
     </div>
     <div class="onboarding-container" id="onboarding-step-5">
-        <h1 class="onboarding-title">Skills</h1>
-        <form id="form-step-5" action="{% url 'ajax_salvar_skill' %}" method="POST">
-            {% csrf_token %} {{ skill_form.as_p }}
-            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button type="submit" name="salvar_outro" class="btn-save" style="background: transparent; border: 1px solid #30363d; color: #c9d1d9; width: auto;">+ Outra</button>
-                <button type="submit" name="continuar" class="btn-save" style="width: auto;">Continuar</button>
-            </div>
-        </form>
-        <div id="lista-skills" style="text-align: left; margin-top: 20px;"></div>
-    </div>
+    
+    <style>
+        /* Container das tags */
+        .tag-cloud-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0 25px 0;
+            padding: 15px;
+            background-color: rgba(22, 27, 34, 0.5); /* Fundo levemente mais claro */
+            border: 1px dashed #30363d;
+            border-radius: 12px;
+        }
+
+        /* O estilo do botão (Tag) */
+        .skill-tag-btn {
+            background-color: #0D1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 8px 16px;
+            border-radius: 20px; /* Borda redonda = pílula */
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            display: inline-block;
+        }
+
+        /* Efeito ao passar o mouse */
+        .skill-tag-btn:hover {
+            border-color: #BEF264;
+            color: #BEF264;
+            background-color: rgba(190, 242, 100, 0.1);
+            transform: translateY(-2px); /* Sobe um pouquinho */
+        }
+
+        /* Efeito ao clicar */
+        .skill-tag-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Separador vertical */
+        .tag-separator {
+            width: 1px;
+            background-color: #30363d;
+            margin: 0 5px;
+        }
+        
+        .sugestao-titulo {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+
+    <h1 class="onboarding-title">Suas Skills</h1>
+    <p class="onboarding-subtitle">Clique nas sugestões abaixo para preencher rápido.</p>
+    
+    <form id="form-step-5" action="{% url 'ajax_salvar_skill' %}" method="POST" class="custom-form-style">
+        {% csrf_token %} 
+        
+        {{ skill_form.as_p }}
+
+        <label class="sugestao-titulo">Sugestões Rápidas:</label>
+        
+        <div class="tag-cloud-box">
+            <div class="skill-tag-btn" onclick="preencherSkill('Python', 'hard')">Python</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('JavaScript', 'hard')">JavaScript</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('SQL', 'hard')">SQL</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('React', 'hard')">React</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('Django', 'hard')">Django</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('Excel', 'hard')">Excel</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('Inglês', 'hard')">Inglês</div>
+            
+            <div class="tag-separator"></div>
+            
+            <div class="skill-tag-btn" onclick="preencherSkill('Liderança', 'soft')">Liderança</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('Comunicação', 'soft')">Comunicação</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('Proatividade', 'soft')">Proatividade</div>
+            <div class="skill-tag-btn" onclick="preencherSkill('Organização', 'soft')">Organização</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button type="submit" name="salvar_outro" class="btn-outline">+ Adicionar Outra</button>
+            <button type="submit" name="continuar" class="btn-save" style="width: auto;">Continuar</button>
+        </div>
+    </form>
+    
+    <div id="lista-skills" style="text-align: left; margin-top: 20px;"></div>
+
+<script>
+        async function preencherSkill(nome, tipo) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const inputNome = document.getElementById('id_nome');
+            const selectTipo = document.getElementById('id_tipo');
+
+            // 1. Feedback Visual Imediato nos inputs (UX)
+            if(inputNome) inputNome.value = nome;
+            if(selectTipo) selectTipo.value = tipo;
+
+            // 2. Montar dados
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('tipo', tipo);
+
+            try {
+                // 3. Enviar para o servidor
+                const response = await fetch("{% url 'ajax_salvar_skill' %}", {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': csrfToken},
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // --- SUCESSO ---
+                    
+                    // A. Adiciona na lista do Onboarding (Visualização atual)
+                    adicionarNaListaVisual('lista-skills', data.skill_id, nome, tipo);
+
+                    // B. Adiciona na lista do PERFIL (Para quando trocar de aba)
+                    // O ID no perfil é 'hard-skills-container' ou 'soft-skills-container'
+                    const containerId = tipo === 'hard' ? 'hard-skills-container' : 'soft-skills-container';
+                    adicionarNaListaPerfil(containerId, data.skill_id, nome);
+
+                    // C. Limpa o input para dar sensação de "concluído"
+                    if(inputNome) inputNome.value = "";
+                    
+                } else if (data.message) {
+                    // Se for erro de duplicidade, avisa suavemente
+                    alert(data.message); 
+                }
+
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        }
+
+        // Função auxiliar para desenhar no Onboarding
+        function adicionarNaListaVisual(containerId, id, nome, tipo) {
+            const lista = document.getElementById(containerId);
+            if (!lista) return;
+
+            const novoItem = document.createElement('div');
+            novoItem.style.cssText = "background: #161B22; border-left: 3px solid #BEF264; padding: 10px; margin-bottom: 5px; border-radius: 4px; color: #fff; animation: fadeIn 0.5s; display: flex; justify-content: space-between;";
+            novoItem.innerHTML = `
+                <div><strong>${nome}</strong> <span style='color:#8b949e; font-size:0.9rem;'>(${tipo === 'hard' ? 'Hard' : 'Soft'})</span></div>
+                <span style='color:#4ade80;'>✓ Salvo</span>
+            `;
+            lista.prepend(novoItem); // Adiciona no topo
+        }
+
+        // Função auxiliar para desenhar na Aba Perfil (Tag estilo pílula)
+        function adicionarNaListaPerfil(containerId, id, nome) {
+            const lista = document.getElementById(containerId);
+            if (!lista) return;
+
+            // Cria a tag igual ao estilo do perfil
+            const novaTag = document.createElement('span');
+            novaTag.className = 'skill-tag';
+            novaTag.id = `skill-${id}`; // Importante para poder remover depois
+            novaTag.innerHTML = `${nome} <span class="remove-skill" onclick="removeSkill(${id})">×</span>`;
+            
+            // Verifica se a mensagem "Nenhuma habilidade" existe e remove ela
+            const msgVazia = lista.querySelector('p');
+            if (msgVazia && msgVazia.innerText.includes('Nenhuma')) {
+                msgVazia.remove();
+            }
+
+            lista.appendChild(novaTag);
+        }
+    </script>
+</div>
     <div class="onboarding-container" id="onboarding-step-6">
         <h1 class="onboarding-title">Currículo PDF</h1>
         <form id="form-step-6" action="{% url 'ajax_salvar_curriculo' %}" method="POST" enctype="multipart/form-data">
@@ -438,10 +604,25 @@
                             {% endfor %}
                         </div>
                         <div class="add-skill-trigger" onclick="toggleSkillInput('hard')">+ Adicionar skill</div>
-                        <div class="skill-input-wrapper" id="hard-skill-input">
-                            <input type="text" class="skill-input" placeholder="Ex: Python" id="hard-skill-name">
-                            <button class="add-skill-btn" onclick="addSkill('hard')">Salvar</button>
-                        </div>
+<div class="skill-input-wrapper" id="hard-skill-input" style="flex-direction: column; align-items: stretch;">
+    <div style="display: flex; gap: 10px;">
+        <input type="text" class="skill-input" placeholder="Digite ou selecione abaixo..." id="hard-skill-name">
+        <button class="add-skill-btn" onclick="addSkill('hard')">Salvar</button>
+    </div>
+    
+    <div class="tag-cloud">
+        <small style="color: #8b949e; display: block; margin-bottom: 5px;">Sugestões:</small>
+        <span onclick="preencherSkill('hard', 'Python')">Python</span>
+        <span onclick="preencherSkill('hard', 'JavaScript')">JavaScript</span>
+        <span onclick="preencherSkill('hard', 'SQL')">SQL</span>
+        <span onclick="preencherSkill('hard', 'React')">React</span>
+        <span onclick="preencherSkill('hard', 'Django')">Django</span>
+        <span onclick="preencherSkill('hard', 'Excel')">Excel</span>
+        <span onclick="preencherSkill('hard', 'Inglês')">Inglês</span>
+        <span onclick="preencherSkill('hard', 'Java')">Java</span>
+        <span onclick="preencherSkill('hard', 'AWS')">AWS</span>
+    </div>
+</div>
                     </div>
 
                     <div class="cv-section">
@@ -452,10 +633,23 @@
                             {% endfor %}
                         </div>
                         <div class="add-skill-trigger" onclick="toggleSkillInput('soft')">+ Adicionar skill</div>
-                        <div class="skill-input-wrapper" id="soft-skill-input">
-                            <input type="text" class="skill-input" placeholder="Ex: Liderança" id="soft-skill-name">
-                            <button class="add-skill-btn" onclick="addSkill('soft')">Salvar</button>
-                        </div>
+                        <div class="skill-input-wrapper" id="soft-skill-input" style="flex-direction: column; align-items: stretch;">
+    <div style="display: flex; gap: 10px;">
+        <input type="text" class="skill-input" placeholder="Digite ou selecione abaixo..." id="soft-skill-name">
+        <button class="add-skill-btn" onclick="addSkill('soft')">Salvar</button>
+    </div>
+
+    <div class="tag-cloud">
+        <small style="color: #8b949e; display: block; margin-bottom: 5px;">Sugestões:</small>
+        <span onclick="preencherSkill('soft', 'Liderança')">Liderança</span>
+        <span onclick="preencherSkill('soft', 'Comunicação')">Comunicação</span>
+        <span onclick="preencherSkill('soft', 'Trabalho em Equipe')">Trabalho em Equipe</span>
+        <span onclick="preencherSkill('soft', 'Resolução de Problemas')">Resolução de Problemas</span>
+        <span onclick="preencherSkill('soft', 'Criatividade')">Criatividade</span>
+        <span onclick="preencherSkill('soft', 'Adaptabilidade')">Adaptabilidade</span>
+        <span onclick="preencherSkill('soft', 'Gestão de Tempo')">Gestão de Tempo</span>
+    </div>
+</div>
                     </div>
 
                     <div class="cv-section">
@@ -714,6 +908,58 @@
         let isFirstLogin=false;{% if messages %}{% for message in messages %}{% if 'FIRST_LOGIN' in message.tags %}isFirstLogin=true;{% endif %}{% endfor %}{% endif %}
         if(isFirstLogin){mainInterface.style.display='none';document.getElementById('progress-bar-fixed-wrapper').style.display='block';onboardingWrapper.style.display='block';showStep(0);document.getElementById('btn-iniciar-onboarding').onclick=()=>showStep(1);document.getElementById('form-step-2').onsubmit=async(e)=>{e.preventDefault();if(await enviarFormulario(e.target,e.submitter))showStep(2)};document.getElementById('form-step-3').onsubmit=async(e)=>{e.preventDefault();if(e.submitter.name==='continuar'&&!e.target.querySelector('[name=cargo]').value){showStep(3);return}if(await enviarFormulario(e.target,e.submitter))showStep(3)};document.getElementById('form-step-4').onsubmit=async(e)=>{e.preventDefault();if(e.submitter.name==='continuar'&&!e.target.querySelector('[name=nome_formacao]').value){showStep(4);return}if(await enviarFormulario(e.target,e.submitter))showStep(4)};document.getElementById('form-step-5').onsubmit=async(e)=>{e.preventDefault();if(e.submitter.name==='continuar'&&!e.target.querySelector('[name=nome]').value){showStep(5);return}if(await enviarFormulario(e.target,e.submitter))showStep(5)};document.getElementById('form-step-6').onsubmit=async(e)=>{e.preventDefault();if(await enviarFormulario(e.target,e.submitter)){onboardingWrapper.style.display='none';document.getElementById('progress-bar-fixed-wrapper').style.display='none';mainInterface.style.display='block';goToTab(0)}}}else{onboardingWrapper.style.display='none';mainInterface.style.display='block'}
     });
+        async function preencherSkill(nome, tipo) {
+            // 1. Pegar o Token de Segurança (obrigatório no Django)
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // 2. Montar os dados para envio
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('tipo', tipo);
+            // Nota: Não enviamos 'continuar', então o backend entende como "Adicionar e Manter na página"
+
+            // 3. Feedback Visual Rápido (Opcional: preenche os inputs só pra mostrar o que está acontecendo)
+            const inputNome = document.getElementById('id_nome');
+            const selectTipo = document.getElementById('id_tipo');
+            if(inputNome) inputNome.value = nome;
+            if(selectTipo) selectTipo.value = tipo;
+
+            try {
+                // 4. Enviar para o Backend via AJAX
+                const response = await fetch("{% url 'ajax_salvar_skill' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // 5. SUCESSO: Adicionar o item na lista visualmente
+                    const lista = document.getElementById('lista-skills');
+                    
+                    // Cria um elemento visual bonitinho igual ao CSS do site
+                    const novoItem = document.createElement('div');
+                    novoItem.style.cssText = "background: #161B22; border-left: 3px solid #BEF264; padding: 10px; margin-bottom: 5px; border-radius: 4px; color: #fff; animation: fadeIn 0.5s;";
+                    novoItem.innerHTML = `<strong>${nome}</strong> <span style='color:#8b949e; font-size:0.9rem;'>(${tipo === 'hard' ? 'Hard Skill' : 'Soft Skill'})</span> <span style='float:right; color:#4ade80;'>✓ Salvo</span>`;
+                    
+                    lista.appendChild(novoItem);
+                    
+                    // Limpa o input para o próximo
+                    if(inputNome) inputNome.value = "";
+                    
+                } else {
+                    console.error('Erro:', data);
+                    // Se der erro (ex: skill duplicada ou vazia), avisa o usuário
+                    // Mas como estamos clicando em tags pré-definidas, erros são raros.
+                }
+
+            } catch (error) {
+                console.error('Erro de conexão:', error);
+            }
+        }
 </script>
 
 {% endblock %}
