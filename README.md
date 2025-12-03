@@ -1,112 +1,162 @@
-Manual de Instalação — Plataforma de Vagas e Recrutamento Inteligente ( Vagalume Carreiras )
+# 💡 Vagalume Carreiras  
+**"Iluminando carreiras, conectando futuros."**
 
+O **Vagalume Carreiras** é uma plataforma de recrutamento e seleção inteligente desenvolvida como **Trabalho de Conclusão de Curso (TCC)**.  
+Diferente de portais tradicionais, o sistema utiliza **Inteligência Artificial Generativa (Google Gemini)** e **Matching Semântico** para conectar os candidatos ideais às vagas certas, além de oferecer ferramentas de **gestão financeira** e **orientação de carreira**.
 
-1. Requisitos do Sistema
+---
 
-Antes de iniciar, verifique se o ambiente possui:
-Python 3.10+
-PostgreSQL 14+
-Git
-Pip e venv
-(Opcional) Visual Studio Code ou outro editor de texto
+## 🚀 Funcionalidades Principais
 
-2. Clonar o Repositório
+### 👤 Para Candidatos
+- **Currículo Web & PDF:** Criação de perfil detalhado (Resumo, Experiência, Formação, Skills) e anexo para currículo em PDF.
+- **Vagalume AI Advisor:** Análise de perfil por IA (Google Gemini) com dicas personalizadas para melhorar o currículo e aumentar as chances de contratação.
+- **Candidatura Simplificada:** Aplicação para vagas com apenas um clique.
+- **Educação Financeira:** Módulo exclusivo com calculadora de salário líquido (CLT) e dicas de orçamento para iniciantes no mercado.
+- **Recuperação Segura:** Recuperação de senha via **E-mail** ou **SMS** (integração com Twilio).
 
-Abra o terminal e execute:
+### 🏢 Para Empresas (Recrutadores)
+- **Gestão de Vagas:** CRUD completo de vagas com controle de status (Aberta/Fechada).
+- **Radar de Talentos (IA - Matching):**  
+  Algoritmo de **Semantic Matching** (sentence-transformers) que varre o banco de dados e ranqueia candidatos por compatibilidade percentual, mesmo sem candidatura prévia.
+- **Planos de Assinatura:** Básico, Intermediário e Premium, com limites de vagas e acesso a funcionalidades de IA.
+- **Dashboard Administrativo:** Visão geral de métricas, candidatos e gestão da marca empregadora.
+
+---
+
+## 🛠️ Stack Tecnológica
+
+### Backend & Core
+- **Python**
+- **Django Framework**
+- **PostgreSQL**
+- **Django REST Framework**
+
+### Inteligência Artificial & Dados
+- 🤖 **Google Gemini (Generative AI)** – Análise de perfis e orientação de carreira  
+- 🧠 **Sentence-Transformers (Torch)** – Geração de embeddings e similaridade semântica  
+- 📊 **Scikit-Learn & NumPy** – Processamento vetorial e numérico  
+
+### Frontend
+- 🎨 **HTML5, CSS3 e JavaScript**
+- **Jinja2 (Django Templates)**
+- Tema **Dark Mode** com acentos Neon (**#BEF264**)
+
+### Serviços Externos
+- 📧 **SMTP (Gmail)** – Envio de e-mails para recuperação de senha
+- 📱 **Twilio** – Envio de SMS para recuperação de senha
+
+---
+
+## ⚙️ Instalação e Configuração Local
+
+### 1. Pré-requisitos
+- Python **3.10+**
+- PostgreSQL instalado e em execução
+- Git
+
+### 2. Clonar o Repositório
+```bash
 git clone https://github.com/pedroH901/Vagalume-Carreiras.git
-Em seguida, acesse a pasta do projeto:
 cd vagalume-carreiras
+```
 
-3. Criar e Ativar o Ambiente Virtual
-No terminal:
+### 3. Criar Ambiente Virtual
+```bash
+# Windows
 python -m venv venv
-Ativar o ambiente:
-Windows
 venv\Scripts\activate
-Linux/Mac
+
+# Linux / Mac
+python3 -m venv venv
 source venv/bin/activate
+```
 
-4. Instalar as Dependências
-Execute:
+### 4. Instalar Dependências
+```bash
 pip install -r requirements.txt
-Caso o arquivo requirements.txt ainda não exista, gere com:
-pip freeze > requirements.txt
+```
+Isso instalará pacotes como PyTorch, Django, Google GenAI, entre outros.
 
-Principais dependências:
-Django
-djangorestframework
-django-crispy-forms
-django-filter
-psycopg2
-pillow
-scikit-learn
-nltk
+### 5. Configurar Variáveis de Ambiente
+Crie um arquivo .env na raiz do projeto:
+```bash
+# Banco de Dados
+DB_NAME=vagalume_db
+DB_USER=postgres
+DB_PASSWORD=sua_senha
+DB_HOST=localhost
+DB_PORT=5432
 
-5. Configurar o Banco de Dados PostgreSQL
+# Google AI (Gemini)
+GOOGLE_API_KEY=sua_chave_aqui
 
-Crie um banco de dados:
-CREATE DATABASE vagalume-carreiras;
-No arquivo settings.py, localize a configuração de banco:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'plataforma_vagas',
-        'USER': 'postgres',
-        'PASSWORD': 'sua_senha',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+# Email
+EMAIL_HOST_USER=seu_email@gmail.com
+EMAIL_HOST_PASSWORD=sua_senha_de_app
 
-6. Executar as Migrações
-Crie as tabelas no banco:
+# Twilio (Opcional)
+TWILIO_ACCOUNT_SID=seu_sid
+TWILIO_AUTH_TOKEN=seu_token
+TWILIO_PHONE_NUMBER=seu_numero
+```
+
+### 6. Migrações e Base de Dados
+Crie o banco no PostgreSQL e execute:
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
 
-7. Criar Usuário Administrador
+### 7. Criar Superusuário
+```bash
 python manage.py createsuperuser
-Preencha com e-mail, nome e senha.
+```
 
-8. Rodar o Servidor
+### 8. Executar o Servidor
+```bash
 python manage.py runserver
-Acesse no navegador:
-http://127.0.0.1:8000/
+```
+Acesse:
+👉 http://127.0.0.1:8000/
 
-9. Testar a Aplicação
-Login: /admin/
-API REST (exemplo): /api/vagas/
-Frontend: página inicial ou diretório /templates/
+---
 
-10. Erros Comuns                          
-Erro - psycopg2.OperationalError
-Solução - Verifique se o PostgreSQL está rodando e as credenciais no settings.py.
+## 🧠 Como funciona a IA (Matching)?
 
-Erro - ModuleNotFoundError	        
-Solução - Execute pip install -r requirements.txt novamente.
+O diferencial do **Vagalume Carreiras** está no **Radar de Talentos**:
 
-Erro - DisallowedHost	                
-Solução - Adicione localhost em ALLOWED_HOSTS no settings.py.
+1. O sistema converte:
+   - **Resumo + Experiências + Skills** do candidato  
+     em vetores matemáticos (*embeddings*) usando modelos pré-treinados  
+     (`distiluse-base-multilingual-cased-v1`).
 
+2. O mesmo processo é aplicado para a vaga:
+   - **Título + Descrição + Requisitos** da vaga.
 
-11. Estrutura de Pastas (Exemplo)
-vagalumne-carreiras/
-│
-├── manage.py
-├── requirements.txt
-├── db.sqlite3 (opcional)
-│
-├── core/               # app principal (usuários, autenticação)
-├── vagas/              # app de vagas e candidaturas
-├── matching/           # app com algoritmo de matching
-├── api/                # app REST
-└── templates/          # páginas HTML
+3. É realizado o **Cálculo de Similaridade de Cosseno** entre os vetores.
 
-12. Desativar o Ambiente Virtual
-Quando terminar o trabalho:
-deactivate
+4. O sistema gera um **Match Score (0 a 100%)** que entende o **contexto semântico**  
+   (ex.: `"Dev Frontend" ≈ "React Developer"`), e não depende apenas de palavras-chave exatas.
 
-13. (Opcional) Implantação
-Para publicação online (exemplo):
-Render, Railway, ou PythonAnywhere
-Banco: PostgreSQL hospedado
-Variáveis de ambiente configuradas (.env)
+---
+
+## 👥 Autores (Equipe TCC)
+
+- **Pedro Henrique** – Full Stack Developer  
+- **Danilo** – Backend Developer  
+- **Gabriel** – Full Stack Developer  
+- **Antonio** – Database Specialist
+
+---
+
+## 📄 Licença
+
+Este projeto é de **uso educacional e acadêmico**.  
+Distribuição e cópia **não autorizadas são proibidas**.
+
+---
+
+<p align="center">
+Feito com 💚 e muito café por <strong>Time Vagalume</strong>.
+</p>
