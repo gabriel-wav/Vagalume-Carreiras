@@ -37,13 +37,14 @@
         <form id="form-step-3" action="{% url 'ajax_salvar_experiencia' %}" method="POST" class="custom-form-style" novalidate>
             {% csrf_token %} {{ experiencia_form.as_p }}
             <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button type="button" class="btn-outline" onclick="avancarSemSalvar(3)">Pular etapa</button>
+                <button type="button" class="btn-outline" onclick="avancarSemSalvar(3)" style="border:none; color:#64748b;">Pular etapa</button>
                 <div style="display: flex; gap: 10px;">
                     <button type="submit" name="salvar_outro" class="btn-outline">+ Outra</button>
                     <button type="submit" name="continuar" class="btn-save" style="width: auto;">Salvar e Continuar</button>
                 </div>
             </div>
         </form>
+        <div id="lista-experiencias" style="text-align: left; margin-top: 20px;"></div>
     </div>
 
     <div class="onboarding-container" id="onboarding-step-4">
@@ -53,13 +54,14 @@
         <form id="form-step-4" action="{% url 'ajax_salvar_formacao' %}" method="POST" class="custom-form-style" novalidate>
             {% csrf_token %} {{ formacao_form.as_p }}
             <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button type="button" class="btn-outline" onclick="avancarSemSalvar(4)">Pular etapa</button>
+                <button type="button" class="btn-outline" onclick="avancarSemSalvar(4)" style="border:none; color:#64748b;">Pular etapa</button>
                 <div style="display: flex; gap: 10px;">
                     <button type="submit" name="salvar_outro" class="btn-outline">+ Outra</button>
                     <button type="submit" name="continuar" class="btn-save" style="width: auto;">Salvar e Continuar</button>
                 </div>
             </div>
         </form>
+        <div id="lista-formacoes" style="text-align: left; margin-top: 20px;"></div>
     </div>
 
     <div class="onboarding-container" id="onboarding-step-5">
@@ -185,6 +187,7 @@
                             {% endfor %}
                         </div>
                         <div class="add-skill-trigger" onclick="toggleSkillInput('hard')">+ Adicionar skill</div>
+                        
                         <div class="skill-input-wrapper" id="hard-skill-input" style="flex-direction: column; align-items: stretch; display: none; margin-top: 15px;">
                             <div style="display: flex; gap: 10px;">
                                 <input type="text" class="skill-input" placeholder="Digite ou selecione..." id="hard-skill-name">
@@ -207,6 +210,7 @@
                             {% endfor %}
                         </div>
                         <div class="add-skill-trigger" onclick="toggleSkillInput('soft')">+ Adicionar skill</div>
+                        
                         <div class="skill-input-wrapper" id="soft-skill-input" style="flex-direction: column; align-items: stretch; display: none; margin-top: 15px;">
                             <div style="display: flex; gap: 10px;">
                                 <input type="text" class="skill-input" placeholder="Digite ou selecione..." id="soft-skill-name">
@@ -228,11 +232,13 @@
                                     <div style="float:right;"><button class="action-btn delete" onclick="deleteItem('experiencia', {{ exp.id }})">Excluir</button></div>
                                     <strong>{{ exp.cargo }}</strong>
                                     <span>{{ exp.empresa }} | {{ exp.data_inicio|date:"Y" }}</span>
+                                    <p>{{ exp.descricao|default:"" }}</p>
                                 </div>
                             {% empty %}<span class="cv-content">Nenhuma experiência registrada.</span>{% endfor %}
                         </div>
                         <button class="add-new-btn" onclick="abrirModal('modal-experiencia')"><span>+</span> Adicionar experiência</button>
                     </div>
+                    
                     <div class="cv-section">
                         <h3>Formação Acadêmica</h3>
                         <div id="formacoes-container">
@@ -240,7 +246,7 @@
                                 <div class="edu-item" id="edu-{{ edu.id }}">
                                     <div style="float:right;"><button class="action-btn delete" onclick="deleteItem('formacao', {{ edu.id }})">Excluir</button></div>
                                     <strong>{{ edu.nome_formacao }}</strong>
-                                    <span>{{ edu.nome_instituicao }}</span>
+                                    <span>{{ edu.nome_instituicao }} ({{ edu.nivel }})</span>
                                 </div>
                             {% empty %}<span class="cv-content">Nenhuma formação registrada.</span>{% endfor %}
                         </div>
@@ -273,13 +279,14 @@
 <div id="modal-info-financa" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3 id="info-title"></h3><button class="btn-close-modal" onclick="fecharModal('modal-info-financa')">&times;</button></div><div id="info-content" style="color:#c9d1d9; line-height:1.6;"></div></div></div>
 
 <script>
-    // --- NAVEGAÇÃO E ONBOARDING ---
-    const mainInterface=document.getElementById('main-interface'), onboardingWrapper=document.getElementById('onboarding-wrapper');
-    const steps = Array.from(document.querySelectorAll('.onboarding-container'));
-    
+    // --- FUNÇÕES DE COOKIE E TOKEN ---
     function getCookie(name){let cookieValue=null;if(document.cookie&&document.cookie!==''){const cookies=document.cookie.split(';');for(let i=0;i<cookies.length;i++){const cookie=cookies[i].trim();if(cookie.substring(0,name.length+1)===(name+'=')){cookieValue=decodeURIComponent(cookie.substring(name.length+1));break}}}return cookieValue}
     const csrftoken = getCookie('csrftoken');
 
+    // --- ONBOARDING ---
+    const mainInterface=document.getElementById('main-interface'), onboardingWrapper=document.getElementById('onboarding-wrapper');
+    const steps = Array.from(document.querySelectorAll('.onboarding-container'));
+    
     function showStep(index){
         steps.forEach((s,i)=>{
             s.style.display = i===index ? 'flex' : 'none';
@@ -294,11 +301,8 @@
         onboardingWrapper.style.display = 'none';
         document.getElementById('progress-bar-fixed-wrapper').style.display = 'none';
         mainInterface.style.display = 'block';
-        const notif = document.createElement('div');
-        notif.className = 'popup-info';
-        notif.innerText = "Dê os últimos toques no seu perfil na aba 'Perfil' abaixo!";
-        document.body.appendChild(notif);
-        setTimeout(() => notif.remove(), 6000);
+        const notif = document.createElement('div'); notif.className = 'popup-info'; notif.innerText = "Perfil configurado!";
+        document.body.appendChild(notif); setTimeout(() => notif.remove(), 4000);
         goToTab(0);
     }
     
@@ -312,17 +316,18 @@
             const res = await fetch(form.action, {method:'POST', body:formData, headers:{'X-CSRFToken':csrftoken}});
             const data = await res.json();
             if(data.status==='success'){
-                if(data.action==='next_step') return true;
+                if(data.action==='next_step') return true; 
                 const lista=document.getElementById(data.list_id);
                 if(lista && data.saved_item_html) lista.innerHTML += data.saved_item_html;
                 form.reset(); return false;
             } else {
-                if(btn && btn.name==='continuar') return true;
+                if(btn && btn.name==='continuar') return true; // Pular se der erro
                 alert("Preencha os campos."); return false;
             }
         } catch(e){ return false; }
     }
 
+    // Inicialização Onboarding
     let isFirstLogin=false;
     {% if messages %}{% for message in messages %}{% if 'FIRST_LOGIN' in message.tags %}isFirstLogin=true;{% endif %}{% endfor %}{% endif %}
     
@@ -367,13 +372,12 @@
         } catch(e){console.error(e);}
     }
 
-    function adicionarNaListaVisual(containerId, id, nome, tipo) {
-        const lista = document.getElementById(containerId);
-        if (!lista) return;
+    function adicionarNaListaVisual(cId, id, nome, tipo) {
+        const l = document.getElementById(cId); if(!l) return;
         const div = document.createElement('div');
         div.style.cssText = "background: #161B22; border-left: 3px solid #BEF264; padding: 10px; margin-bottom: 5px; border-radius: 4px; color: #fff; display:flex; justify-content:space-between;";
         div.innerHTML = `<div><strong>${nome}</strong> <span style='color:#8b949e;'>(${tipo})</span></div><span style='color:#4ade80;'>✓ Salvo</span>`;
-        lista.prepend(div);
+        l.prepend(div);
     }
     function adicionarNaListaPerfil(cId, id, nome) {
         const c = document.getElementById(cId); if(!c) return;
@@ -382,6 +386,8 @@
         const p = c.querySelector('p'); if(p && p.innerText.includes('Nenhuma')) p.remove();
         c.appendChild(tag);
     }
+    
+    // Funções de Skill Manual na Aba Perfil
     function toggleSkillInput(type) {
         const w = document.getElementById(type + '-skill-input');
         if (w.style.display === 'none' || w.style.display === '') {
@@ -413,16 +419,8 @@
         document.querySelectorAll('.panel').forEach((p,i)=> i===index ? p.classList.add('active-panel') : p.classList.remove('active-panel'));
         currentTab=index;
     }
-    tabs.forEach((tab,i)=>tab.addEventListener('click',()=>goToTab(i)));
-    window.addEventListener('resize',()=>updateIndicator(tabs[currentTab]));
-    window.addEventListener('load',()=>{
-        const saved=localStorage.getItem('candidateTab');
-        slider.classList.add('no-transition');
-        if(saved && parseInt(saved)<3){ goToTab(parseInt(saved)); } else { updateIndicator(tabs[0]); }
-        setTimeout(()=>slider.classList.remove('no-transition'),100);
-    });
-    function updateIndicator(tab){ const rect=tab.getBoundingClientRect(); const containerRect=tab.parentElement.getBoundingClientRect(); indicator.style.width=rect.width+'px'; indicator.style.left=(rect.left-containerRect.left)+'px'; }
-
+    document.querySelectorAll('.tab').forEach((t,i)=>t.addEventListener('click',()=>goToTab(i)));
+    
     // --- MODAIS/IA ---
     function abrirModal(id) { const m=document.getElementById(id); m.style.display='flex'; setTimeout(()=>m.classList.add('active'),10); }
     function fecharModal(id) { const m=document.getElementById(id); m.classList.remove('active'); setTimeout(()=>m.style.display='none',300); }
@@ -440,25 +438,51 @@
         finally{btn.innerHTML=txt; btn.disabled=false;}
     }
 
+    // --- FINANÇAS ---
+    const infoData={'Orçamento':'<p>Regra 50-30-20...</p>','Benefícios':'<p>VT, VR...</p>','Primeiro Salário':'<p>Priorize dívidas...</p>','Emergência':'<p>3 a 6 meses...</p>','Contracheque':'<p>INSS, IRRF...</p>','FGTS':'<p>8% salário...</p>'};
+    function abrirModalInfo(k){document.getElementById('info-title').innerText=k; document.getElementById('info-content').innerHTML=infoData[k]||"Indisponível"; abrirModal('modal-info-financa');}
+    function calcularSalario(){const b=parseFloat(document.getElementById('calc-bruto').value),d=parseInt(document.getElementById('calc-dep').value)||0;if(!b)return;let i=0;if(b<=1412)i=b*0.075;else if(b<=2666)i=b*0.09-21.18;else if(b<=4000)i=b*0.12-101.18;else if(b<=7786)i=b*0.14-181.18;else i=908.85;let bi=b-i-(d*189.59),ir=0;if(bi>2259){if(bi<=2826)ir=bi*0.075-169.44;else if(bi<=3751)ir=bi*0.15-381.44;else if(bi<=4664)ir=bi*0.225-662.77;else ir=bi*0.275-896.00}if(ir<0)ir=0;document.getElementById('valor-liquido').innerText=(b-i-ir).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});document.getElementById('calc-resultado').style.display='block';}
+
+    // --- EDIÇÃO GERAL ---
     async function saveResumo(){const val=document.getElementById('resumo-textarea').value;const fd=new FormData();fd.append('resumo',val);try{const r=await fetch("{% url 'ajax_salvar_resumo' %}",{method:'POST',headers:{'X-CSRFToken':csrftoken},body:fd});if(r.ok){document.getElementById('resumo-content').innerText=val;cancelEdit('resumo')}}catch(e){}}
     function makeEditable(f){const c=document.getElementById(f+'-content'),a=document.getElementById(f+'-actions');if(c.style.display==='none')return;const t=document.createElement('textarea');t.id=f+'-textarea';t.className='editable-textarea';t.value=c.innerText.trim();c.style.display='none';c.parentNode.insertBefore(t,c.nextSibling);a.style.display='flex';t.focus()}
     function cancelEdit(f){const t=document.getElementById(f+'-textarea'),c=document.getElementById(f+'-content'),a=document.getElementById(f+'-actions');if(t)t.remove();c.style.display='block';a.style.display='none'}
     if(document.getElementById('resumo-content')) document.getElementById('resumo-content').addEventListener('click',()=>makeEditable('resumo'));
-    
     async function removeSkill(id){if(!confirm("Remover?"))return;try{await fetch(`/contas/ajax/deletar-skill/${id}/`,{method:'DELETE',headers:{'X-CSRFToken':csrftoken}});document.getElementById('skill-'+id).remove()}catch(e){}}
     async function deleteItem(t,id){if(!confirm("Excluir?"))return;const url=type==='experiencia'?`/contas/ajax/deletar-experiencia/${id}/`:`/contas/ajax/deletar-formacao/${id}/`;try{const r=await fetch(url,{method:'DELETE',headers:{'X-CSRFToken':csrftoken}});if(r.ok)document.getElementById((t==='experiencia'?'xp-':'edu-')+id).remove()}catch(e){}}
 
-    const infoData = {'Orçamento': '<p>Regra 50-30-20...</p>','Benefícios':'<p>VT, VR...</p>','Primeiro Salário':'<p>Priorize dívidas...</p>','Emergência':'<p>3 a 6 meses...</p>','Contracheque':'<p>INSS, IRRF...</p>','FGTS':'<p>8% salário...</p>'};
-    function abrirModalInfo(k){document.getElementById('info-title').innerText=k; document.getElementById('info-content').innerHTML=infoData[k]||"Indisponível"; abrirModal('modal-info-financa');}
-    function calcularSalario(){const b=parseFloat(document.getElementById('calc-bruto').value),d=parseInt(document.getElementById('calc-dep').value)||0;if(!b)return;let i=0;if(b<=1412)i=b*0.075;else if(b<=2666)i=b*0.09-21.18;else if(b<=4000)i=b*0.12-101.18;else if(b<=7786)i=b*0.14-181.18;else i=908.85;let bi=b-i-(d*189.59),ir=0;if(bi>2259){if(bi<=2826)ir=bi*0.075-169.44;else if(bi<=3751)ir=bi*0.15-381.44;else if(bi<=4664)ir=bi*0.225-662.77;else ir=bi*0.275-896.00}if(ir<0)ir=0;document.getElementById('valor-liquido').innerText=(b-i-ir).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});document.getElementById('calc-resultado').style.display='block';}
-    
-    document.querySelectorAll('.dashboard-ajax-form').forEach(f=>{
-        f.addEventListener('submit',async(e)=>{
-            e.preventDefault(); const fd=new FormData(f); const btn=f.querySelector('button[type="submit"]'); const txt=btn.innerText;
-            btn.innerText="Salvando..."; btn.disabled=true;
-            try { const res=await fetch(f.action,{method:'POST',body:fd,headers:{'X-CSRFToken':csrftoken}}); if(res.ok) window.location.reload(); else {alert('Erro.'); btn.innerText=txt; btn.disabled=false;} }
-            catch(e){ btn.innerText=txt; btn.disabled=false; }
-        });
+    // --- CORREÇÃO DO BUG JSON (EVENT DELEGATION) ---
+    // Em vez de procurar o form, escutamos qualquer submit na página e filtramos
+    document.body.addEventListener('submit', async function(e) {
+        if (e.target.classList.contains('dashboard-ajax-form')) {
+            e.preventDefault(); // AGORA O PREVENT DEFAULT FUNCIONA SEMPRE
+            const f = e.target;
+            const fd = new FormData(f);
+            const btn = f.querySelector('button[type="submit"]');
+            const txt = btn.innerText;
+            btn.innerText = "Salvando..."; btn.disabled = true;
+            
+            try {
+                const res = await fetch(f.action, {
+                    method: 'POST', 
+                    body: fd, 
+                    headers: {'X-CSRFToken': csrftoken}
+                });
+                
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Erro ao salvar (verifique os campos).');
+                    btn.innerText = txt; 
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                alert("Erro de conexão.");
+                btn.innerText = txt; 
+                btn.disabled = false;
+            }
+        }
     });
 </script>
+
 {% endblock %}

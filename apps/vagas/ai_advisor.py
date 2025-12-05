@@ -5,7 +5,7 @@ from google.api_core import exceptions
 
 def configurar_ia():
     try:
-        # Pega a chave que configuramos no settings.py
+        # LÊ DO SETTINGS.PY (CRUCIAL PARA O RAILWAY)
         api_key = settings.GOOGLE_API_KEY
         
         if not api_key:
@@ -20,23 +20,23 @@ def configurar_ia():
 
 def gerar_dicas_perfil(perfil_texto):
     if not configurar_ia():
-        return "<ul><li>Erro de configuração da IA (Chave não detectada). Verifique as variáveis do Railway.</li></ul>"
+        return "<ul><li>Erro: Chave de API não configurada no painel.</li></ul>"
 
-    modelos = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']
+    modelos = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
 
     prompt = f"""
     Aja como um recrutador sênior de tecnologia.
-    Analise o perfil abaixo e dê 3 dicas práticas (HTML <li> com <strong> no título) para melhorar o currículo.
+    Analise o perfil abaixo e dê 3 dicas práticas (HTML <li> com <strong> no título).
     Perfil: "{perfil_texto}"
     """
 
     for modelo in modelos:
         try:
-            print(f"Tentando modelo: {modelo}...")
+            print(f"Tentando {modelo}...")
             model = genai.GenerativeModel(modelo)
             response = model.generate_content(prompt)
             return response.text
         except:
-            continue # Tenta o próximo se der erro
+            continue
             
-    return "<ul><li>O Vagalume AI está temporariamente indisponível. Tente novamente em instantes.</li></ul>"
+    return "<ul><li>IA temporariamente indisponível.</li></ul>"
