@@ -181,6 +181,22 @@
                                 <span class="skill-tag" id="skill-{{ skill.id }}">{{ skill.nome }} <span class="remove-skill" onclick="removeSkill({{ skill.id }})">×</span></span>
                             {% endfor %}
                         </div>
+                        
+                        <div class="add-skill-trigger" onclick="toggleSkillInput('hard')">+ Adicionar skill</div>
+                        
+                        <div class="skill-input-wrapper" id="hard-skill-input" style="flex-direction: column; align-items: stretch; display: none; margin-top: 15px;">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="skill-input" placeholder="Digite ou selecione..." id="hard-skill-name">
+                                <button class="add-skill-btn" onclick="addSkill('hard')">Salvar</button>
+                            </div>
+                            <div class="tag-cloud" style="margin-top: 10px;">
+                                <small style="color: #8b949e; display: block; margin-bottom: 5px;">Sugestões:</small>
+                                <span onclick="preencherSkillPerfil('hard', 'Python')">Python</span>
+                                <span onclick="preencherSkillPerfil('hard', 'Java')">Java</span>
+                                <span onclick="preencherSkillPerfil('hard', 'SQL')">SQL</span>
+                                <span onclick="preencherSkillPerfil('hard', 'React')">React</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="cv-section">
@@ -190,38 +206,22 @@
                                 <span class="skill-tag" id="skill-{{ skill.id }}">{{ skill.nome }} <span class="remove-skill" onclick="removeSkill({{ skill.id }})">×</span></span>
                             {% endfor %}
                         </div>
-                    </div>
-
-                    <div class="cv-section">
-                        <h3>Experiência Profissional</h3>
-                        <div id="experiencias-container">
-                            {% for exp in experiencias %}
-                                <div class="xp-item" id="xp-{{ exp.id }}">
-                                    <div style="float:right;"><button class="action-btn delete" onclick="deleteItem('experiencia', {{ exp.id }})">Excluir</button></div>
-                                    <strong>{{ exp.cargo }}</strong>
-                                    <span>{{ exp.empresa }} | {{ exp.data_inicio|date:"Y" }}</span>
-                                </div>
-                            {% empty %}<span class="cv-content">Nenhuma experiência registrada.</span>{% endfor %}
+                        
+                        <div class="add-skill-trigger" onclick="toggleSkillInput('soft')">+ Adicionar skill</div>
+                        
+                        <div class="skill-input-wrapper" id="soft-skill-input" style="flex-direction: column; align-items: stretch; display: none; margin-top: 15px;">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="skill-input" placeholder="Digite ou selecione..." id="soft-skill-name">
+                                <button class="add-skill-btn" onclick="addSkill('soft')">Salvar</button>
+                            </div>
+                            <div class="tag-cloud" style="margin-top: 10px;">
+                                <small style="color: #8b949e; display: block; margin-bottom: 5px;">Sugestões:</small>
+                                <span onclick="preencherSkillPerfil('soft', 'Liderança')">Liderança</span>
+                                <span onclick="preencherSkillPerfil('soft', 'Comunicação')">Comunicação</span>
+                                <span onclick="preencherSkillPerfil('soft', 'Proatividade')">Proatividade</span>
+                            </div>
                         </div>
-                        <button class="add-new-btn" onclick="abrirModal('modal-experiencia')"><span>+</span> Adicionar experiência</button>
                     </div>
-
-                    <div class="cv-section">
-                        <h3>Formação Acadêmica</h3>
-                        <div id="formacoes-container">
-                            {% for edu in formacoes %}
-                                <div class="edu-item" id="edu-{{ edu.id }}">
-                                    <div style="float:right;"><button class="action-btn delete" onclick="deleteItem('formacao', {{ edu.id }})">Excluir</button></div>
-                                    <strong>{{ edu.nome_formacao }}</strong>
-                                    <span>{{ edu.nome_instituicao }}</span>
-                                </div>
-                            {% empty %}<span class="cv-content">Nenhuma formação registrada.</span>{% endfor %}
-                        </div>
-                        <button class="add-new-btn" onclick="abrirModal('modal-formacao')"><span>+</span> Adicionar formação</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="panel">
             <div class="finance-controls">
@@ -406,5 +406,59 @@
             await fetch(f.action,{method:'POST',body:fd,headers:{'X-CSRFToken':csrftoken}}).then(r=>{if(r.ok)window.location.reload()});
         });
     });
+
+    // Função para abrir/fechar o input manual
+    function toggleSkillInput(type) {
+        const wrapper = document.getElementById(type + '-skill-input');
+        if (wrapper.style.display === 'none' || wrapper.style.display === '') {
+            wrapper.style.display = 'flex';
+            // Foca no input
+            setTimeout(() => document.getElementById(type + '-skill-name').focus(), 100);
+        } else {
+            wrapper.style.display = 'none';
+        }
+    }
+
+    // Função para salvar skill digitada manualmente (ou clicada na tag do perfil)
+    async function addSkill(type) {
+        const input = document.getElementById(type + '-skill-name');
+        const nome = input.value;
+        if (!nome) return; // Não salva vazio
+
+        const fd = new FormData();
+        fd.append('nome', nome);
+        fd.append('tipo', type);
+
+        try {
+            const res = await fetch("{% url 'ajax_salvar_skill' %}", {
+                method: 'POST', 
+                headers: {'X-CSRFToken': csrftoken}, 
+                body: fd
+            });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                // Adiciona na lista visualmente
+                const containerId = type === 'hard' ? 'hard-skills-container' : 'soft-skills-container';
+                adicionarNaListaPerfil(containerId, data.skill_id, nome, type);
+                
+                // Limpa e foca para próxima
+                input.value = '';
+                input.focus();
+            } else {
+                alert(data.message || "Erro ao salvar skill.");
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Helper para clicar na tag e já preencher o input (na aba perfil)
+    function preencherSkillPerfil(type, nome) {
+        const input = document.getElementById(type + '-skill-name');
+        input.value = nome;
+        // Opcional: Salvar direto ao clicar? Se sim, descomente a linha abaixo:
+        // addSkill(type);
+    }
 </script>
 {% endblock %}
