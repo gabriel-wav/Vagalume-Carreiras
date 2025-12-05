@@ -16,9 +16,14 @@ class CandidatoCadastroForm(forms.Form):
     password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Senha'}))
     password_confirm = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Confirmar Senha'}))
 
+    # --- VALIDAÇÕES (Agora dentro da classe) ---
+
     def clean_cpf(self):
         # Validação do CPF 
         cpf = self.cleaned_data.get('cpf')
+        if not cpf:
+            return cpf
+        
         cpf_digits = re.sub(r'[^0-9]', '', cpf) # Remove pontos e traços
         
         if len(cpf_digits) != 11:
@@ -32,9 +37,11 @@ class CandidatoCadastroForm(forms.Form):
 
     def clean_email(self):
         # Validação de unicidade do Email
-        email = self.cleaned_data.get('email').lower()
-        if Usuario.objects.filter(email=email).exists():
-            raise forms.ValidationError("Este email já está cadastrado. Tente fazer login.") 
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.lower()
+            if Usuario.objects.filter(email=email).exists():
+                raise forms.ValidationError("Este email já está cadastrado. Tente fazer login.") 
         return email
 
     def clean(self):
@@ -44,17 +51,15 @@ class CandidatoCadastroForm(forms.Form):
         password_confirm = cleaned_data.get("password_confirm")
 
         if password and password_confirm and password != password_confirm:
-            raise forms.ValidationError("As senhas não coincidem.")
+            self.add_error('password_confirm', "As senhas não coincidem.")
         
         return cleaned_data
 
     def clean_telefone(self):
-    # Validação de unicidade do Telefone
+        # Validação de unicidade do Telefone
         telefone = self.cleaned_data.get('telefone')
-    # (Opcional: limpar o telefone de máscaras, similar ao CPF)
-    # telefone_digits = re.sub(r'[^0-9]', '', telefone) 
-
-        if Usuario.objects.filter(telefone=telefone).exists():
+        
+        if telefone and Usuario.objects.filter(telefone=telefone).exists():
             raise forms.ValidationError("Este telefone já está cadastrado.")
         return telefone
 
@@ -91,8 +96,8 @@ class FormacaoForm(forms.ModelForm):
             'data_inicio', 'data_fim', 'cursando_atualmente'
         ]
         widgets = {
-            'data_inicio': forms.DateInput(attrs={'type': 'date'}),
-            'data_fim': forms.DateInput(attrs={'type': 'date'}),
+            'data_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'data_fim': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'cursando_atualmente': forms.RadioSelect(
                 choices=[(True, 'Sim, estou cursando'), (False, 'Não, já concluí (ou tranquei)')],
                 attrs={'class': 'radio-custom'}
@@ -135,19 +140,23 @@ class RecrutadorCadastroForm(forms.Form):
     setor = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Setor (Ex: Tecnologia)'}))
 
     def clean_email(self):
-        email = self.cleaned_data.get('email').lower()
-        if Usuario.objects.filter(email=email).exists():
-            raise forms.ValidationError("Este email corporativo já está cadastrado.")
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.lower()
+            if Usuario.objects.filter(email=email).exists():
+                raise forms.ValidationError("Este email corporativo já está cadastrado.")
         return email
 
     def clean_cnpj(self):
         cnpj = self.cleaned_data.get('cnpj')
-        cnpj_digits = re.sub(r'[^0-9]', '', cnpj)
-        if len(cnpj_digits) != 14:
-            raise forms.ValidationError("CNPJ deve conter 14 dígitos.")
-        if Empresa.objects.filter(cnpj=cnpj_digits).exists():
-            raise forms.ValidationError("Este CNPJ já está cadastrado em nossa plataforma.")
-        return cnpj_digits
+        if cnpj:
+            cnpj_digits = re.sub(r'[^0-9]', '', cnpj)
+            if len(cnpj_digits) != 14:
+                raise forms.ValidationError("CNPJ deve conter 14 dígitos.")
+            if Empresa.objects.filter(cnpj=cnpj_digits).exists():
+                raise forms.ValidationError("Este CNPJ já está cadastrado em nossa plataforma.")
+            return cnpj_digits
+        return cnpj
 
     def clean(self):
         cleaned_data = super().clean()
@@ -158,8 +167,6 @@ class RecrutadorCadastroForm(forms.Form):
             self.add_error('password_confirm', "As senhas não coincidem.")
         
         return cleaned_data
-
-# apps/usuarios/forms.py
 
 class PerfilUsuarioForm(forms.ModelForm):
     class Meta:
@@ -194,8 +201,5 @@ class NovaSenhaForm(forms.Form):
 
         if new_password and confirm_password and new_password != confirm_password:
             raise forms.ValidationError("As senhas não coincidem.")
-        
-        # Nota: A validação de complexidade de senha (UserAttributeSimilarityValidator, etc.)
-        # deve ser aplicada na view (nova_senha_view).
         
         return cleaned_data
