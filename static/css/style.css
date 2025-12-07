@@ -191,11 +191,11 @@ a:hover {
 }
 
 /* Quando o input está marcado (usando seletor adjacente) */
-/* Nota: Funciona se o HTML for input + texto dentro da label */
 .radio-custom label:has(input:checked) {
     border-color: #BEF264;
     background-color: rgba(190, 242, 100, 0.1);
 }
+
 /* Nuvem de Tags (Skills) */
 .tag-cloud {
     margin-top: 10px;
@@ -240,7 +240,6 @@ a:hover {
     
     /* NOTIFICAÇÕES FLUTUANTES */
   .popup-info { 
-    /* Fixa no topo e centraliza na marra */
     position: fixed;
     top: 100px; /* Logo abaixo da navbar */
     left: 50%;
@@ -255,7 +254,6 @@ a:hover {
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     animation: slideDownFade 0.5s ease forwards;
     
-    /* Garante que o texto não quebre feio */
     white-space: nowrap;
     max-width: 90%;
     text-align: center;
@@ -797,13 +795,33 @@ a:hover {
 .radio-custom label:hover { border-color:#BEF264; color:#fff; }
 .radio-custom input[type="radio"] { margin-right:5px; accent-color:#BEF264; }
 
-/* ==============================================
-   CORREÇÃO DE MOBILE (Patch V2.0 - Completo)
-   ============================================== */
+/* ===================================================================
+   CORREÇÃO FINAL E DEFINITIVA: MOBILE, BOTÕES E FAIXA
+   =================================================================== */
 
+/* 1. CORREÇÃO DA FAIXA DE EMPRESAS (OVERLAP) */
+/* Isso garante que a faixa não esmague os logos */
+
+.faixa-track {
+    display: flex;
+    align-items: center;
+    gap: 40px; /* Espaço entre os itens */
+    width: max-content; /* OBRIGATÓRIO: Largura = soma dos itens */
+    /* animation: scroll 20s linear infinite; <-- Adicione se tiver animação */
+}
+
+.faixa-track img,
+.faixa-track span,
+.faixa-track div {
+    flex-shrink: 0 !important; /* A MÁGICA: Impede de encolher e sobrepor */
+    white-space: nowrap;
+    max-width: none;
+}
+
+/* 2. CORREÇÃO GERAL DE CONTAINERS NO MOBILE */
 @media (max-width: 600px) {
     
-    /* 1. Desgrudar containers das bordas (Adicionei .form-container e outros) */
+    /* Desgrudar containers das bordas */
     .onboarding-container, 
     .form-container,
     .politica-container,
@@ -812,56 +830,87 @@ a:hover {
     .new-password-wrapper,
     .recovery-wrapper 
     {
-        width: 90% !important;
+        width: 92% !important; /* Mais largura útil no mobile */
         margin: 20px auto !important;
         padding: 20px 15px !important;
         
-        /* --- AS LINHAS MÁGICAS DO SCROLL --- */
-        max-height: 85vh !important; /* Limita a altura a 85% da tela */
-        overflow-y: auto !important; /* Cria o scroll se passar disso */
-        display: block !important;   /* Garante comportamento de bloco */
+        max-height: 85vh !important; 
+        overflow-y: auto !important; 
+        display: block !important;
         
-        /* Ajuste fino para o scroll ficar bonito */
         scrollbar-width: thin; 
         scrollbar-color: #BEF264 #0D1B2A;
     }
 
-    /* 2. Ajustar Títulos Grandes */
+    /* Ajustar fontes grandes */
     h1, .onboarding-title, .titulo-pagina, .header-section h1 {
         font-size: 1.8rem !important;
         line-height: 1.2 !important;
-        word-wrap: break-word !important; /* Evita estourar texto longo */
+        word-wrap: break-word !important;
     }
 
-    /* 3. Ajustar os Cards */
+    /* Ajustar Cards */
     .job-card, .perfil-box, .radar-highlight, .menu-card {
         padding: 20px !important;
         margin-bottom: 15px !important;
     }
 
-    /* 4. Arrumar o Header/Hero */
+    /* Header e Botões Largos */
     .hero, .header-section {
         padding: 30px 15px !important;
         min-height: auto !important;
     }
 
-    /* 5. Botões que estouravam a largura */
     .btn-create-big, .radar-btn, .btn-save, .btn-login-gradient {
         width: 100% !important;
         justify-content: center;
         padding: 12px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
     }
 
-    /* 6. Ajuste da Navbar Mobile */
     .navbar-mobile-menu {
         width: 85% !important;
         padding-top: 60px !important;
     }
 
-    /* 7. Inputs de formulários não estourarem */
     input, select, textarea {
         max-width: 100% !important;
+    }
+}
+
+/* 3. CORREÇÃO DOS BOTÕES "COMEÇAR" E "SOU EMPRESA" */
+.container-botoes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Estilo padrão dos botões */
+.botao-comecar, 
+.botao-sou-empresa,
+.container-botoes a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* Seus estilos visuais (cor, padding) ficam aqui ou no HTML */
+}
+
+/* Ajuste específico para MOBILE (quebra linha e centraliza) */
+@media (max-width: 768px) {
+    .container-botoes {
+        flex-direction: column; /* Um embaixo do outro */
+        gap: 15px;
+    }
+
+    .container-botoes a,
+    .botao-comecar, 
+    .botao-sou-empresa {
+        width: 100% !important; /* Largura total */
+        max-width: 320px;       /* Mas não gigante */
+        display: flex;          /* Garante flexibilidade */
+        margin: 0 auto;         /* Centraliza */
     }
 }
