@@ -914,3 +914,155 @@ a:hover {
         margin: 0 auto;         /* Centraliza */
     }
 }
+
+/* ===================================================================
+   RESPONSIVIDADE MOBILE: DASHBOARDS (CANDIDATO E RECRUTADOR)
+   =================================================================== */
+
+@media (max-width: 900px) {
+
+    /* --- 1. AJUSTES GERAIS DO DASHBOARD --- */
+    
+    /* Remove padding lateral excessivo e ajusta container */
+    .dashboard-window {
+        min-height: auto !important; /* Deixa a altura crescer conforme o conteúdo */
+        padding-bottom: 40px;
+    }
+
+    .panel {
+        padding: 0 10px; /* Menos espaçamento lateral no painel */
+    }
+
+    /* Abas do topo (Minha Vagas / Radar / Etc) */
+    .tabs {
+        width: 100%;
+        gap: 5px;
+        padding: 0 10px;
+    }
+
+    .tab {
+        font-size: 0.9rem; /* Texto menor */
+        padding: 12px 5px;
+    }
+
+    /* --- 2. PAINEL DO RECRUTADOR (home_recrutador.html) --- */
+
+    /* Botão de Criar Vaga Grande */
+    .create-job-area {
+        margin-bottom: 20px;
+    }
+    .btn-create-big {
+        width: 100%; /* Botão ocupa largura total */
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    /* Card de Vaga (Recrutador) */
+    .job-card {
+        padding: 20px;
+    }
+
+    .job-meta {
+        flex-direction: column; /* Ícones de local/contrato um embaixo do outro */
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    /* Botões de Ação (Ver Candidatos, Editar, Excluir) */
+    .admin-actions {
+        grid-template-columns: 1fr; /* Um botão por linha */
+        gap: 10px;
+    }
+
+    .btn-candidates {
+        grid-column: span 1; /* Remove o span de 3 colunas */
+    }
+
+    /* Radar e Menu Grid */
+    .radar-highlight {
+        padding: 20px;
+    }
+    .radar-highlight h2 {
+        font-size: 1.5rem !important;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr; /* Cards de menu um embaixo do outro */
+    }
+
+    /* --- 3. PAINEL DO CANDIDATO (home_candidato.html) --- */
+
+    /* Container de Perfil (Esquerda) e CV (Direita) */
+    .perfil-container {
+        grid-template-columns: 1fr; /* Empilha os blocos */
+        gap: 20px;
+    }
+
+    /* Box de edição de perfil */
+    .perfil-box {
+        padding: 20px;
+    }
+
+    /* Cards de Vagas (Candidato) */
+    .job-card-footer {
+        flex-direction: column; /* Botões embaixo */
+        align-items: stretch !important; /* Estica os botões */
+        gap: 15px;
+    }
+    
+    .apply-btn {
+        width: 100%; /* Botão candidatar largura total */
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Seção de Finanças */
+    .finance-controls {
+        flex-direction: column; /* Botões de finança empilhados */
+        gap: 10px;
+    }
+
+    .btn-pill {
+        width: 100%;
+    }
+
+    .finance-grid {
+        grid-template-columns: 1fr; /* Cards financeiros empilhados */
+    }
+
+    /* --- 4. ONBOARDING (Passo a Passo) --- */
+    .onboarding-container {
+        width: 95% !important;
+        padding: 25px 15px !important;
+        margin: 20px auto !important;
+        min-height: auto;
+    }
+
+    .onboarding-title {
+        font-size: 1.5rem;
+    }
+
+    .skill-input-wrapper {
+        flex-direction: column;
+    }
+    
+    .skill-input-wrapper button {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    /* --- 5. MODAIS --- */
+    .modal-box {
+        width: 95%;
+        padding: 20px;
+        max-height: 90vh; /* Evita que o modal saia da tela */
+        overflow-y: auto; /* Scroll dentro do modal se precisar */
+    }
+
+    /* --- 6. POPUPS E TOASTS --- */
+    .popup-info {
+        width: 90%;
+        font-size: 0.9rem;
+        padding: 12px 20px;
+    }
+}

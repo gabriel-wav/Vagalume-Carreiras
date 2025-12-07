@@ -148,22 +148,16 @@
         }
 
         /* =========================
-           MARQUEE X (CORREÇÃO DEFINITIVA - FULL WIDTH)
+           MARQUEE X (CORREÇÃO DEFINITIVA)
         ========================= */
         .marquee-wrapper {
-            /* A MÁGICA DO BREAKOUT: */
             width: 100vw;
-            /* Largura total da janela (Viewport Width) */
             margin-left: calc(50% - 50vw);
-            /* Puxa para a esquerda para centralizar na tela, ignorando o pai */
             margin-right: calc(50% - 50vw);
-            /* Mesma coisa para a direita */
-
             overflow: hidden;
             position: relative;
             background-color: #0D1117;
             padding: 80px 0;
-            /* Altura do respiro */
             margin-top: 80px;
             margin-bottom: 80px;
         }
@@ -171,7 +165,6 @@
         .marquee-section {
             position: relative;
             height: 1000px;
-            /* Altura suficiente para o X girar sem cortar */
             width: 100%;
             display: flex;
             align-items: center;
@@ -180,11 +173,9 @@
 
         .marquee-stripe {
             position: absolute;
-            /* Como o wrapper já é 100vw, 150% aqui garante sobra para a rotação */
             width: 150%;
             left: 50%;
             top: 50%;
-
             padding: 30px 0;
             background: linear-gradient(to bottom, #BEF264, #ffffff);
             color: #0D1B2A;
@@ -194,21 +185,15 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             text-transform: uppercase;
             letter-spacing: 2px;
-
-            /* Centraliza o ponto de rotação */
             transform-origin: center center;
         }
 
-        /* Faixa 1 (Descendo) */
         .stripe-1 {
-            /* Centraliza (x, y) e Gira */
             transform: translate(-50%, -50%) rotate(4deg);
             z-index: 2;
         }
 
-        /* Faixa 2 (Subindo) */
         .stripe-2 {
-            /* Centraliza (x, y) e Gira Inverso */
             transform: translate(-50%, -50%) rotate(-4deg);
             z-index: 1;
             opacity: 0.9;
@@ -229,23 +214,24 @@
             flex-shrink: 0;
         }
 
+        /* CORREÇÃO AQUI: flex-shrink: 0 impede sobreposição */
         .marquee-group span {
             white-space: nowrap;
             padding: 0 50px;
+            flex-shrink: 0 !important; /* Importante para não amassar */
         }
 
         @keyframes scroll-left {
             from {
                 transform: translateX(0);
             }
-
             to {
                 transform: translateX(-100%);
             }
         }
 
         /* =========================
-           JOBS SECTION (Dinâmica)
+           JOBS SECTION
         ========================= */
         .jobs-section {
             width: 100%;
@@ -284,7 +270,6 @@
             margin-bottom: 40px;
         }
 
-        /* Card de Vaga */
         .job-card {
             background: #0D1117;
             border: 1px solid #30363d;
@@ -544,34 +529,14 @@
         .social-proof-animation {
             flex: 1;
             min-width: 300px;
-            height: 400px;
-            position: relative;
-            border: 2px dashed #30363d;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #30363d;
-            font-size: 0.9rem;
-        }
-
-        /* =========================
-   RADAR ANIMATION (Novo)
-========================= */
-        .social-proof-animation {
-            flex: 1;
-            min-width: 300px;
             height: 500px;
-            /* Aumentei um pouco para caber os anéis */
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            /* Garante que não vaze da tela */
         }
 
-        /* Container relativo para posicionar os anéis */
         .radar-system {
             position: relative;
             width: 450px;
@@ -581,16 +546,13 @@
             justify-content: center;
         }
 
-        /* Estilo Base dos Anéis */
         .radar-ring {
             position: absolute;
             border-radius: 50%;
             border: 1px dashed rgba(190, 242, 100, 0.3);
-            /* #BEF264 com transparência */
             box-shadow: 0 0 20px rgba(190, 242, 100, 0.05);
         }
 
-        /* Tamanhos dos Anéis */
         .ring-1 {
             width: 100%;
             height: 100%;
@@ -610,7 +572,6 @@
             border-color: rgba(190, 242, 100, 0.1);
         }
 
-        /* Avatar Central */
         .avatar-center {
             width: 80px;
             height: 80px;
@@ -628,7 +589,6 @@
             object-fit: cover;
         }
 
-        /* Avatares Orbitais */
         .orbit-item {
             position: absolute;
             width: 50px;
@@ -636,8 +596,6 @@
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid #161B22;
-            /* Borda escura para destacar do fundo */
-            /* Centraliza o item na linha do anel */
             top: 50%;
             left: 50%;
             margin-top: -25px;
@@ -648,134 +606,68 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Mantém a imagem em pé enquanto o anel gira */
             animation: counter-spin inherit;
         }
 
-        /* Posicionamento nos Anéis (Transform Translate afasta do centro) */
-        /* Anel Externo (Ring 1) - Raio aprox 225px */
-        .pos-1 {
-            transform: rotate(0deg) translate(225px) rotate(0deg);
-        }
+        .pos-1 { transform: rotate(0deg) translate(225px) rotate(0deg); }
+        .pos-2 { transform: rotate(72deg) translate(225px) rotate(-72deg); }
+        .pos-3 { transform: rotate(144deg) translate(225px) rotate(-144deg); }
+        .pos-4 { transform: rotate(216deg) translate(225px) rotate(-216deg); }
+        .pos-5 { transform: rotate(288deg) translate(225px) rotate(-288deg); }
+        .pos-6 { transform: rotate(45deg) translate(146px) rotate(-45deg); }
+        .pos-7 { transform: rotate(165deg) translate(146px) rotate(-165deg); }
+        .pos-8 { transform: rotate(285deg) translate(146px) rotate(-285deg); }
 
-        .pos-2 {
-            transform: rotate(72deg) translate(225px) rotate(-72deg);
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes counter-spin { 100% { transform: rotate(-360deg); } }
 
-        .pos-3 {
-            transform: rotate(144deg) translate(225px) rotate(-144deg);
-        }
-
-        .pos-4 {
-            transform: rotate(216deg) translate(225px) rotate(-216deg);
-        }
-
-        .pos-5 {
-            transform: rotate(288deg) translate(225px) rotate(-288deg);
-        }
-
-        /* Anel do Meio (Ring 2) - Raio aprox 146px */
-        .pos-6 {
-            transform: rotate(45deg) translate(146px) rotate(-45deg);
-        }
-
-        .pos-7 {
-            transform: rotate(165deg) translate(146px) rotate(-165deg);
-        }
-
-        .pos-8 {
-            transform: rotate(285deg) translate(146px) rotate(-285deg);
-        }
-
-        /* Animações de Rotação */
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Animação para manter as fotos "em pé" */
-        @keyframes counter-spin {
-            100% {
-                transform: rotate(-360deg);
-            }
-        }
-
-        /* Responsividade para o Radar */
         @media (max-width: 600px) {
-            .radar-system {
-                width: 320px;
-                height: 320px;
-            }
-
-            .pos-1,
-            .pos-2,
-            .pos-3,
-            .pos-4,
-            .pos-5 {
+            .radar-system { width: 320px; height: 320px; }
+            .pos-1, .pos-2, .pos-3, .pos-4, .pos-5 {
                 transform: rotate(var(--deg)) translate(160px) rotate(calc(var(--deg) * -1));
             }
-
-            /* Nota: Simplifiquei acima, no mobile o CSS puro pode precisar de ajustes manuais nos translates se encolher */
         }
 
         /* =========================
            ANIMATIONS
         ========================= */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* =========================
-           RESPONSIVE
+           RESPONSIVE (MOBILE FIX)
         ========================= */
         @media (max-width: 900px) {
-            .categories-content {
-                grid-template-columns: 1fr;
-            }
-
-            .social-proof-section {
-                flex-direction: column;
-                text-align: center;
-            }
+            .categories-content { grid-template-columns: 1fr; }
+            .social-proof-section { flex-direction: column; text-align: center; }
         }
 
         @media (max-width: 600px) {
-            .hero-section {
-                min-height: 70vh;
-            }
-
+            .hero-section { min-height: 70vh; }
+            
+            /* CORREÇÃO AQUI: Botões centralizados */
             .hero-buttons {
                 flex-direction: column;
                 width: 100%;
+                align-items: center; /* Centraliza a coluna */
+                gap: 15px;
             }
 
             .btn-cta-green,
             .btn-cta-outline {
                 width: 100%;
                 max-width: 300px;
+                display: flex; /* Garante que o texto fique no meio */
+                justify-content: center;
+                margin: 0 auto; /* Centraliza o botão no container */
+                text-align: center;
             }
 
-            .stats-section {
-                flex-direction: column;
-                gap: 40px;
-            }
-
-            .marquee-section {
-                height: 220px;
-            }
-
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
+            .stats-section { flex-direction: column; gap: 40px; }
+            .marquee-section { height: 220px; }
+            .categories-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
