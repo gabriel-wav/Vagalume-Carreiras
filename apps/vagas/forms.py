@@ -25,8 +25,9 @@ class VagaForm(forms.ModelForm):
             'descricao': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Descreva as atividades...'}),
             'requisitos': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Ex: Python, SQL, Inglês...'}),
             'beneficios': forms.Textarea(attrs={'rows': 3, 'placeholder': 'VT, VR, Plano de Saúde...'}),
-            # Estiliza o dropdown da área de atuação
             'area_atuacao': forms.Select(attrs={'class': 'form-control', 'style': 'background-color:#0D1117; color:#fff; border:1px solid #30363d;'}),
+            'status': forms.RadioSelect(choices=[(True, 'Vaga Aberta'), (False, 'Vaga Fechada (Arquivada)')],
+            attrs={'class': 'radio-custom'}),
         }
         
         labels = {

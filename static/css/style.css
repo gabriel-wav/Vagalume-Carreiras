@@ -239,14 +239,27 @@ a:hover {
     .hero p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 15px; }
     
     /* NOTIFICAÇÕES FLUTUANTES */
-    .popup-info { 
-        color: #0D1B2A; background: #AFEB83; 
-        font-weight: 700; padding: 10px 20px; 
-        border-radius: 50px; margin-top: 15px; 
-        display: inline-block;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        animation: slideDownFade 0.5s ease forwards;
-    }
+  .popup-info { 
+    /* Fixa no topo e centraliza na marra */
+    position: fixed;
+    top: 100px; /* Logo abaixo da navbar */
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza exato */
+    z-index: 9999;
+    
+    color: #0D1B2A; 
+    background: #AFEB83; 
+    font-weight: 700; 
+    padding: 15px 30px; 
+    border-radius: 50px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideDownFade 0.5s ease forwards;
+    
+    /* Garante que o texto não quebre feio */
+    white-space: nowrap;
+    max-width: 90%;
+    text-align: center;
+}
     @keyframes slideDownFade { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
 
     /* =========================

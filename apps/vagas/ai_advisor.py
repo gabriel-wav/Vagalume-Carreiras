@@ -23,8 +23,10 @@ def gerar_dicas_perfil(perfil_texto):
         return "<ul><li>Erro: Chave de API não configurada no painel.</li></ul>"
 
     prompt = f"""
-    Aja como um recrutador sênior de tecnologia.
-    Analise o perfil abaixo e dê 3 dicas práticas (HTML <li> com <strong> no título).
+    Aja como um recrutador sênior. Analise o perfil abaixo e dê 3 dicas curtas e diretas.
+    SAÍDA OBRIGATÓRIA: Apenas código HTML cru (tags <ul>, <li>, <strong>).
+    NÃO use crases de markdown (```html). NÃO coloque introdução.
+    
     Perfil: "{perfil_texto}"
     """
 
@@ -54,7 +56,9 @@ def gerar_dicas_perfil(perfil_texto):
                 print(f"Tentando usar: {modelo_nome}...")
                 model = genai.GenerativeModel(modelo_nome)
                 response = model.generate_content(prompt)
-                return response.text
+                texto_limpo = response.text
+                texto_limpo = texto_limpo.replace("```html", "").replace("```", "")
+                return texto_limpo
             except Exception as e:
                 print(f"❌ Erro no modelo {modelo_nome}: {e}")
                 continue

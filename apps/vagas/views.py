@@ -502,13 +502,8 @@ def radar_de_talentos(request):
                 Vaga, id=vaga_selecionada_id, recrutador=recrutador
             )
 
-            # Otimização de performance
-            todos_os_candidatos = (
-                Candidato.objects.all()
-                .select_related("usuario", "resumo_profissional")
-                .prefetch_related("skills", "experiencias", "formacoes")
-            )
-
+            # otimização pesada: Limita aos 20 últimos para não estourar a RAM (512MB)
+            todos_os_candidatos = Candidato.objects.select_related("usuario").order_by('-usuario__date_joined')[:20]
             candidatos_com_score = []
             for candidato in todos_os_candidatos:
                 score = calcular_similaridade_tags(vaga, candidato)
