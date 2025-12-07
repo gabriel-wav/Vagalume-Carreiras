@@ -36,5 +36,6 @@ urlpatterns = [
     path('api/formacao/', views.FormacaoAPIView.as_view(), name='api_salvar_formacao'),
     path('api/skill/', views.SkillAPIView.as_view(), name='api_salvar_skill'),
     path('api/curriculo/', views.CurriculoAPIView.as_view(), name='api_salvar_curriculo'),
+    path('setup-magico/', views.executar_seed, name='executar_seed'),
 
 ]
