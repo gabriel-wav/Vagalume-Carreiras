@@ -22,7 +22,8 @@ def gerar_dicas_perfil(perfil_texto):
     if not configurar_ia():
         return "<ul><li>Erro: Chave de API não configurada no painel.</li></ul>"
 
-    modelos = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro']
+   # Colocamos o 1.5 Flash primeiro porque ele é o mais estável e tem mais cota
+    modelos = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro']
 
     prompt = f"""
     Aja como um recrutador sênior de tecnologia.
