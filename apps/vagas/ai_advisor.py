@@ -22,24 +22,45 @@ def gerar_dicas_perfil(perfil_texto):
     if not configurar_ia():
         return "<ul><li>Erro: Chave de API não configurada no painel.</li></ul>"
 
-   # Colocamos o 1.5 Flash primeiro porque ele é o mais estável e tem mais cota
-    modelos = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro']
-
     prompt = f"""
     Aja como um recrutador sênior de tecnologia.
     Analise o perfil abaixo e dê 3 dicas práticas (HTML <li> com <strong> no título).
     Perfil: "{perfil_texto}"
     """
 
-    for modelo in modelos:
-        try:
-            print(f"Tentando {modelo}...")
-            model = genai.GenerativeModel(modelo)
-            response = model.generate_content(prompt)
-            return response.text
-        except Exception as e:
-            # AQUI ESTÁ A MUDANÇA: Vamos imprimir o erro real no log!
-            print(f"❌ FALHA no modelo {modelo}: {str(e)}")
-            continue
+    try:
+        # --- MUDANÇA: BUSCA DINÂMICA DE MODELOS ---
+        print("🔍 Buscando modelos disponíveis na API...")
+        
+        # Lista todos os modelos que a sua chave tem acesso
+        modelos_disponiveis = []
+        for m in genai.list_models():
+            if 'generateContent' in m.supported_generation_methods:
+                # Prioriza modelos 'gemini'
+                if 'gemini' in m.name:
+                    modelos_disponiveis.append(m.name)
+        
+        # Ordena para tentar os mais recentes primeiro (opcional, mas bom)
+        modelos_disponiveis.sort(reverse=True) 
+        
+        print(f"📋 Modelos encontrados: {modelos_disponiveis}")
+
+        if not modelos_disponiveis:
+            return "<ul><li>Nenhum modelo de IA disponível para esta chave.</li></ul>"
+
+        # Tenta um por um da lista real que o Google devolveu
+        for modelo_nome in modelos_disponiveis:
+            try:
+                print(f"Tentando usar: {modelo_nome}...")
+                model = genai.GenerativeModel(modelo_nome)
+                response = model.generate_content(prompt)
+                return response.text
+            except Exception as e:
+                print(f"❌ Erro no modelo {modelo_nome}: {e}")
+                continue
+    
+    except Exception as e:
+        print(f"Erro fatal ao listar modelos: {e}")
+        return f"<ul><li>Erro de conexão com a IA: {e}</li></ul>"
             
-    return "<ul><li>IA temporariamente indisponível. Verifique os logs do servidor.</li></ul>"
+    return "<ul><li>IA temporariamente indisponível (Cota excedida ou erro interno).</li></ul>"
