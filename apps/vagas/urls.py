@@ -26,5 +26,6 @@ urlpatterns = [
     path('comentario/deletar/<int:comentario_id>/', views.deletar_comentario, name='deletar_comentario'),
     path('ajax/analise-ia-perfil/', views.ajax_analise_ia_perfil, name='ajax_analise_ia_perfil'),
     path('painel-admin/toggle-status/<int:user_id>/', views.toggle_status_usuario, name='toggle_status_usuario'),
+    path('vagas/detalhe/<int:vaga_id>/', views.ver_vaga_detalhe, name='ver_vaga_detalhe'),
     
 ]

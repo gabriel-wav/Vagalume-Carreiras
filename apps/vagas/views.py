@@ -863,3 +863,10 @@ def ajax_analise_ia_perfil(request):
             return JsonResponse({'status': 'error', 'message': str(e)})
             
     return JsonResponse({'status': 'error', 'message': 'Método inválido'})
+
+def ver_vaga_detalhe(request, vaga_id):
+    """
+    Exibe os detalhes completos de uma vaga pública.
+    """
+    vaga = get_object_or_404(Vaga, id=vaga_id)
+    return render(request, 'vagas/ver_vaga_detalhe.html', {'vaga': vaga})

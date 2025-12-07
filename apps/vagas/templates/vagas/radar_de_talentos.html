@@ -101,7 +101,7 @@
         <a href="{% url 'home_recrutador' %}" style="display: inline-block; margin-bottom: 20px; color: #8b949e; text-decoration: none; font-weight: bold;">
         &larr; Voltar ao Painel
     </a>
-    
+
         <h1>Radar de Talentos Proativo</h1>
         <p>Encontre candidatos em todo o banco de dados que se encaixam perfeitamente em uma de suas vagas.</p>
     </div>
@@ -129,7 +129,10 @@
             
             <div class="candidato-info">
                 <div class="candidato-foto">
-                    </div>
+        <img src="https://ui-avatars.com/api/?name={{ item.candidato.usuario.get_full_name }}&background=random&color=fff&size=128" 
+         style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
+         alt="Avatar">
+                </div>
                 <div class.="candidato-detalhes">
                     <h3>{{ item.candidato.usuario.get_full_name }} ({{item.score}}%)</h3>
                     <p>{{ item.candidato.headline|default:"Sem cargo" }}</p>

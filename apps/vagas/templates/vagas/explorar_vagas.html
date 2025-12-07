@@ -303,6 +303,9 @@
                     <form action="{% url 'aplicar_vaga' vaga.id %}" method="POST" style="margin:0;">
                         {% csrf_token %}
                         <button type="submit" class="btn-apply">Candidatar-Se</button>
+                        <a href="{% url 'ver_vaga_detalhe' vaga.id %}" style="display: block; text-align: center; color: #BEF264; font-weight: 600; margin-bottom: 10px; text-decoration: none;">
+                        Ver Detalhes &rarr;
+                        </a>
                     </form>
                     {% elif user.is_authenticated and user.tipo_usuario == 'recrutador' %}
                     <span style="color:#8b949e; font-size:0.8rem;">(Visão de Recrutador)</span>

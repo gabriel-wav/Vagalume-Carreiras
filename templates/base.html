@@ -939,10 +939,9 @@
 
     <div class="navbar-overlay" id="navbarOverlay"></div>
     <div class="navbar-mobile-menu" id="navbarMobileMenu">
-        <div class="navbar-mobile-links">
+            <div class="navbar-mobile-links">
             <a href="{% url 'landing_page' %}">Home</a>
             <a href="{% url 'sobre_nos' %}">Sobre Nós</a>
-            <a href="#">Conteúdo</a>
             <a href="{% url 'explorar_vagas' %}">Explorar Vagas</a>
             <a href="{% url 'politica_de_privacidade' %}">Política de Privacidade</a>
 
@@ -950,7 +949,6 @@
                 <hr style="border-color: #30363d; margin: 10px 0;">
                 <span style="color: #8b949e; font-size: 0.85rem; padding-left: 0;">Área do Candidato</span>
                 <a href="{% url 'home_candidato' %}">Meu Painel (Dashboard)</a>
-                <a href="{% url 'financas_candidato' %}">Finanças Pessoais</a>
                 <a href="{% url 'perfil_publico' user.username %}">Ver Meu Perfil Público</a>
             {% endif %}
 
