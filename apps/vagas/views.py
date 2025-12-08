@@ -204,7 +204,6 @@ def home_candidato(request):
     candidato = request.user.candidato
 
     # --- SALVAR PERFIL ---
-    # Se for POST e não tiver 'continuar' (que é do onboarding), é edição de perfil
     if request.method == "POST" and "continuar" not in request.POST:
         perfil_user_form = PerfilUsuarioForm(request.POST, instance=request.user)
         perfil_candidato_form = PerfilCandidatoForm(request.POST, instance=candidato)
@@ -217,24 +216,27 @@ def home_candidato(request):
         else:
             messages.error(request, "Erro ao atualizar. Verifique os dados.")
 
-    # --- PREPARAÇÃO DOS DADOS PARA EXIBIÇÃO ---
-
-    # Forms para Edição (Preenchidos com dados atuais)
+    # --- PREPARAÇÃO DOS DADOS ---
     perfil_user_form = PerfilUsuarioForm(instance=request.user)
     perfil_candidato_form = PerfilCandidatoForm(instance=candidato)
-
-    # Forms para o Onboarding (Vazios)
     experiencia_form = ExperienciaForm()
     formacao_form = FormacaoForm()
     skill_form = SkillForm()
     curriculo_form = CurriculoForm()
 
-    # Dados do Currículo (Para leitura - Versão Segura)
     resumo = getattr(candidato, "resumo_profissional", None)
     texto_resumo = resumo.texto if resumo else "Nenhum resumo cadastrado."
 
+    # --- PAGINAÇÃO DAS VAGAS RECOMENDADAS ---
+    vagas_list = Vaga.objects.filter(status=True).order_by("-data_publicacao")
+    
+    # Mostra 5 vagas por página no Dashboard (para não ficar muito longo)
+    paginator = Paginator(vagas_list, 5) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     contexto = {
-        "vagas": Vaga.objects.filter(status=True).order_by("-data_publicacao"),
+        "vagas": page_obj, # Agora paginado!
         # Forms
         "perfil_user_form": perfil_user_form,
         "perfil_candidato_form": perfil_candidato_form,
@@ -242,16 +244,12 @@ def home_candidato(request):
         "formacao_form": formacao_form,
         "skill_form": skill_form,
         "curriculo_form": curriculo_form,
-        # Dados Visuais (Ordenados)
+        # Dados Visuais
         "texto_resumo": texto_resumo,
         "hard_skills": Skill.objects.filter(candidato=candidato, tipo="hard"),
         "soft_skills": Skill.objects.filter(candidato=candidato, tipo="soft"),
-        "experiencias": Experiencia.objects.filter(candidato=candidato).order_by(
-            "-data_inicio"
-        ),
-        "formacoes": Formacao_Academica.objects.filter(candidato=candidato).order_by(
-            "-data_inicio"
-        ),
+        "experiencias": Experiencia.objects.filter(candidato=candidato).order_by("-data_inicio"),
+        "formacoes": Formacao_Academica.objects.filter(candidato=candidato).order_by("-data_inicio"),
     }
 
     return render(request, "vagas/home_candidato.html", contexto)
@@ -260,10 +258,7 @@ def home_candidato(request):
 @login_required
 def home_recrutador(request):
     """
-    Painel do Recrutador.
-    Agora busca o plano atual da empresa para mostrar na Badge.
-    Painel do Recrutador, lista as vagas criadas por ele. (R do CRUD)
-    Adiciona o plano atual da empresa ao contexto.
+    Painel do Recrutador com Paginação nas Vagas.
     """
     if request.user.tipo_usuario != "recrutador":
         messages.error(request, "Acesso negado.")
@@ -271,50 +266,35 @@ def home_recrutador(request):
 
     try:
         recrutador = request.user.recrutador
-        empresa = recrutador.empresa # Pega a empresa
+        empresa = recrutador.empresa
         
         # --- LÓGICA DO PLANO ---
-        # Dicionário para traduzir 'premium' -> 'Plano Premium'
-        # 1. Obter a Empresa do Recrutador
-        empresa = recrutador.empresa
-
-        # 2. Dicionário para formatar o nome do plano
         planos_nomes = {
             "basico": "Plano Básico",
             "intermediario": "Plano Intermediário",
             "premium": "Plano Premium"
         }
-        
-        # Pega o código do banco (ex: 'premium')
         slug = getattr(empresa, 'plano_assinado', 'basico')
-        
-        # Traduz para o nome bonito
         plano_atual_nome = planos_nomes.get(slug, "Plano Básico")
-        # -----------------------
-
-        plano_atual_slug = empresa.plano_assinado 
-        # Obtém o nome amigável. Usa 'Nenhum Plano' como fallback
-        plano_atual_nome = planos_nomes.get(plano_atual_slug, "Nenhum Plano") 
 
     except Recrutador.DoesNotExist:
         messages.error(request, "Você não possui um perfil de recrutador.")
         return redirect("home_candidato")
 
-    minhas_vagas = Vaga.objects.filter(recrutador=recrutador)
+    # --- PAGINAÇÃO DAS VAGAS DO RECRUTADOR ---
+    minhas_vagas_list = Vaga.objects.filter(recrutador=recrutador).order_by('-data_publicacao')
+    
+    # Mostra 6 vagas por página no painel do recrutador
+    paginator = Paginator(minhas_vagas_list, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     contexto = {
-        "vagas": minhas_vagas,
-        "plano_atual_nome": plano_atual_nome, # <--- ENVIANDO PARA O HTML
+        "vagas": page_obj, # Agora paginado!
+        "plano_atual_nome": plano_atual_nome,
     }
     
     return render(request, "vagas/home_recrutador.html", contexto)
-    
-    contexto = {
-        'vagas': minhas_vagas,
-        # 3. Adiciona o nome do plano ao contexto
-        'plano_atual_nome': plano_atual_nome 
-    }
-    return render(request, 'vagas/home_recrutador.html', contexto)
 
 @login_required
 def editar_vaga(request, vaga_id):

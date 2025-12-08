@@ -70,6 +70,26 @@
                             <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 20px;"></i>
                             <p>Você ainda não publicou nenhuma vaga.</p>
                         </div>
+
+                        {% if vagas.has_other_pages %}
+<div class="pagination-container" style="margin-top: 30px;">
+    <div class="pagination">
+        {% if vagas.has_previous %}
+            <a href="?page=1" class="page-btn first" title="Primeira">&laquo;</a>
+            <a href="?page={{ vagas.previous_page_number }}" class="page-btn">Anterior</a>
+        {% endif %}
+
+        <span class="current-page">
+            {{ vagas.number }} / {{ vagas.paginator.num_pages }}
+        </span>
+
+        {% if vagas.has_next %}
+            <a href="?page={{ vagas.next_page_number }}" class="page-btn">Próxima</a>
+            <a href="?page={{ vagas.paginator.num_pages }}" class="page-btn last" title="Última">&raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
                     {% endfor %}
                 </div>
             </div>
