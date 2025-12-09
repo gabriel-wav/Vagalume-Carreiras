@@ -7,6 +7,9 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-5.0+-092E20?style=flat&logo=django&logoColor=white)
 
+
+**DEMO AO VIVO:** https://vagalume-carreiras-production.up.railway.app/
+
 O **Vagalume Carreiras** é uma plataforma de recrutamento e seleção inteligente desenvolvida como **Trabalho de Conclusão de Curso (TCC)**.  
 Diferente de portais tradicionais, o sistema utiliza **Inteligência Artificial Generativa (Google Gemini)** e **Matching Semântico** para conectar os candidatos ideais às vagas certas, além de oferecer ferramentas de **gestão financeira** e **orientação de carreira**.
 
@@ -151,7 +154,7 @@ O diferencial do **Vagalume Carreiras** está no **Radar de Talentos**:
 
 - **Pedro Henrique** – Full Stack Developer  
 - **Danilo** – Backend Developer  
-- **Gabriel** – Full Stack Developer  
+- **Gabriel** – Frontend Developer  
 - **Antonio** – Database Specialist
 
 ---
@@ -166,4 +169,5 @@ Distribuição e cópia **não autorizadas são proibidas**.
 <p align="center">
 Feito com 💚 e muito café por <strong>Time Vagalume</strong>.
 </p>
+
 
