@@ -1,36 +1,39 @@
 # 💡 Vagalume Carreiras  
-**"Iluminando carreiras, conectando futuros."**
+**"Illuminating careers, connecting futures."**
 
 ![Vagalume Banner](https://img.shields.io/badge/Vagalume-Carreiras-BEF264?style=for-the-badge&logoColor=0D1B2A&labelColor=0D1B2A)
-![Status](https://img.shields.io/badge/Status-Concluído-success?style=flat-square)
-![Versão](https://img.shields.io/badge/Versão-1.0.0-blue?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Completed-success?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-5.0+-092E20?style=flat&logo=django&logoColor=white)
 
-O **Vagalume Carreiras** é uma plataforma de recrutamento e seleção inteligente desenvolvida como **Trabalho de Conclusão de Curso (TCC)**.  
-Diferente de portais tradicionais, o sistema utiliza **Inteligência Artificial Generativa (Google Gemini)** e **Matching Semântico** para conectar os candidatos ideais às vagas certas, além de oferecer ferramentas de **gestão financeira** e **orientação de carreira**.
+
+**LIVE DEMO:** https://vagalume-carreiras-production.up.railway.app/
+
+**Vagalume Carreiras** is an intelligent recruitment and selection platform developed as a **Final Undergraduate Thesis (TCC)**.  
+Unlike traditional job portals, the system uses **Generative Artificial Intelligence (Google Gemini)** and **Semantic Matching** to connect ideal candidates to the right job openings, while also offering **financial management** and **career guidance** tools.
 
 ---
 
-## 🚀 Funcionalidades Principais
+## 🚀 Key Features
 
-### 👤 Para Candidatos
-- **Currículo Web & PDF:** Criação de perfil detalhado (Resumo, Experiência, Formação, Skills) e anexo para currículo em PDF.
-- **Vagalume AI Advisor:** Análise de perfil por IA (Google Gemini) com dicas personalizadas para melhorar o currículo e aumentar as chances de contratação.
-- **Candidatura Simplificada:** Aplicação para vagas com apenas um clique.
-- **Educação Financeira:** Módulo exclusivo com calculadora de salário líquido (CLT) e dicas de orçamento para iniciantes no mercado.
-- **Recuperação Segura:** Recuperação de senha via **E-mail** ou **SMS** (integração com Twilio).
+### 👤 For Candidates
+- **Web & PDF Resume:** Creation of a detailed profile (Summary, Experience, Education, Skills) and attachment for a PDF resume.
+- **Vagalume AI Advisor:** AI-powered profile analysis (Google Gemini) with personalized tips to improve your resume and increase your chances of being hired.
+- **Simplified Application:** Apply to job openings with just one click.
+- **Financial Education:** Exclusive module with a net salary calculator (Brazilian CLT regime) and budgeting tips for newcomers to the job market.
+- **Secure Recovery:** Password recovery via **Email** or **SMS** (Twilio integration).
 
-### 🏢 Para Empresas (Recrutadores)
-- **Gestão de Vagas:** CRUD completo de vagas com controle de status (Aberta/Fechada).
-- **Radar de Talentos (IA - Matching):**  
-  Algoritmo de **Semantic Matching** (sentence-transformers) que varre o banco de dados e ranqueia candidatos por compatibilidade percentual, mesmo sem candidatura prévia.
-- **Planos de Assinatura:** Básico, Intermediário e Premium, com limites de vagas e acesso a funcionalidades de IA.
-- **Dashboard Administrativo:** Visão geral de métricas, candidatos e gestão da marca empregadora.
+### 🏢 For Companies (Recruiters)
+- **Job Management:** Full CRUD for job listings with status control (Open/Closed).
+- **Talent Radar (AI - Matching):**  
+  **Semantic Matching** algorithm (sentence-transformers) that scans the database and ranks candidates by compatibility percentage, even without a prior application.
+- **Subscription Plans:** Basic, Intermediate, and Premium, with job listing limits and access to AI features.
+- **Admin Dashboard:** Overview of metrics, candidates, and employer brand management.
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🛠️ Tech Stack
 
 ### Backend & Core
 - **Python**
@@ -38,36 +41,36 @@ Diferente de portais tradicionais, o sistema utiliza **Inteligência Artificial 
 - **PostgreSQL**
 - **Django REST Framework**
 
-### Inteligência Artificial & Dados
-- 🤖 **Google Gemini (Generative AI)** – Análise de perfis e orientação de carreira  
-- 🧠 **Sentence-Transformers (Torch)** – Geração de embeddings e similaridade semântica  
-- 📊 **Scikit-Learn & NumPy** – Processamento vetorial e numérico  
+### Artificial Intelligence & Data
+- 🤖 **Google Gemini (Generative AI)** – Profile analysis and career guidance  
+- 🧠 **Sentence-Transformers (Torch)** – Embedding generation and semantic similarity  
+- 📊 **Scikit-Learn & NumPy** – Vector and numerical processing  
 
 ### Frontend
-- 🎨 **HTML5, CSS3 e JavaScript**
+- 🎨 **HTML5, CSS3 and JavaScript**
 - **Jinja2 (Django Templates)**
-- Tema **Dark Mode** com acentos Neon (**#BEF264**)
+- **Dark Mode** theme with Neon accents (**#BEF264**)
 
-### Serviços Externos
-- 📧 **SMTP (Gmail)** – Envio de e-mails para recuperação de senha
-- 📱 **Twilio** – Envio de SMS para recuperação de senha
+### External Services
+- 📧 **SMTP (Gmail)** – Email delivery for password recovery
+- 📱 **Twilio** – SMS delivery for password recovery
 
 ---
 
-## ⚙️ Instalação e Configuração Local
+## ⚙️ Local Installation & Setup
 
-### 1. Pré-requisitos
+### 1. Prerequisites
 - Python **3.10+**
-- PostgreSQL instalado e em execução
+- PostgreSQL installed and running
 - Git
 
-### 2. Clonar o Repositório
+### 2. Clone the Repository
 ```bash
 git clone https://github.com/pedroH901/Vagalume-Carreiras.git
 cd vagalume-carreiras
 ```
 
-### 3. Criar Ambiente Virtual
+### 3. Create a Virtual Environment
 ```bash
 # Windows
 python -m venv venv
@@ -78,76 +81,76 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 4. Instalar Dependências
+### 4. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
-Isso instalará pacotes como PyTorch, Django, Google GenAI, entre outros.
+This will install packages such as PyTorch, Django, Google GenAI, and others.
 
-### 5. Configurar Variáveis de Ambiente
-Crie um arquivo .env na raiz do projeto:
+### 5. Configure Environment Variables
+Create a .env file in the project root:
 ```bash
-# Banco de Dados
+# Database
 DB_NAME=vagalume_db
 DB_USER=postgres
-DB_PASSWORD=sua_senha
+DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
 
 # Google AI (Gemini)
-GOOGLE_API_KEY=sua_chave_aqui
+GOOGLE_API_KEY=your_key_here
 
 # Email
-EMAIL_HOST_USER=seu_email@gmail.com
-EMAIL_HOST_PASSWORD=sua_senha_de_app
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_app_password
 
-# Twilio (Opcional)
-TWILIO_ACCOUNT_SID=seu_sid
-TWILIO_AUTH_TOKEN=seu_token
-TWILIO_PHONE_NUMBER=seu_numero
+# Twilio (Optional)
+TWILIO_ACCOUNT_SID=your_sid
+TWILIO_AUTH_TOKEN=your_token
+TWILIO_PHONE_NUMBER=your_number
 ```
 
-### 6. Migrações e Base de Dados
-Crie o banco no PostgreSQL e execute:
+### 6. Migrations & Database
+Create the database in PostgreSQL and run:
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 7. Criar Superusuário
+### 7. Create a Superuser
 ```bash
 python manage.py createsuperuser
 ```
 
-### 8. Executar o Servidor
+### 8. Run the Server
 ```bash
 python manage.py runserver
 ```
-Acesse:
+Access:
 👉 http://127.0.0.1:8000/
 
 ---
 
-## 🧠 Como funciona a IA (Matching)?
+## 🧠 How does the AI (Matching) work?
 
-O diferencial do **Vagalume Carreiras** está no **Radar de Talentos**:
+The differentiator of **Vagalume Carreiras** lies in the **Talent Radar**:
 
-1. O sistema converte:
-   - **Resumo + Experiências + Skills** do candidato  
-     em vetores matemáticos (*embeddings*) usando modelos pré-treinados  
+1. The system converts:
+   - The candidate's **Summary + Experience + Skills**  
+     into mathematical vectors (*embeddings*) using pre-trained models  
      (`distiluse-base-multilingual-cased-v1`).
 
-2. O mesmo processo é aplicado para a vaga:
-   - **Título + Descrição + Requisitos** da vaga.
+2. The same process is applied to the job listing:
+   - The job's **Title + Description + Requirements**.
 
-3. É realizado o **Cálculo de Similaridade de Cosseno** entre os vetores.
+3. A **Cosine Similarity Calculation** is performed between the vectors.
 
-4. O sistema gera um **Match Score (0 a 100%)** que entende o **contexto semântico**  
-   (ex.: `"Dev Frontend" ≈ "React Developer"`), e não depende apenas de palavras-chave exatas.
+4. The system generates a **Match Score (0 to 100%)** that understands **semantic context**  
+   (e.g.: `"Dev Frontend" ≈ "React Developer"`), without relying solely on exact keyword matches.
 
 ---
 
-## 👥 Autores (Equipe TCC)
+## 👥 Authors (TCC Team)
 
 - **Pedro Henrique** – Full Stack Developer  
 - **Danilo** – Backend Developer  
@@ -156,14 +159,13 @@ O diferencial do **Vagalume Carreiras** está no **Radar de Talentos**:
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-Este projeto é de **uso educacional e acadêmico**.  
-Distribuição e cópia **não autorizadas são proibidas**.
+This project is for **educational and academic use**.  
+Unauthorized distribution and copying **are prohibited**.
 
 ---
 
 <p align="center">
-Feito com 💚 e muito café por <strong>Time Vagalume</strong>.
+Made with 💚 and lots of coffee by <strong>Team Vagalume</strong>.
 </p>
-
